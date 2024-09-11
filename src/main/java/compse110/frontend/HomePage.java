@@ -18,11 +18,14 @@ public class HomePage extends Application {
 
         // Create UI elements
         Label titleLabel = new Label("TrainFinder");
-        titleLabel.setStyle("-fx-background-color: gray; -fx-text-fill: white; -fx-font-size: 20px; -fx-padding: 10px;");
+        titleLabel.setStyle("-fx-background-color: #D9D9D9; -fx-font-size: 50px;");
+        titleLabel.setPrefSize(200, 200); // Set background size to 200x200
+        titleLabel.setMaxWidth(Double.MAX_VALUE); 
+        titleLabel.setAlignment(Pos.CENTER); // Center the text inside the label
 
+        // Wrap the titleLabel in a VBox to center it horizontally
         VBox titleBox = new VBox(titleLabel);
-        titleBox.setAlignment(Pos.CENTER);
-        titleBox.setPadding(new Insets(100));
+        titleBox.setAlignment(Pos.CENTER); // Center VBox contents
 
         Label welcomeLabel = new Label("Welcome to search any train connections and information about your destination");
         Label departingStationLabel = new Label("Departing station:");
@@ -45,11 +48,11 @@ public class HomePage extends Application {
         CheckBox showCoolFactsCheckBox = new CheckBox("Show cool facts about cities");
         Button searchButton = new Button("Search");
 
-        // Create layout
+        // Create layout for input fields
         GridPane gridPane = new GridPane();
-        gridPane.setHgap(10);
-        gridPane.setVgap(10);
-        gridPane.add(titleLabel, 0, 0, 2, 1); // Add the title and span across two columns
+        gridPane.setHgap(30);
+        gridPane.setVgap(30);
+        gridPane.setAlignment(Pos.CENTER); 
         gridPane.add(welcomeLabel, 0, 1, 2, 1);
         gridPane.add(departingStationLabel, 0, 2);
         gridPane.add(departingStationField, 1, 2);
@@ -60,8 +63,13 @@ public class HomePage extends Application {
         gridPane.add(showCoolFactsCheckBox, 0, 5);
         gridPane.add(searchButton, 1, 5);
 
+        // Create the main layout with a BorderPane
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setTop(titleBox); // Add the titleBox at the top
+        mainLayout.setCenter(gridPane); // Add the input fields in the center
+
         // Create scene and stage with full screen and centered content
-        primaryStage.setScene(new Scene(gridPane));
+        primaryStage.setScene(new Scene(mainLayout));
         primaryStage.setMaximized(true); // Maximize the stage for full screen
         primaryStage.show();
     }
