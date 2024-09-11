@@ -66,14 +66,23 @@ public class HomePage extends Application {
                     alert.showAndWait();
 
                 } else {
+                    String message;
+                    if (showCoolFactsCheckBox.isSelected()) {
+                        message = "Cool facts about cities are enabled.";
+                    } else {
+                        message = "No cool facts selected.";
+                    }
                     // Open new window
                     InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
                     Stage infoStage = new Stage(); // Create a new Stage (window)
                     try {
-                        infoPage.start(infoStage); // Call the start method of InformationPage to display it
+                        infoPage.start(infoStage, message); // Call the start method of InformationPage to display it
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
+                    // Close the current HomePage window
+                    primaryStage.close();
                 }
 
             }
