@@ -1,6 +1,8 @@
 package compse110.frontend;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,7 +22,7 @@ public class HomePage extends Application {
         Label titleLabel = new Label("TrainFinder");
         titleLabel.setStyle("-fx-background-color: #D9D9D9; -fx-font-size: 50px;");
         titleLabel.setPrefSize(200, 200); // Set background size to 200x200
-        titleLabel.setMaxWidth(Double.MAX_VALUE); 
+        titleLabel.setMaxWidth(Double.MAX_VALUE);
         titleLabel.setAlignment(Pos.CENTER); // Center the text inside the label
 
         // Wrap the titleLabel in a VBox to center it horizontally
@@ -29,9 +31,11 @@ public class HomePage extends Application {
 
         Label welcomeLabel = new Label("Welcome to search any train connections and information about your destination");
         Label departingStationLabel = new Label("Departing station:");
-        TextField departingStationField = new TextField("Oulu");
+        TextField departingStationField = new TextField();
+        departingStationField.setPromptText("Oulu"); // Set hint text
         Label arrivalStationLabel = new Label("Arrival station (optional):");
-        TextField arrivalStationField = new TextField("Helsinki");
+        TextField arrivalStationField = new TextField();
+        arrivalStationField.setPromptText("Helsinki"); // Set hint text
         Label departureDateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = new DatePicker();
         departureDatePicker.setValue(LocalDate.now()); // Set default value to today
@@ -47,12 +51,30 @@ public class HomePage extends Application {
 
         CheckBox showCoolFactsCheckBox = new CheckBox("Show cool facts about cities");
         Button searchButton = new Button("Search");
+        searchButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                // Check departing Station Field is empty
+                if (departingStationField.getText().isEmpty()) {
+                    //
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Alert");
+                    alert.setHeaderText("Input departing station");
+                    alert.setContentText("Please input departing station name or short code");
+                    alert.showAndWait();
+
+                } else {
+                    // Open new window
+                }
+
+            }
+        });
 
         // Create layout for input fields
         GridPane gridPane = new GridPane();
         gridPane.setHgap(30);
         gridPane.setVgap(30);
-        gridPane.setAlignment(Pos.CENTER); 
+        gridPane.setAlignment(Pos.CENTER);
         gridPane.add(welcomeLabel, 0, 1, 2, 1);
         gridPane.add(departingStationLabel, 0, 2);
         gridPane.add(departingStationField, 1, 2);
@@ -70,7 +92,10 @@ public class HomePage extends Application {
 
         // Create scene and stage with full screen and centered content
         primaryStage.setScene(new Scene(mainLayout));
-        primaryStage.setMaximized(true); // Maximize the stage for full screen
+        primaryStage.setWidth(700);
+        primaryStage.setMinHeight(800);
+
+        primaryStage.setMaximized(false); // Maximize the stage for full screen
         primaryStage.show();
     }
 
