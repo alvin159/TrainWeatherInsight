@@ -1,47 +1,35 @@
 package compse110.frontend;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
-public class HomePage {
+public class HomePage extends Application {
     public static void main(String[] args) {
-        // Create the main frame
-        JFrame frame = new JFrame("TrainWeatherInsight");
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        launch();
 
-        // Create a panel to hold components
-        JPanel panel = new JPanel();
-        frame.add(panel);
-        placeComponents(panel);
-
-        // Set the frame visibility to true
-        frame.setVisible(true);
     }
 
-    private static void placeComponents(JPanel panel) {
-        panel.setLayout(null);
+    @Override
+    public void start(Stage stage) throws Exception {
 
-        // Create a label
-        JLabel label = new JLabel("Welcome to TrainWeatherInsight!");
-        label.setBounds(10, 20, 300, 25);
-        panel.add(label);
+        //Creating a new BorderPane.
+        BorderPane root = new BorderPane();
 
-        // Create a button
-        JButton button = new JButton("Click Me");
-        button.setBounds(10, 80, 150, 25);
-        panel.add(button);
+        VBox vBox = new VBox(5);
+        vBox.getChildren().add(new Text("TrainWeatherInsight"));
+        root.setCenter(vBox);
 
-        // Add action listener to the button
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                label.setText("Hello, TrainWeatherInsight!");
-            }
-        });
+        root.setPadding(new Insets(10, 10, 10, 10));
+
+        Scene scene = new Scene(root, 700, 900);
+        stage.setScene(scene);
+        stage.setTitle("TrainWeatherInsight");
+        stage.show();
+
     }
 }
