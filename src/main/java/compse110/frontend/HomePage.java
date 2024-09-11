@@ -50,7 +50,9 @@ public class HomePage extends Application {
         });
 
         CheckBox showCoolFactsCheckBox = new CheckBox("Show cool facts about cities");
+        
         Button searchButton = new Button("Search");
+        searchButton.setStyle("-fx-background-color: #0BCAFF");
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -65,6 +67,13 @@ public class HomePage extends Application {
 
                 } else {
                     // Open new window
+                    InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
+                    Stage infoStage = new Stage(); // Create a new Stage (window)
+                    try {
+                        infoPage.start(infoStage); // Call the start method of InformationPage to display it
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
