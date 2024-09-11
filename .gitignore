@@ -1,2 +1,12 @@
-.vscode
+# Ignore target directory
 target/
+
+# Ignore IDE-specific files
+.vscode/
+
+# Ignore other common generated files
+*.log
+*.tmp
+*.swp
+*.class
+.DS_Store
