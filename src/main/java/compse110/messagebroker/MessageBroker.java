@@ -5,9 +5,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import compse110.backend.exampleBackend.ExampleBackendComponent;
+
 public class MessageBroker implements MessageBrokerInterface {
+    private static MessageBroker instance;
     // Map to store subscribers for each topic
     private final Map<String, Set<MessageCallback>> subscribers = new HashMap<>();
+    private static ExampleBackendComponent exampleBackendService;
+
+    private MessageBroker() {
+        //To prevent initialization
+    }
+
+    public static synchronized MessageBroker getInstance() {
+        if (instance == null) {
+            instance = new MessageBroker();
+            initializeBackend();
+        }
+        return instance;
+    }
 
     @Override
     public void publish(String topic, Object payload) {
@@ -36,5 +52,11 @@ public class MessageBroker implements MessageBrokerInterface {
                 subscribers.remove(topic);
             }
         }
+    }
+
+    private static void initializeBackend() {
+        exampleBackendService = new ExampleBackendComponent();
+        exampleBackendService.initialize();
+        // Initialize other backend services here as well
     }
 }
