@@ -1,9 +1,9 @@
 package compse110.frontend;
 
+import compse110.frontend.Entity.SearchInfo;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -58,20 +58,28 @@ public class HomePage extends Application {
             public void handle(ActionEvent event) {
                 // Check departing Station Field is empty
                 if (departingStationField.getText().isEmpty()) {
-                    //
+                    // Show input alert
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Alert");
                     alert.setHeaderText("Input departing station");
                     alert.setContentText("Please input departing station name or short code");
                     alert.showAndWait();
 
+                } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
+                    // Check Departing and arrive station is same?
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Alert");
+                    alert.setHeaderText("Departing station and arrive station can not same name");
+                    alert.setContentText("Please input departing station name or short code again");
+                    alert.showAndWait();
                 } else {
-                    String message;
-                    if (showCoolFactsCheckBox.isSelected()) {
-                        message = "Cool facts about cities are enabled.";
-                    } else {
-                        message = "No cool facts selected.";
-                    }
+                    // Create a message entity
+                    SearchInfo message = new SearchInfo();
+                    // Put data to message
+                    message.setDeparting(departingStationField.getText());
+                    message.setArriving(arrivalStationField.getText());
+                    message.setDate(departureDatePicker.getValue());
+                    message.setShowCoolFacts(showCoolFactsCheckBox.isSelected());
                     // Open new window
                     InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
                     Stage infoStage = new Stage(); // Create a new Stage (window)
