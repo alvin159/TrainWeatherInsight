@@ -144,10 +144,8 @@ public class HomePage extends Application implements MessageCallback{
 
         // Create scene and stage with full screen and centered content
         primaryStage.setScene(new Scene(mainLayout));
-        primaryStage.setWidth(700);
-        primaryStage.setMinHeight(800);
 
-        primaryStage.setMaximized(false); // Maximize the stage for full screen
+        primaryStage.setMaximized(true); // Maximize the stage for full screen
         primaryStage.show();
     }
 

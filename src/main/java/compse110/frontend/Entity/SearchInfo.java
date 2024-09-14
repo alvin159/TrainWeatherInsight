@@ -1,35 +1,27 @@
 package compse110.frontend.Entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class SearchInfo {
-
-    private String Departing;
-
-    private String Arriving;
-
+    private String departing;
+    private String arriving;
     private LocalDate date;
-
     private boolean showCoolFacts;
 
-    public SearchInfo() {
-    }
-
-    public String getDeparting() {
-        return Departing;
+    public String getDepartingCity() {
+        return departing;
     }
 
     public void setDeparting(String departing) {
-        Departing = departing;
+        this.departing = departing;
     }
 
-    public String getArriving() {
-        return Arriving;
+    public String getArrivingCity() {
+        return arriving;
     }
 
     public void setArriving(String arriving) {
-        Arriving = arriving;
+        this.arriving = arriving;
     }
 
     public LocalDate getDate() {
@@ -46,15 +38,5 @@ public class SearchInfo {
 
     public void setShowCoolFacts(boolean showCoolFacts) {
         this.showCoolFacts = showCoolFacts;
-    }
-
-    @Override
-    public String toString() {
-        return "SearchInfo{" +
-                "Departing='" + Departing + '\'' +
-                ", Arriving='" + Arriving + '\'' +
-                ", date=" + date +
-                ", showCoolFacts=" + showCoolFacts +
-                '}';
     }
 }
