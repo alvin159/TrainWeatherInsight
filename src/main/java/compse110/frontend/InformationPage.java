@@ -38,15 +38,15 @@ public class InformationPage extends Application {
         header.setSpacing(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Label departingLabel = new Label("Departing:");
+        Label departingLabel = new Label("Departing station:");
         TextField departingField = new TextField();
         departingField.setText(message.getDepartingCity());  // Use departing city from SearchInfo
 
-        Label arrivingLabel = new Label("Arriving:");
+        Label arrivingLabel = new Label("Arrival station (optional):");
         TextField arrivingField = new TextField();
         arrivingField.setText(message.getArrivingCity());   // Use arriving city from SearchInfo
 
-        Label dateLabel = new Label("Date:");
+        Label dateLabel = new Label("Departure date:");
         TextField dateField = new TextField();
         dateField.setText(message.getDate().toString());               // Use date from SearchInfo
 
