@@ -2,6 +2,8 @@ package compse110.frontend;
 
 import compse110.frontend.Entity.SearchInfo;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,6 +17,7 @@ import javafx.stage.Stage;
 
 public class InformationPage extends Application {
 
+    private SearchInfo message;
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
@@ -24,6 +27,7 @@ public class InformationPage extends Application {
             primaryStage.close();
             return;
         } else {
+            this.message = message;
             // debug
             System.out.println(message);
         }
@@ -33,33 +37,14 @@ public class InformationPage extends Application {
         root.setPadding(new Insets(20));
         root.setSpacing(20);
 
-        // Header layout for Departing and Arriving fields
-        HBox header = new HBox();
-        header.setSpacing(10);
-        header.setAlignment(Pos.CENTER_LEFT);
-
-        Label departingLabel = new Label("Departing station:");
-        TextField departingField = new TextField();
-        departingField.setText(message.getDepartingCity());  // Use departing city from SearchInfo
-
-        Label arrivingLabel = new Label("Arrival station (optional):");
-        TextField arrivingField = new TextField();
-        arrivingField.setText(message.getArrivingCity());   // Use arriving city from SearchInfo
-
-        Label dateLabel = new Label("Departure date:");
-        TextField dateField = new TextField();
-        dateField.setText(message.getDate().toString());               // Use date from SearchInfo
-
-        Button searchButton = new Button("Search");
-
-        header.getChildren().addAll(departingLabel, departingField, arrivingLabel, arrivingField, dateLabel, dateField, searchButton);
-
         // Departure Information Layout
         VBox departInfoBox = new VBox();
         departInfoBox.setPadding(new Insets(15));
         departInfoBox.setSpacing(10);
         departInfoBox.setStyle("-fx-background-color: lightblue;");
-        Label departInfoHeader = new Label(message.getDepartingCity());
+        Label departInfoHeader = new Label(message.getDepartingCity() + " information now");
+
+
 
         // Temperature, Weather, and Population Details
         HBox departInfoDetails = new HBox();
@@ -70,7 +55,7 @@ public class InformationPage extends Application {
         temperatureBox.setAlignment(Pos.CENTER);
 
         // Placeholder for weather icon and condition (we can dynamically load this if needed)
-        VBox weatherBox = new VBox(new ImageView(new Image("file:partly_cloudy.png")), new Label("Partly cloudy"));
+        VBox weatherBox = new VBox(new ImageView(new Image("https://openweathermap.org/img/wn/10d@2x.png")), new Label("Partly cloudy"));
         weatherBox.setAlignment(Pos.CENTER);
 
         VBox populationBox = new VBox(new Label("200 000"), new Label("Population"));
@@ -98,7 +83,15 @@ public class InformationPage extends Application {
         trainScheduleBox.setSpacing(10);
         trainScheduleBox.setStyle("-fx-background-color: #f0f0f0;");
 
-        Label scheduleHeader = new Label("Trains " + message.getDepartingCity() + " - " + message.getArrivingCity());
+        Label scheduleHeader = new Label();
+        // TODO search user input
+        if (message.getArrivingCity().isEmpty()) {
+            scheduleHeader.setText(message.getDepartingCity() + " on track");
+        } else {
+            scheduleHeader.setText("Trains " + message.getDepartingCity() + " -> " + message.getArrivingCity());
+        }
+
+        // TODO change to list view to show
 
         HBox trainInfo = new HBox();
         trainInfo.setSpacing(50);
@@ -120,8 +113,12 @@ public class InformationPage extends Application {
         }
         coolFactsLabel.setStyle("-fx-font-size: 14px; -fx-padding: 20px;");
 
+
         // Adding all sections to the root layout
-        root.getChildren().addAll(header, coolFactsLabel, departInfoBox, trainScheduleBox);
+        root.getChildren().add(addheaderView());
+
+        root.getChildren().addAll(coolFactsLabel, departInfoBox, trainScheduleBox);
+
 
         if (!message.getArrivingCity().isEmpty()) {// if no any arriving city will not show this part
 
@@ -164,7 +161,9 @@ public class InformationPage extends Application {
             });
             arriveInfoBox.getChildren().add(togglearriveForecastButton);
 
+            // add view to root view
             root.getChildren().add(arriveInfoBox);
+
         }
 
 
@@ -180,4 +179,38 @@ public class InformationPage extends Application {
         // This method is required, but unused in this scenario
         // Leave it empty or redirect to the overloaded start method
     }
+
+    private HBox addheaderView() {
+        // Header layout for Departing and Arriving fields
+        HBox header = new HBox();
+        header.setSpacing(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label departingLabel = new Label("Departing station:");
+        TextField departingField = new TextField();
+        departingField.setText(message.getDepartingCity());  // Use departing city from SearchInfo
+
+        Label arrivingLabel = new Label("Arrival station (optional):");
+        TextField arrivingField = new TextField();
+        arrivingField.setText(message.getArrivingCity());   // Use arriving city from SearchInfo
+
+        Label dateLabel = new Label("Departure date:");
+        TextField dateField = new TextField();
+        dateField.setText(message.getDate().toString());               // Use date from SearchInfo
+
+        // Search button
+        Button searchButton = new Button("Search");
+        searchButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                //on Click
+            }
+        });
+
+        header.getChildren().addAll(departingLabel, departingField, arrivingLabel, arrivingField, dateLabel, dateField, searchButton);
+
+        return header;
+    }
+
+//    private void a
 }
