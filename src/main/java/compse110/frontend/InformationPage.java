@@ -8,13 +8,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
+import java.time.LocalDate;
 
 public class InformationPage extends Application {
 
@@ -40,7 +40,22 @@ public class InformationPage extends Application {
         root = new VBox();
         root.setPadding(new Insets(20));
         root.setSpacing(20);
-        
+
+        initView();
+
+        Scene scene = new Scene(root, 600, 400);
+        primaryStage.setScene(scene);
+        primaryStage.setMaximized(true); // Maximize the stage for full screen
+        primaryStage.show();
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        // This method is required, but unused in this scenario
+        // Leave it empty or redirect to the overloaded start method
+    }
+
+    private void initView() {
         // Train Schedule Table (simplified for this example)
         VBox trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
@@ -77,6 +92,8 @@ public class InformationPage extends Application {
         coolFactsLabel.setStyle("-fx-font-size: 14px; -fx-padding: 20px;");
 
 
+        // clear children view first
+        root.getChildren().clear();
         // Adding all sections to the root layout
         root.getChildren().add(addHeaderView());
         root.getChildren().add(coolFactsLabel);
@@ -101,17 +118,6 @@ public class InformationPage extends Application {
 
             root.getChildren().add(addCityInformationView(cityInformation1));
         }
-
-        Scene scene = new Scene(root, 600, 400);
-        primaryStage.setScene(scene);
-        primaryStage.setMaximized(true); // Maximize the stage for full screen
-        primaryStage.show();
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        // This method is required, but unused in this scenario
-        // Leave it empty or redirect to the overloaded start method
     }
 
     private HBox addHeaderView() {
@@ -129,8 +135,17 @@ public class InformationPage extends Application {
         arrivingField.setText(message.getArrivingCity());   // Use arriving city from SearchInfo
 
         Label dateLabel = new Label("Departure date:");
-        TextField dateField = new TextField();
-        dateField.setText(message.getDate().toString());               // Use date from SearchInfo
+        DatePicker departureDatePicker = new DatePicker();
+        departureDatePicker.setValue(message.getDate()); // Set default value to today
+
+        // Disable past dates in the DatePicker
+        departureDatePicker.setDayCellFactory(datePicker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(LocalDate.now()));
+            }
+        });
 
         // Search button
         Button searchButton = new Button("Search");
@@ -138,10 +153,33 @@ public class InformationPage extends Application {
             @Override
             public void handle(ActionEvent event) {
                 //on Click
+                // Check departing Station Field is empty
+                if (departingField.getText().isEmpty()) {
+                    // Show input alert
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Alert");
+                    alert.setHeaderText("Input departing station");
+                    alert.setContentText("Please input departing station name or short code");
+                    alert.showAndWait();
+
+                } else if (departingField.getText().equals(arrivingField.getText())) {
+                    // Check Departing and arrive station is same?
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Alert");
+                    alert.setHeaderText("Departing station and arrive station can not same name");
+                    alert.setContentText("Please input departing station name or short code again");
+                    alert.showAndWait();
+                } else {
+                    //reload data
+                    message.setDeparting(departingField.getText());
+                    message.setArriving(arrivingField.getText());
+                    message.setDate(departureDatePicker.getValue());
+                    initView();
+                }
             }
         });
 
-        header.getChildren().addAll(departingLabel, departingField, arrivingLabel, arrivingField, dateLabel, dateField, searchButton);
+        header.getChildren().addAll(departingLabel, departingField, arrivingLabel, arrivingField, dateLabel, departureDatePicker, searchButton);
 
         return header;
     }
@@ -166,6 +204,15 @@ public class InformationPage extends Application {
         departInfoDetails.setAlignment(Pos.CENTER);
 
         VBox temperatureBox = new VBox(new Label(String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature())), new Label("Temperature"));
+        temperatureBox.setStyle(
+                "-fx-background-color: #d96ce3;" +        // color
+                        "-fx-background-radius: 50%;" +      // radius
+                        "-fx-min-width: 100px;" +            // min weight
+                        "-fx-max-height: 100px;" +           // min height
+                        "-fx-max-width: 100px;" +            // max weight
+                        "-fx-max-height: 100px;" +           // max height
+                        "-fx-alignment: center;"             // alignment center
+        );
         temperatureBox.setAlignment(Pos.CENTER);
 
         // Placeholder for weather icon and condition (we can dynamically load this if needed)
@@ -174,6 +221,15 @@ public class InformationPage extends Application {
         weatherBox.setAlignment(Pos.CENTER);
 
         VBox populationBox = new VBox(new Label(String.valueOf(cityInformation.getCityDetails().getPopulation())), new Label("Population"));
+        populationBox.setStyle(
+                "-fx-background-color: lightgreen;" +        // color
+                        "-fx-background-radius: 50%;" +      // radius
+                        "-fx-min-width: 100px;" +            // min weight
+                        "-fx-max-height: 100px;" +           // min height
+                        "-fx-max-width: 100px;" +            // max weight
+                        "-fx-max-height: 100px;" +           // max height
+                        "-fx-alignment: center;"             // alignment center
+        );
         populationBox.setAlignment(Pos.CENTER);
 
         VBox areaBox = new VBox(new Label(String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea())), new Label("Area"));
