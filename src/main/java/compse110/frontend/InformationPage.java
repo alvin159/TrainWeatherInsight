@@ -184,13 +184,38 @@ public class InformationPage extends Application {
         return header;
     }
 
+    public class InfoBox extends VBox {
+        
+        public InfoBox(String value, String label) {
+            // Create the two labels
+            Label valueLabel = new Label(value);
+            Label descriptionLabel = new Label(label);
+            
+            // Add the labels to the VBox
+            this.getChildren().addAll(valueLabel, descriptionLabel);
+            
+            // Apply the common styling
+            this.setStyle(
+                "-fx-background-color: #d96ce3;" +  // dynamic color
+                "-fx-background-radius: 50%;" +                     // round border
+                "-fx-min-width: 100px;" +                           // min width
+                "-fx-max-height: 100px;" +                          // max height
+                "-fx-max-width: 100px;" +                           // max width
+                "-fx-alignment: center;"                            // center alignment
+            );
+            
+            // Align the content in the center of the VBox
+            this.setAlignment(Pos.CENTER);
+        }
+    }
+
     private VBox addCityInformationView(CityInformation cityInformation) {
 
         if (cityInformation == null) {
             return new VBox();
         }
 
-        // Departure Information Layout
+        // City Information Layout
         VBox cityInfoBox = new VBox();
         cityInfoBox.setPadding(new Insets(15));
         cityInfoBox.setSpacing(10);
@@ -203,40 +228,31 @@ public class InformationPage extends Application {
         departInfoDetails.setSpacing(30);
         departInfoDetails.setAlignment(Pos.CENTER);
 
-        VBox temperatureBox = new VBox(new Label(String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature())), new Label("Temperature"));
-        temperatureBox.setStyle(
-                "-fx-background-color: #d96ce3;" +        // color
-                        "-fx-background-radius: 50%;" +      // radius
-                        "-fx-min-width: 100px;" +            // min weight
-                        "-fx-max-height: 100px;" +           // min height
-                        "-fx-max-width: 100px;" +            // max weight
-                        "-fx-max-height: 100px;" +           // max height
-                        "-fx-alignment: center;"             // alignment center
+        InfoBox temperatureBox = new InfoBox(
+            String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()), 
+            "Temperature"
         );
-        temperatureBox.setAlignment(Pos.CENTER);
 
         // Placeholder for weather icon and condition (we can dynamically load this if needed)
         VBox weatherBox = new VBox(new ImageView(new Image(cityInformation.getForecast().getWeatherImageSrc())),
                 new Label(cityInformation.getForecast().getWeatherStatus()));
         weatherBox.setAlignment(Pos.CENTER);
 
-        VBox populationBox = new VBox(new Label(String.valueOf(cityInformation.getCityDetails().getPopulation())), new Label("Population"));
-        populationBox.setStyle(
-                "-fx-background-color: lightgreen;" +        // color
-                        "-fx-background-radius: 50%;" +      // radius
-                        "-fx-min-width: 100px;" +            // min weight
-                        "-fx-max-height: 100px;" +           // min height
-                        "-fx-max-width: 100px;" +            // max weight
-                        "-fx-max-height: 100px;" +           // max height
-                        "-fx-alignment: center;"             // alignment center
+
+        InfoBox populationBox = new InfoBox(
+            String.valueOf(cityInformation.getCityDetails().getPopulation()), 
+            "Population"
         );
-        populationBox.setAlignment(Pos.CENTER);
+        
+        InfoBox areaBox = new InfoBox(
+            String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea()), 
+            "Area"
+        );
 
-        VBox areaBox = new VBox(new Label(String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea())), new Label("Area"));
-        areaBox.setAlignment(Pos.CENTER);
-
-        VBox densityBox = new VBox(new Label(String.valueOf(cityInformation.getCityDetails().getPopulationDensity())), new Label("Population Density"));
-        densityBox.setAlignment(Pos.CENTER);
+        InfoBox densityBox = new InfoBox(
+            String.valueOf(cityInformation.getCityDetails().getPopulationDensity()), 
+            "Population\n  Density"
+        );
 
         departInfoDetails.getChildren().addAll(temperatureBox, weatherBox, populationBox, areaBox, densityBox);
 
