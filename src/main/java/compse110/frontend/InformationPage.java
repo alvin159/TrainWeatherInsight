@@ -1,6 +1,7 @@
 package compse110.frontend;
 
-import compse110.frontend.Entity.SearchInfo;
+import compse110.frontend.Entity.*;
+import compse110.frontend.Utils.StringUtils;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,6 +19,9 @@ import javafx.stage.Stage;
 public class InformationPage extends Application {
 
     private SearchInfo message;
+    private VBox root;
+
+
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
@@ -33,50 +37,9 @@ public class InformationPage extends Application {
         }
 
         // Main layout container
-        VBox root = new VBox();
+        root = new VBox();
         root.setPadding(new Insets(20));
         root.setSpacing(20);
-
-        // Departure Information Layout
-        VBox departInfoBox = new VBox();
-        departInfoBox.setPadding(new Insets(15));
-        departInfoBox.setSpacing(10);
-        departInfoBox.setStyle("-fx-background-color: lightblue;");
-        Label departInfoHeader = new Label(message.getDepartingCity() + " information now");
-
-
-
-        // Temperature, Weather, and Population Details
-        HBox departInfoDetails = new HBox();
-        departInfoDetails.setSpacing(30);
-        departInfoDetails.setAlignment(Pos.CENTER);
-
-        VBox temperatureBox = new VBox(new Label("+15"), new Label("Temperature"));
-        temperatureBox.setAlignment(Pos.CENTER);
-
-        // Placeholder for weather icon and condition (we can dynamically load this if needed)
-        VBox weatherBox = new VBox(new ImageView(new Image("https://openweathermap.org/img/wn/10d@2x.png")), new Label("Partly cloudy"));
-        weatherBox.setAlignment(Pos.CENTER);
-
-        VBox populationBox = new VBox(new Label("200 000"), new Label("Population"));
-        populationBox.setAlignment(Pos.CENTER);
-
-        VBox areaBox = new VBox(new Label("15 000 km²"), new Label("Area"));
-        areaBox.setAlignment(Pos.CENTER);
-
-        VBox densityBox = new VBox(new Label("200"), new Label("Population Density"));
-        densityBox.setAlignment(Pos.CENTER);
-
-        departInfoDetails.getChildren().addAll(temperatureBox, weatherBox, populationBox, areaBox, densityBox);
-
-        departInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
-
-        // Button for showing detailed forecast (expanded functionality)
-        Button toggleForecastButton = new Button("See detailed forecast");
-        toggleForecastButton.setOnAction(e -> {
-            // Expand to show the detailed forecast information
-        });
-        departInfoBox.getChildren().add(toggleForecastButton);
         
         // Train Schedule Table (simplified for this example)
         VBox trainScheduleBox = new VBox();
@@ -115,58 +78,29 @@ public class InformationPage extends Application {
 
 
         // Adding all sections to the root layout
-        root.getChildren().add(addheaderView());
+        root.getChildren().add(addHeaderView());
+        root.getChildren().add(coolFactsLabel);
 
-        root.getChildren().addAll(coolFactsLabel, departInfoBox, trainScheduleBox);
+        // TODO this only demo data
+        Forecast forecast = new Forecast(18.2, "Cloudy", "https://openweathermap.org/img/wn/03d@2x.png", new ForecastDetails());
+        CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
 
+        CityInformation cityInformation = new CityInformation(0, message.getDepartingCity(), forecast, cityDetails);
 
-        if (!message.getArrivingCity().isEmpty()) {// if no any arriving city will not show this part
+        root.getChildren().add(addCityInformationView(cityInformation));
+        root.getChildren().add(trainScheduleBox);
 
-            // Departure Information Layout
-            VBox arriveInfoBox = new VBox();
-            arriveInfoBox.setPadding(new Insets(15));
-            arriveInfoBox.setSpacing(10);
-            arriveInfoBox.setStyle("-fx-background-color: lightblue;");
-            Label arriveInfoHeader = new Label(message.getArrivingCity());
+        if (!message.getArrivingCity().isEmpty()) {
+            // if no any arriving city will not show this part
 
-            // Temperature, Weather, and Population Details
-            HBox arriveInfoDetails = new HBox();
-            arriveInfoDetails.setSpacing(30);
-            arriveInfoDetails.setAlignment(Pos.CENTER);
+            // TODO this only demo data
+            Forecast forecast1 = new Forecast(23.1, "clear sky", "https://openweathermap.org/img/wn/01d@2x.png", new ForecastDetails());
+            CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
 
-            VBox arriveTemperatureBox = new VBox(new Label("+15"), new Label("Temperature"));
-            temperatureBox.setAlignment(Pos.CENTER);
+            CityInformation cityInformation1 = new CityInformation(0, message.getArrivingCity(), forecast1, cityDetails1);
 
-            // Placeholder for weather icon and condition (we can dynamically load this if needed)
-            VBox arriveWeatherBox = new VBox(new ImageView(new Image("file:partly_cloudy.png")), new Label("Partly cloudy"));
-            weatherBox.setAlignment(Pos.CENTER);
-
-            VBox arrivePopulationBox = new VBox(new Label("200 000"), new Label("Population"));
-            populationBox.setAlignment(Pos.CENTER);
-
-            VBox arriveAreaBox = new VBox(new Label("15 000 km²"), new Label("Area"));
-            areaBox.setAlignment(Pos.CENTER);
-
-            VBox arriveDensityBox = new VBox(new Label("200"), new Label("Population Density"));
-            densityBox.setAlignment(Pos.CENTER);
-
-            arriveInfoDetails.getChildren().addAll(arriveTemperatureBox, arriveWeatherBox, arrivePopulationBox, arriveAreaBox, arriveDensityBox);
-
-            arriveInfoBox.getChildren().addAll(arriveInfoHeader, arriveInfoDetails);
-
-            // Button for showing detailed forecast (expanded functionality)
-            Button togglearriveForecastButton = new Button("See detailed forecast");
-            toggleForecastButton.setOnAction(e -> {
-                // Expand to show the detailed forecast information
-            });
-            arriveInfoBox.getChildren().add(togglearriveForecastButton);
-
-            // add view to root view
-            root.getChildren().add(arriveInfoBox);
-
+            root.getChildren().add(addCityInformationView(cityInformation1));
         }
-
-
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
@@ -180,7 +114,7 @@ public class InformationPage extends Application {
         // Leave it empty or redirect to the overloaded start method
     }
 
-    private HBox addheaderView() {
+    private HBox addHeaderView() {
         // Header layout for Departing and Arriving fields
         HBox header = new HBox();
         header.setSpacing(10);
@@ -212,5 +146,54 @@ public class InformationPage extends Application {
         return header;
     }
 
-//    private void a
+    private VBox addCityInformationView(CityInformation cityInformation) {
+
+        if (cityInformation == null) {
+            return new VBox();
+        }
+
+        // Departure Information Layout
+        VBox cityInfoBox = new VBox();
+        cityInfoBox.setPadding(new Insets(15));
+        cityInfoBox.setSpacing(10);
+        cityInfoBox.setStyle("-fx-background-color: lightblue;");
+        Label departInfoHeader = new Label(cityInformation.getTitle() + " information now");
+
+
+        // Temperature, Weather, and Population Details
+        HBox departInfoDetails = new HBox();
+        departInfoDetails.setSpacing(30);
+        departInfoDetails.setAlignment(Pos.CENTER);
+
+        VBox temperatureBox = new VBox(new Label(String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature())), new Label("Temperature"));
+        temperatureBox.setAlignment(Pos.CENTER);
+
+        // Placeholder for weather icon and condition (we can dynamically load this if needed)
+        VBox weatherBox = new VBox(new ImageView(new Image(cityInformation.getForecast().getWeatherImageSrc())),
+                new Label(cityInformation.getForecast().getWeatherStatus()));
+        weatherBox.setAlignment(Pos.CENTER);
+
+        VBox populationBox = new VBox(new Label(String.valueOf(cityInformation.getCityDetails().getPopulation())), new Label("Population"));
+        populationBox.setAlignment(Pos.CENTER);
+
+        VBox areaBox = new VBox(new Label(String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea())), new Label("Area"));
+        areaBox.setAlignment(Pos.CENTER);
+
+        VBox densityBox = new VBox(new Label(String.valueOf(cityInformation.getCityDetails().getPopulationDensity())), new Label("Population Density"));
+        densityBox.setAlignment(Pos.CENTER);
+
+        departInfoDetails.getChildren().addAll(temperatureBox, weatherBox, populationBox, areaBox, densityBox);
+
+        cityInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
+
+        // Button for showing detailed forecast (expanded functionality)
+        Button toggleForecastButton = new Button("See detailed forecast");
+        toggleForecastButton.setOnAction(e -> {
+            // Expand to show the detailed forecast information
+        });
+        cityInfoBox.getChildren().add(toggleForecastButton);
+
+        return cityInfoBox;
+
+    }
 }
