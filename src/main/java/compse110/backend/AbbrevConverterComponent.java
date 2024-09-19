@@ -29,7 +29,7 @@ public class AbbrevConverterComponent implements MessageCallback {
     public void onMessageReceived(String topic, Object payload) {
         if (topic.equals("abbrevConverterRequest")) {
             String stationShortCode = (String) payload;
-            System.out.println("Request received for station short code: " + stationShortCode);
+            //System.out.println("Request received for station short code: " + stationShortCode);
             executorService.submit(() -> {
                 try {
                     String stationName = getStationName(stationShortCode);
@@ -45,7 +45,7 @@ public class AbbrevConverterComponent implements MessageCallback {
     private String getStationName(String stationShortCode) throws Exception {
         // Check if the data is already in cache
         if (stationCache.containsKey(stationShortCode)) {
-            System.out.println("Using cached data for station: " + stationShortCode);
+            //System.out.println("Using cached data for station: " + stationShortCode);
             return stationCache.get(stationShortCode);
         }
 
