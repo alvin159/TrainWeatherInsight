@@ -28,12 +28,14 @@ public class AbbrevConverterComponent implements MessageCallback {
     @Override
     public void onMessageReceived(String topic, Object payload) {
         if (topic.equals("abbrevConverterRequest")) {
-            String stationShortCode = (String) payload;
+            AbbreviationObject abbreviationObject = (AbbreviationObject) payload;
+            String stationShortCode = abbreviationObject.getStationShortCodeRequest();
             //System.out.println("Request received for station short code: " + stationShortCode);
             executorService.submit(() -> {
                 try {
                     String stationName = getStationName(stationShortCode);
-                    broker.publish("abbrevConverterResponse", stationName);
+                    abbreviationObject.setStationNameResponse(stationName);
+                    broker.publish("abbrevConverterResponse", abbreviationObject);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
