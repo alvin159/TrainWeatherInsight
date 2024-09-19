@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import compse110.backend.AbbrevConverterComponent;
 import compse110.backend.exampleBackend.ExampleBackendComponent;
 
 public class MessageBroker implements MessageBrokerInterface {
@@ -12,6 +13,7 @@ public class MessageBroker implements MessageBrokerInterface {
     // Map to store subscribers for each topic
     private final Map<String, Set<MessageCallback>> subscribers = new HashMap<>();
     private static ExampleBackendComponent exampleBackendService;
+    private static AbbrevConverterComponent abbrevConverterService;
 
     private MessageBroker() {
         //To prevent initialization
@@ -58,5 +60,7 @@ public class MessageBroker implements MessageBrokerInterface {
         exampleBackendService = new ExampleBackendComponent();
         exampleBackendService.initialize();
         // Initialize other backend services here as well
+        abbrevConverterService = new AbbrevConverterComponent();
+        abbrevConverterService.initialize();
     }
 }
