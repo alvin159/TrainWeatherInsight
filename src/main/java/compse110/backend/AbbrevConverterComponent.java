@@ -23,18 +23,27 @@ public class AbbrevConverterComponent implements MessageCallback {
     private static final String STATION_DATA_URL = "https://rata.digitraffic.fi/api/v1/metadata/stations";
 
     // Cache structure: Map<stationShortCode, stationName>
-    private final Map<String, String> stationCache = new HashMap<>();
+    //private final Map<String, String> stationCache = new HashMap<>();
+
+    // New Cache structure：Map<String, AbbreviationObject>
+    Map<String, AbbreviationObject> stationCache = new HashMap<>();
+
 
     @Override
     public void onMessageReceived(String topic, Object payload) {
-        if (topic.equals("abbrevConverterRequest")) {
+        if (topic.equals("abbrevConverterRequest") && payload instanceof AbbreviationObject) {
             AbbreviationObject abbreviationObject = (AbbreviationObject) payload;
             String stationShortCode = abbreviationObject.getStationShortCodeRequest();
             //System.out.println("Request received for station short code: " + stationShortCode);
             executorService.submit(() -> {
                 try {
-                    String stationName = getStationName(stationShortCode);
-                    abbreviationObject.setStationNameResponse(stationName);
+                    // Fetch data from the cache or call the API to retrieve it
+                    AbbreviationObject cachedObject = getStationFromCacheOrAPI(stationShortCode);
+
+                    // Set the station name retrieved from the cache or API into the request object
+                    abbreviationObject.setStationNameResponse(cachedObject.getStationNameResponse());
+
+                    // publish AbbreviationObject response
                     broker.publish("abbrevConverterResponse", abbreviationObject);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -42,7 +51,7 @@ public class AbbrevConverterComponent implements MessageCallback {
             });
         }
     }
-
+/*
     // Fetch the station name based on the short code, using cache if available
     private String getStationName(String stationShortCode) throws Exception {
         // Check if the data is already in cache
@@ -61,6 +70,28 @@ public class AbbrevConverterComponent implements MessageCallback {
         }
         return stationName != null ? stationName : "Station Not Found";
     }
+*/
+
+
+    private AbbreviationObject getStationFromCacheOrAPI(String stationShortCode) throws Exception {
+        // Check if the cache already contains the AbbreviationObject corresponding to the stationShortCode
+        if (stationCache.containsKey(stationShortCode)) {
+            System.out.println("Using cached data for station: " + stationShortCode);
+            return stationCache.get(stationShortCode);  // return directly from cache
+        }
+
+        // If not in cache, fetch the data from the API
+        JSONArray stationData = fetchStationDataFromAPI();
+        String stationName = findStationName(stationShortCode, stationData);
+
+        // create new AbbreviationObject and restore it in cache
+        AbbreviationObject abbrevObject = new AbbreviationObject(stationShortCode);
+        abbrevObject.setStationNameResponse(stationName);
+
+        stationCache.put(stationShortCode, abbrevObject);  // restore AbbreviationObject into cache
+        return abbrevObject;
+    }
+
 
     private JSONArray fetchStationDataFromAPI() throws Exception {
         URL url = new URL(STATION_DATA_URL);
