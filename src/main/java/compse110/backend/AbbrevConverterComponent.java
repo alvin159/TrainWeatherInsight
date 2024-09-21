@@ -1,26 +1,25 @@
 package compse110.backend;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import compse110.Utils.API_Config;
+import compse110.Entity.Station;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AbbrevConverterComponent implements MessageCallback {
     private static final MessageBroker broker = MessageBroker.getInstance();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-    // API URL to fetch the station data
-    private static final String STATION_DATA_URL = "https://rata.digitraffic.fi/api/v1/metadata/stations";
 
     // Cache structure: Map<stationShortCode, stationName>
     //private final Map<String, String> stationCache = new HashMap<>();
@@ -41,7 +40,7 @@ public class AbbrevConverterComponent implements MessageCallback {
                     AbbreviationObject cachedObject = getStationFromCacheOrAPI(stationShortCode);
 
                     // Set the station name retrieved from the cache or API into the request object
-                    abbreviationObject.setStationNameResponse(cachedObject.getStationNameResponse());
+                    abbreviationObject.setStationNameResponse(cachedObject.getStationResponse());
 
                     // publish AbbreviationObject response
                     broker.publish("abbrevConverterResponse", abbreviationObject);
@@ -81,69 +80,100 @@ public class AbbrevConverterComponent implements MessageCallback {
         }
 
         // If not in cache, fetch the data from the API
-        JSONArray stationData = fetchStationDataFromAPI();
-        String stationName = findStationName(stationShortCode, stationData);
+        Map<String, Station> stationData = fetchStationDataFromAPI();
+        Station station = findStationByName(stationShortCode, stationData);
+
 
         // create new AbbreviationObject and restore it in cache
         AbbreviationObject abbrevObject = new AbbreviationObject(stationShortCode);
-        abbrevObject.setStationNameResponse(stationName);
-
+        abbrevObject.setStationNameResponse(station);
         stationCache.put(stationShortCode, abbrevObject);  // restore AbbreviationObject into cache
         return abbrevObject;
     }
 
 
-    private JSONArray fetchStationDataFromAPI() throws Exception {
-        URL url = new URL(STATION_DATA_URL);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
+//    private JSONArray fetchStationDataFromAPI() throws Exception {
+//        URL url = new URL(API_Config.TRAIN_STATION_URL);
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setRequestMethod("GET");
+//
+//        // Set the necessary headers based on Postman values
+//        conn.setRequestProperty("User-Agent", "PostmanRuntime/7.42.0");
+//        conn.setRequestProperty("Accept", "*/*");
+//        conn.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+//        conn.setRequestProperty("Connection", "keep-alive");
+//
+//        // Check if the server returned the content encoded with GZIP
+//        String encoding = conn.getContentEncoding();
+//        InputStream inputStream;
+//
+//        // If the content is GZIP encoded, use GZIPInputStream to decompress it
+//        if ("gzip".equalsIgnoreCase(encoding)) {
+//            inputStream = new GZIPInputStream(conn.getInputStream());
+//        } else {
+//            inputStream = conn.getInputStream();  // Handle uncompressed data
+//        }
+//
+//        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+//        String inputLine;
+//        StringBuilder content = new StringBuilder();
+//        while ((inputLine = in.readLine()) != null) {
+//            content.append(inputLine);
+//        }
+//
+//        in.close();
+//        conn.disconnect();
+//
+//        // Print the decompressed content for debugging
+//        //System.out.println("Decompressed JSON Response: " + content.toString());
+//
+//        // Parse the decompressed content into a JSON array
+//        return new JSONArray(content.toString());
+//    }
 
-        // Set the necessary headers based on Postman values
-        conn.setRequestProperty("User-Agent", "PostmanRuntime/7.42.0");
-        conn.setRequestProperty("Accept", "*/*");
-        conn.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-        conn.setRequestProperty("Connection", "keep-alive");
+    public Map<String, Station> fetchStationDataFromAPI() {
+        //create a OkHttp client
+        OkHttpClient client = new OkHttpClient();
+        //create a request
+        Request request = new Request.Builder()
+                .url(API_Config.TRAIN_STATION_URL)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            // Handle the response
+            // Use gson to transfer response to json
+            List<Station> stations = new Gson().fromJson(response.body().string(), new TypeToken<List<Station>>() {}.getType());
+            // Create a Map to save station information
+            Map<String, Station> stationMap = new HashMap<>();
+            for (Station station : stations) {
+                stationMap.put(station.getStationShortCode(), station);
+            }
+            return stationMap;
 
-        // Check if the server returned the content encoded with GZIP
-        String encoding = conn.getContentEncoding();
-        InputStream inputStream;
-
-        // If the content is GZIP encoded, use GZIPInputStream to decompress it
-        if ("gzip".equalsIgnoreCase(encoding)) {
-            inputStream = new GZIPInputStream(conn.getInputStream());
-        } else {
-            inputStream = conn.getInputStream();  // Handle uncompressed data
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-        String inputLine;
-        StringBuilder content = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
-        }
-
-        in.close();
-        conn.disconnect();
-
-        // Print the decompressed content for debugging
-        //System.out.println("Decompressed JSON Response: " + content.toString());
-
-        // Parse the decompressed content into a JSON array
-        return new JSONArray(content.toString());
     }
 
     // Find the station name based on the short code in the fetched station data
-    private String findStationName(String stationShortCode, JSONArray stationData) {
-        for (int i = 0; i < stationData.length(); i++) {
-            JSONObject station = stationData.getJSONObject(i);
-            if (station.has("stationName") && station.has("stationShortCode")) {
-                String shortCode = station.getString("stationShortCode");
-                if (shortCode.equals(stationShortCode)) {
-                    return station.getString("stationName");
-                }
-            }
-        }
-        return null; // Return null if station not found
+//    private String findStationName(String stationShortCode, JSONArray stationData) {
+//        for (int i = 0; i < stationData.length(); i++) {
+//            JSONObject station = stationData.getJSONObject(i);
+//            if (station.has("stationName") && station.has("stationShortCode")) {
+//                String shortCode = station.getString("stationShortCode");
+//                if (shortCode.equals(stationShortCode)) {
+//                    return station.getString("stationName");
+//                }
+//            }
+//        }
+//        return null; // Return null if station not found
+//    }
+
+    private Station findStationByName(String stationShortCode, Map<String, Station> stationMap) {
+        return stationMap.get(stationShortCode);
     }
 
     public void initialize() {

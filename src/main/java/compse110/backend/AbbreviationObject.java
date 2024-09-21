@@ -1,12 +1,14 @@
 package compse110.backend;
 
+import compse110.Entity.Station;
+
 public class AbbreviationObject {
 
     // Request field for the station short code
     private String stationShortCodeRequest;
 
     // Response field for the full station name
-    private String stationNameResponse;
+    private Station stationResponse;
 
     // Constructor
     public AbbreviationObject(String stationShortCodeRequest) {
@@ -24,13 +26,13 @@ public class AbbreviationObject {
     }
 
     // Getter for stationNameResponse
-    public String getStationNameResponse() {
-        return stationNameResponse;
+    public Station getStationResponse() {
+        return stationResponse;
     }
 
     // Setter for stationNameResponse
-    public void setStationNameResponse(String stationNameResponse) {
-        this.stationNameResponse = stationNameResponse;
+    public void setStationNameResponse(Station stationResponse) {
+        this.stationResponse = stationResponse;
     }
 
     // For demonstration
@@ -38,7 +40,7 @@ public class AbbreviationObject {
     public String toString() {
         return "AbbreviationObject{" +
                 "stationShortCodeRequest='" + stationShortCodeRequest + '\'' +
-                ", stationNameResponse='" + stationNameResponse + '\'' +
+                ", stationNameResponse='" + stationResponse + '\'' +
                 '}';
     }
 }

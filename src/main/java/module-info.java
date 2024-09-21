@@ -5,4 +5,5 @@ module compse110.frontend {
     requires okhttp3;
     //allow Gson access model
     opens compse110.frontend.Entity;
+    opens compse110.Entity;
 }

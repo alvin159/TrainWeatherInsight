@@ -1,4 +1,4 @@
-package compse110.frontend.Entity;
+package compse110.Entity;
 
 public class Station {
 

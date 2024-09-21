@@ -1,4 +1,4 @@
-package compse110.frontend.Utils;
+package compse110.Utils;
 
 public class StringUtils {
 

@@ -1,7 +1,7 @@
 package compse110.frontend;
 
 import compse110.frontend.Entity.*;
-import compse110.frontend.Utils.StringUtils;
+import compse110.Utils.StringUtils;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
