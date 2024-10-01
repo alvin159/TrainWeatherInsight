@@ -159,7 +159,7 @@ public class HomePage extends Application implements MessageCallback{
     }
 
     @Override
-    public void onMessageReceived(EventType eventType, Object payload) {
+    public void onMessageReceived(EventType eventType, EventPayload payload) {
         if (eventType == EventType.ABBREVIATION_RESPONSE) {
             // Cast the payload to the specific type
             Events.AbbreviationResponse.Payload responsePayload = (Events.AbbreviationResponse.Payload) payload;

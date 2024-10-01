@@ -19,18 +19,19 @@ public abstract class BackendComponent implements MessageCallback {
     }
 
     @Override
-    public void onMessageReceived(EventType event, Object payload) {
+    public void onMessageReceived(EventType event, EventPayload payload) {
         executor.submit(() -> {
             try {
                 handleEvent(event, payload);
             } catch (Exception e) {
                 e.printStackTrace();
-                broker.publish(EventType.ERROR_RESPONSE, "Failed to process request due to an unexpected error.");
+                // TODO: Log error
+                broker.publish(EventType.ERROR_RESPONSE, null);
             }
         });
     }
 
-    protected abstract void handleEvent(EventType event, Object payload);
+    protected abstract void handleEvent(EventType event, EventPayload payload);
     public abstract void initialize();
     public abstract void shutdown();
 }

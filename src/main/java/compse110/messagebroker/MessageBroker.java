@@ -7,6 +7,7 @@ import java.util.Set;
 
 import compse110.backend.AbbrevConverterComponent;
 import compse110.backend.exampleBackend.ExampleBackendComponent;
+import compse110.Entity.EventPayload;
 import compse110.Entity.Events.EventType;;
 
 public class MessageBroker implements MessageBrokerInterface {
@@ -30,7 +31,7 @@ public class MessageBroker implements MessageBrokerInterface {
         }
 
         @Override
-        public void publish(EventType event, Object payload) {
+        public void publish(EventType event, EventPayload payload) {
         // Check if there are any subscribers for the given event type
         if (subscribers.containsKey(event)) {
             // Notify all subscribers of the event type

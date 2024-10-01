@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import compse110.Utils.API_Config;
 import compse110.Entity.Station;
+import compse110.Entity.EventPayload;
 import compse110.Entity.Events.EventType;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -30,7 +31,7 @@ public class AbbrevConverterComponent implements MessageCallback {
 
     // TODO: Update this function to handle the new Events
     @Override
-    public void onMessageReceived(EventType event, Object payload) {
+    public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == EventType.ABBREVIATION_REQUEST && payload instanceof AbbreviationObject) {
             AbbreviationObject abbreviationObject = (AbbreviationObject) payload;
             String stationShortCode = abbreviationObject.getStationShortCodeRequest();
@@ -45,7 +46,7 @@ public class AbbrevConverterComponent implements MessageCallback {
 
                     // publish AbbreviationObject response
                     // TODO: Illegal response, see what the response has to be from Events.AbbreviationResponse.Payload
-                    broker.publish(EventType.ABBREVIATION_RESPONSE, abbreviationObject);
+                    broker.publish(EventType.ABBREVIATION_RESPONSE, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -1,6 +1,7 @@
 package compse110.backend.exampleBackend;
 
 import compse110.Entity.BackendComponent;
+import compse110.Entity.EventPayload;
 import compse110.Entity.Events;
 import compse110.Entity.Events.EventType;
 import compse110.Entity.Station;
@@ -9,7 +10,7 @@ import compse110.Entity.Station;
 public class ExampleBackendComponent extends BackendComponent {
     
     @Override
-    protected void handleEvent(EventType event, Object payload) {
+    protected void handleEvent(EventType event, EventPayload payload) {
         try {
             if(event == EventType.ABBREVIATION_REQUEST) {
                 Events.AbbreviationRequest.Payload request = getPayload(event, payload);
