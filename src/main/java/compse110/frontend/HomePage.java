@@ -1,5 +1,7 @@
 package compse110.frontend;
 
+import compse110.Entity.Events;
+import compse110.Entity.Events.EventType;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -25,7 +27,7 @@ public class HomePage extends Application implements MessageCallback{
         primaryStage.setTitle("TrainFinder");
 
         //Listen for responses from the backend
-        broker.subscribe("exampleRequest_response", this);
+        broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
 
         // Create UI elements
         Label titleLabel = new Label("TrainFinder");
@@ -151,12 +153,12 @@ public class HomePage extends Application implements MessageCallback{
 
     public void sendFetchTrainRequest() {
         Platform.runLater(() -> backendLabel.setText("Sent request to backend...\nWaiting for response..."));
-        broker.publish("exampleRequest", "Sample payload");
+        broker.publish(EventType.ABBREVIATION_REQUEST, new Events.AbbreviationRequest.Payload("HEL"));
     }
 
     @Override
-    public void onMessageReceived(String topic, Object payload) {
-        if(topic.equals("exampleRequest_response")) {
+    public void onMessageReceived(EventType event, Object payload) {
+        if(event == EventType.ABBREVIATION_RESPONSE) {
             Platform.runLater(() -> backendLabel.setText("Received response from backend with a payload:\n" + payload));
         }
     }
