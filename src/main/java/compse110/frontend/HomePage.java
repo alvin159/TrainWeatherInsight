@@ -1,7 +1,9 @@
 package compse110.frontend;
 
+import compse110.Entity.EventPayload;
 import compse110.Entity.Events;
 import compse110.Entity.Events.EventType;
+import compse110.Entity.Station;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -157,9 +159,15 @@ public class HomePage extends Application implements MessageCallback{
     }
 
     @Override
-    public void onMessageReceived(EventType event, Object payload) {
-        if(event == EventType.ABBREVIATION_RESPONSE) {
-            Platform.runLater(() -> backendLabel.setText("Received response from backend with a payload:\n" + payload));
+    public void onMessageReceived(EventType eventType, Object payload) {
+        if (eventType == EventType.ABBREVIATION_RESPONSE) {
+            // Cast the payload to the specific type
+            Events.AbbreviationResponse.Payload responsePayload = (Events.AbbreviationResponse.Payload) payload;
+
+            // Now you can access the data from the payload
+            Station station = responsePayload.getStation();
+
+            Platform.runLater(() -> backendLabel.setText("Received response: " + station.getStationName()));
         }
     }
 
