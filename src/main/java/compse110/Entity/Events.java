@@ -12,8 +12,8 @@ public class Events {
     public static class AbbreviationRequest {
         public static final EventType TOPIC = EventType.ABBREVIATION_REQUEST;
 
-        public static class Payload {
-            private String stationShortCode;
+        public static class Payload implements EventPayload {
+            private final String stationShortCode;
 
             public Payload(String stationShortCode) {
                 this.stationShortCode = stationShortCode;
@@ -28,8 +28,8 @@ public class Events {
     public static class AbbreviationResponse {
         public static final EventType TOPIC = EventType.ABBREVIATION_RESPONSE;
 
-        public static class Payload {
-            private Station station;
+        public static class Payload  implements EventPayload {
+            private final Station station;
 
             public Payload(Station station) {
                 this.station = station;
