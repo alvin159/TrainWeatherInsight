@@ -72,7 +72,7 @@ public class AbbrevConverterComponent implements MessageCallback {
 */
 
 
-    private AbbreviationObject getStationFromCacheOrAPI(String stationShortCode) throws Exception {
+    private AbbreviationObject getStationFromCacheOrAPI(String stationShortCode) {
         // Check if the cache already contains the AbbreviationObject corresponding to the stationShortCode
         if (stationCache.containsKey(stationShortCode)) {
             System.out.println("Using cached data for station: " + stationShortCode);

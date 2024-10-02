@@ -6,5 +6,8 @@ public class API_Config {
 
     public static final String TRAIN_STATION_URL = "https://rata.digitraffic.fi/api/v1/metadata/stations";
 
+    public static final String TRAIN_DATA_URL = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
+
+
 
 }
