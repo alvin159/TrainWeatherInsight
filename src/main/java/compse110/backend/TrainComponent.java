@@ -26,6 +26,8 @@ public class TrainComponent implements MessageCallback {
 
         //create a OkHttp client
         OkHttpClient client = new OkHttpClient();
+
+        System.out.println("tran data url: " + API_Config.TRAIN_DATA_URL + departureStationShortCode + (arrivalStationShortCode != null ? "/" + arrivalStationShortCode : ""));
         //create a request
         Request request = new Request.Builder()
                 .url(API_Config.TRAIN_DATA_URL + departureStationShortCode + (arrivalStationShortCode != null ? "/" + arrivalStationShortCode : ""))

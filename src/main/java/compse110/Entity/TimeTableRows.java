@@ -16,12 +16,12 @@ public class TimeTableRows {
         private Date liveEstimateTime;
         private String estimateSource;
         private int differenceInMinutes;
-        private List<String> causes;
+        private List<Causes> causes;
 
         public TimeTableRows() {
         }
 
-    public TimeTableRows(String stationShortCode, int stationUICCode, String countryCode, String type, boolean trainStopping, boolean commercialStop, String commercialTrack, boolean cancelled, Date scheduledTime, Date liveEstimateTime, String estimateSource, int differenceInMinutes, List<String> causes) {
+    public TimeTableRows(String stationShortCode, int stationUICCode, String countryCode, String type, boolean trainStopping, boolean commercialStop, String commercialTrack, boolean cancelled, Date scheduledTime, Date liveEstimateTime, String estimateSource, int differenceInMinutes, List<Causes> causes) {
         this.stationShortCode = stationShortCode;
         this.stationUICCode = stationUICCode;
         this.countryCode = countryCode;
@@ -133,11 +133,11 @@ public class TimeTableRows {
         this.differenceInMinutes = differenceInMinutes;
     }
 
-    public List<String> getCauses() {
+    public List<Causes> getCauses() {
         return causes;
     }
 
-    public void setCauses(List<String> causes) {
+    public void setCauses(List<Causes> causes) {
         this.causes = causes;
     }
 
