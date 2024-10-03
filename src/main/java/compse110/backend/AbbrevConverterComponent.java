@@ -131,7 +131,7 @@ public class AbbrevConverterComponent implements MessageCallback {
 //        return new JSONArray(content.toString());
 //    }
 
-    public Map<String, Station> fetchStationDataFromAPI() {
+    private Map<String, Station> fetchStationDataFromAPI() {
         //create a OkHttp client
         OkHttpClient client = new OkHttpClient();
         //create a request

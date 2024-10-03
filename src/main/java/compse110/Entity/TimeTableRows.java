@@ -4,22 +4,21 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeTableRows {
-        private String stationShortCode;
-        private int stationUICCode;
-        private String countryCode;
-        private String type;
-        private boolean trainStopping;
-        private boolean commercialStop;
-        private String commercialTrack;
-        private boolean cancelled;
-        private Date scheduledTime;
-        private Date liveEstimateTime;
-        private String estimateSource;
-        private int differenceInMinutes;
-        private List<Causes> causes;
-
-        public TimeTableRows() {
-        }
+    private String stationShortCode;
+    private int stationUICCode;
+    private String countryCode;
+    private String type;
+    private boolean trainStopping;
+    private boolean commercialStop;
+    private String commercialTrack;
+    private boolean cancelled;
+    private Date scheduledTime;
+    private Date liveEstimateTime;
+    private String estimateSource;
+    private int differenceInMinutes;
+    private List<Causes> causes;
+    public TimeTableRows() {
+    }
 
     public TimeTableRows(String stationShortCode, int stationUICCode, String countryCode, String type, boolean trainStopping, boolean commercialStop, String commercialTrack, boolean cancelled, Date scheduledTime, Date liveEstimateTime, String estimateSource, int differenceInMinutes, List<Causes> causes) {
         this.stationShortCode = stationShortCode;
