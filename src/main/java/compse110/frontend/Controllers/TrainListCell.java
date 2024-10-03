@@ -35,8 +35,10 @@ public class TrainListCell extends ListCell<TrainInformation> {
     protected void updateItem(TrainInformation item, boolean empty) {
         super.updateItem(item, empty);
 
-        if (item != null) {
-
+        if (item != null && !empty) {
+            this.departureTime.setText(item.getDepartureTime().toString());
+            this.duration.setText(item.getDuration() + " min");
+            this.arrivalTime.setText(item.getArriveTime().toString());
         }
     }
 }
