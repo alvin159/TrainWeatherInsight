@@ -1,9 +1,9 @@
 package compse110.backend.exampleBackend;
 
-import compse110.Entity.BackendComponent;
-import compse110.Entity.EventPayload;
-import compse110.Entity.Events;
-import compse110.Entity.Events.EventType;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
+import compse110.Utils.Events.EventType;
+import compse110.backend.utils.BackendComponent;
 import compse110.Entity.Station;
 
 

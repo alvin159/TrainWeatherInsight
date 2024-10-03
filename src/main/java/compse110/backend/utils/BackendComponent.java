@@ -1,9 +1,10 @@
-package compse110.Entity;
+package compse110.backend.utils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import compse110.Entity.Events.EventType;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events.EventType;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 

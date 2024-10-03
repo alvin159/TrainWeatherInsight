@@ -1,4 +1,4 @@
-package compse110.Entity;
+package compse110.Utils;
 
 public interface EventPayload {
     

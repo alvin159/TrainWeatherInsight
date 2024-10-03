@@ -1,4 +1,6 @@
-package compse110.Entity;
+package compse110.Utils;
+
+import compse110.Entity.Station;
 
 // This class defines the events that can be sent and received by the components
 public class Events {

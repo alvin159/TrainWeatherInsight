@@ -1,8 +1,8 @@
 package compse110.frontend;
 
-import compse110.Entity.EventPayload;
-import compse110.Entity.Events;
-import compse110.Entity.Events.EventType;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
+import compse110.Utils.Events.EventType;
 import compse110.Entity.Station;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;

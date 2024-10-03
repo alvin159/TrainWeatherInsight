@@ -7,8 +7,8 @@ import java.util.Set;
 
 import compse110.backend.AbbrevConverterComponent;
 import compse110.backend.exampleBackend.ExampleBackendComponent;
-import compse110.Entity.EventPayload;
-import compse110.Entity.Events.EventType;;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events.EventType;
 
 public class MessageBroker implements MessageBrokerInterface {
     private static MessageBroker instance;
