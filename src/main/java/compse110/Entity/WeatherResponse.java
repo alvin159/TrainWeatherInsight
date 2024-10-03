@@ -1,38 +1,45 @@
 package compse110.Entity;
 
-public class WeatherResponse {
-    private double temp;
-    private String description;
 
-    public WeatherResponse(double temp, String description) {
-        this.temp = temp;
-        this.description = description;
+import compse110.Utils.EventPayload;
+
+public class WeatherResponse implements EventPayload {
+    private final String cityName;
+    private final double temperature;
+    private final String weatherCondition;
+    private final String weatherIcon;
+
+    public WeatherResponse(String cityName, double temperature, String weatherCondition, String weatherIcon) {
+        this.cityName = cityName;
+        this.temperature = temperature;
+        this.weatherCondition = weatherCondition;
+        this.weatherIcon = weatherIcon;
     }
 
-    public WeatherResponse() {}
-
-    public double getTemp() {
-        return temp;
+    public String getCityName() {
+        return cityName;
     }
 
-    public void setTemp(double temp) {
-        this.temp = temp;
+    public double getTemperature() {
+        return temperature;
     }
 
-    public String getDescription() {
-        return description;
+    public String getWeatherCondition() {
+        return weatherCondition;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public String getWeatherIcon() {
+        return weatherIcon;
     }
 
-    // 重写 toString 方法
     @Override
     public String toString() {
-        return "WeatherResponse{" +
-                "temp=" + temp +
-                ", description='" + description + '\'' +
+        return "WeatherPayload{" +
+                "cityName='" + cityName + '\'' +
+                ", temperature=" + temperature +
+                ", weatherCondition='" + weatherCondition + '\'' +
+                ", weatherIcon='" + weatherIcon + '\'' +
                 '}';
     }
 }
+
