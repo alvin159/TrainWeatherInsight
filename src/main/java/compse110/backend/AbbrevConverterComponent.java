@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import compse110.Utils.API_Config;
 import compse110.Entity.Station;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events.EventType;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import java.io.IOException;
@@ -27,10 +29,10 @@ public class AbbrevConverterComponent implements MessageCallback {
     // New Cache structure：Map<String, AbbreviationObject>
     Map<String, AbbreviationObject> stationCache = new HashMap<>();
 
-
+    // TODO: Update this function to handle the new Events
     @Override
-    public void onMessageReceived(String topic, Object payload) {
-        if (topic.equals("abbrevConverterRequest") && payload instanceof AbbreviationObject) {
+    public void onMessageReceived(EventType event, EventPayload payload) {
+        if (event == EventType.ABBREVIATION_REQUEST && payload instanceof AbbreviationObject) {
             AbbreviationObject abbreviationObject = (AbbreviationObject) payload;
             String stationShortCode = abbreviationObject.getStationShortCodeRequest();
             //System.out.println("Request received for station short code: " + stationShortCode);
@@ -43,7 +45,8 @@ public class AbbrevConverterComponent implements MessageCallback {
                     abbreviationObject.setStationNameResponse(cachedObject.getStationResponse());
 
                     // publish AbbreviationObject response
-                    broker.publish("abbrevConverterResponse", abbreviationObject);
+                    // TODO: Illegal response, see what the response has to be from Events.AbbreviationResponse.Payload
+                    broker.publish(EventType.ABBREVIATION_RESPONSE, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -177,11 +180,11 @@ public class AbbrevConverterComponent implements MessageCallback {
     }
 
     public void initialize() {
-        broker.subscribe("abbrevConverterRequest", this);
+        broker.subscribe(EventType.ABBREVIATION_REQUEST, this);
     }
 
     public void shutdown() {
-        broker.unsubscribe("abbrevConverterRequest", this);
+        broker.unsubscribe(EventType.ABBREVIATION_REQUEST, this);
         executorService.shutdown();
     }
 }

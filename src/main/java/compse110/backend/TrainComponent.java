@@ -1,5 +1,7 @@
 package compse110.backend;
 
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events.EventType;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import compse110.Entity.TrainData;
@@ -14,7 +16,7 @@ import java.util.List;
 
 public class TrainComponent implements MessageCallback {
     @Override
-    public void onMessageReceived(String topic, Object payload) {
+    public void onMessageReceived(EventType event, EventPayload payload) {
 
     }
 

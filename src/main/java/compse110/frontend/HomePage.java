@@ -1,5 +1,9 @@
 package compse110.frontend;
 
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
+import compse110.Utils.Events.EventType;
+import compse110.Entity.Station;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -25,7 +29,7 @@ public class HomePage extends Application implements MessageCallback{
         primaryStage.setTitle("TrainFinder");
 
         //Listen for responses from the backend
-        broker.subscribe("exampleRequest_response", this);
+        broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
 
         // Create UI elements
         Label titleLabel = new Label("TrainFinder");
@@ -151,13 +155,19 @@ public class HomePage extends Application implements MessageCallback{
 
     public void sendFetchTrainRequest() {
         Platform.runLater(() -> backendLabel.setText("Sent request to backend...\nWaiting for response..."));
-        broker.publish("exampleRequest", "Sample payload");
+        broker.publish(EventType.ABBREVIATION_REQUEST, new Events.AbbreviationRequest.Payload("HEL"));
     }
 
     @Override
-    public void onMessageReceived(String topic, Object payload) {
-        if(topic.equals("exampleRequest_response")) {
-            Platform.runLater(() -> backendLabel.setText("Received response from backend with a payload:\n" + payload));
+    public void onMessageReceived(EventType eventType, EventPayload payload) {
+        if (eventType == EventType.ABBREVIATION_RESPONSE) {
+            // Cast the payload to the specific type
+            Events.AbbreviationResponse.Payload responsePayload = (Events.AbbreviationResponse.Payload) payload;
+
+            // Now you can access the data from the payload
+            Station station = responsePayload.getStation();
+
+            Platform.runLater(() -> backendLabel.setText("Received response: " + station.getStationName()));
         }
     }
 
