@@ -98,7 +98,7 @@ public class WeatherComponent implements MessageCallback {
 
     private void sendWeatherResponse(WeatherResponse WeatherResponse) {
         // Publish the weather data through the MessageBroker
-        broker.publish(EventType.ABBREVIATION_RESPONSE, WeatherResponse);
+        broker.publish(EventType.WEATHER_RESPONSE, WeatherResponse);
 
         // Optional logging
         System.out.println("Published WEATHER_RESPONSE event with payload: " + WeatherResponse);
