@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import compse110.backend.AbbrevConverterComponent;
 import compse110.backend.exampleBackend.ExampleBackendComponent;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
@@ -16,7 +15,6 @@ public class MessageBroker implements MessageBrokerInterface {
     private final Map<EventType, Set<MessageCallback>> subscribers = new HashMap<>();
     
     private static ExampleBackendComponent exampleBackendService;
-    private static AbbrevConverterComponent abbrevConverterService;
 
     private MessageBroker() {
         //To prevent initialization
