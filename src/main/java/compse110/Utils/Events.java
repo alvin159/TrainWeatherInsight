@@ -8,7 +8,8 @@ public class Events {
     public enum EventType {
         ABBREVIATION_REQUEST,
         ABBREVIATION_RESPONSE,
-        ERROR_RESPONSE
+        ERROR_RESPONSE,
+        WEATHER_RESPONSE
     }
 
     public static class AbbreviationRequest {
