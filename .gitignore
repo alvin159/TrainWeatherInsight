@@ -3,6 +3,7 @@ target/
 
 # Ignore IDE-specific files
 .vscode/
+.idea/
 
 # Ignore other common generated files
 *.log
