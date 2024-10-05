@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
+import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.*;
-import compse110.Entity.Station;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import okhttp3.OkHttpClient;
@@ -25,20 +25,8 @@ public class WeatherComponent implements MessageCallback {
 
     @Override
     public void onMessageReceived(EventType event, EventPayload payload) {
-        if (event == EventType.ABBREVIATION_RESPONSE && payload instanceof AbbreviationObject) {
-            AbbreviationObject abbreviationObject = (AbbreviationObject) payload;
-            Station station = abbreviationObject.getStationResponse();
-
-            if (station != null && station.getStationName() != null) {
-                String cityName = station.getStationName();
-
-                // Fetch weather data for the city received from the AbbreviationObject
-                try {
-                    fetchWeatherData(cityName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        if (event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
+            // TODO: Implement the logic to fetch weather data
         }
     }
 
@@ -105,10 +93,10 @@ public class WeatherComponent implements MessageCallback {
     }
 
     public void initialize() {
-        broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
+        broker.subscribe(EventType.WEATHER_REQUEST, this);
     }
 
     public void shutdown() {
-        broker.unsubscribe(EventType.ABBREVIATION_RESPONSE, this);
+        broker.unsubscribe(EventType.WEATHER_REQUEST, this);
     }
 }
