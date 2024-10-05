@@ -22,6 +22,13 @@ public class AbbrevConvert {
     private final Map<String, String> stationCache = new HashMap<>();
 
     // Fetch the station name based on the short code, using cache if available
+    /**
+     * Retrieves the full name of a station given its short code.
+     * 
+     * @param stationShortCode The short code of the station.
+     * @return String, The full name of the station, or null if the station name could not be found.
+     * @throws Exception If there is an error fetching the station data from the API.
+     */
     public String getStationFullName(String stationShortCode) throws Exception {
         // Check if the data is already in cache
         if (stationCache.containsKey(stationShortCode)) {
@@ -37,7 +44,7 @@ public class AbbrevConvert {
         if (stationName != null) {
             stationCache.put(stationShortCode, stationName);
         }
-        return stationName != null ? stationName : "Station Not Found";
+        return stationName != null ? stationName : null;
     }
 
     private JsonArray fetchStationDataFromAPI() throws Exception {
