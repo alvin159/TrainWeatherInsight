@@ -63,7 +63,5 @@ public class MessageBroker implements MessageBrokerInterface {
         exampleBackendService = new ExampleBackendComponent();
         exampleBackendService.initialize();
         // Initialize other backend services here as well
-        abbrevConverterService = new AbbrevConverterComponent();
-        abbrevConverterService.initialize();
     }
 }
