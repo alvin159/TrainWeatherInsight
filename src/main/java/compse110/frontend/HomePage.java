@@ -4,10 +4,14 @@ import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import compse110.Entity.Station;
+import compse110.Utils.Log;
+import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -18,11 +22,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javafx.application.Platform;
 
 public class HomePage extends Application implements MessageCallback{
     private static final MessageBroker broker = MessageBroker.getInstance();
     private Label backendLabel;
+
+    private List<Station> stations;
 
     @Override
     public void start(Stage primaryStage) {
@@ -49,6 +59,14 @@ public class HomePage extends Application implements MessageCallback{
         Label arrivalStationLabel = new Label("Arrival station (optional):");
         TextField arrivalStationField = new TextField();
         arrivalStationField.setPromptText("Helsinki"); // Set hint text
+
+        stations = StationInfoFetcher.fetchStationDataFromAPI();
+        Log.d("Station data fetched from API: " + stations.size());
+        ContextMenu contextMenu = new ContextMenu();
+        addSearchStationRecommendListener(departingStationField, contextMenu);
+        addSearchStationRecommendListener(arrivalStationField, contextMenu);
+        //TODO:
+
         Label departureDateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = new DatePicker();
         departureDatePicker.setValue(LocalDate.now()); // Set default value to today
@@ -151,6 +169,62 @@ public class HomePage extends Application implements MessageCallback{
 
         primaryStage.setMaximized(true); // Maximize the stage for full screen
         primaryStage.show();
+    }
+
+    private void addSearchStationRecommendListener(TextField textField, ContextMenu contextMenu) {
+        textField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (newValue.length() < 2) {
+                    contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
+                } else {
+                    // Start showing recommendations when typing more than two characters
+                    List<Station> filteredStations = searchStations(newValue);
+                    Log.i("Filtered stations: " + filteredStations.size());
+
+                    if (!filteredStations.isEmpty()) {
+                        contextMenu.getItems().clear();
+                        for (Station station : filteredStations) {
+                            MenuItem item = new MenuItem(station.getStationName()); // set results
+                            item.setOnAction(event -> {
+                                textField.setText(station.getStationName());
+                                contextMenu.hide();
+                            });
+                            contextMenu.getItems().add(item);
+                        }
+
+                        if (!contextMenu.isShowing()) {
+                            // Use localToScreen to get the absolute position of the TextField on the screen
+                            double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
+                            double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
+
+                            // Show ContextMenu below TextField
+                            contextMenu.show(textField, screenX, screenY);
+                        }
+                    } else {
+                        contextMenu.hide();  // Hide ContextMenu when no match
+                    }
+                }
+            }
+        });
+
+        // When the TextField gets focus, display the ContextMenu
+        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    contextMenu.hide();  // Hide ContextMenu when TextField loses focus
+                }
+            }
+        });
+    }
+
+    public List<Station> searchStations(String query) {
+        String lowerCaseQuery = query.toLowerCase();
+        return this.stations.stream()
+                .filter(station -> station.getStationName().toLowerCase().contains(lowerCaseQuery)
+                        || station.getStationShortCode().toLowerCase().contains(lowerCaseQuery))
+                .collect(Collectors.toList());
     }
 
     public void sendFetchTrainRequest() {

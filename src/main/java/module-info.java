@@ -1,6 +1,7 @@
-module compse110.frontend {
+module compse.frontend {
     requires javafx.controls;
     exports compse110.frontend;
+    exports compse110.frontend.Entity;
     requires com.google.gson;
     requires okhttp3;
     //allow Gson access model
