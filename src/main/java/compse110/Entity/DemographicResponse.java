@@ -1,17 +1,17 @@
 package compse110.Entity;
 
-public class DemographicInfoResponse {
+public class DemographicResponse {
     private int population;
     private double landArea;
     private double populationDensity;
 
-    public DemographicInfoResponse(int population, double landArea, double populationDensity) {
+    public DemographicResponse(int population, double landArea, double populationDensity) {
         this.population = population;
         this.landArea = landArea;
         this.populationDensity = populationDensity;
     }
 
-    public DemographicInfoResponse() {}
+    public DemographicResponse() {}
 
     public int getPopulation() {
         return population;

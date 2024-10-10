@@ -1,13 +1,13 @@
 package compse110.Entity;
 
-public class DemographicInfoRequest {
+public class DemographicRequest {
     private String cityName;
 
-    public DemographicInfoRequest(String cityName) {
+    public DemographicRequest(String cityName) {
         this.cityName = cityName;
     }
 
-    public DemographicInfoRequest() {}
+    public DemographicRequest() {}
 
     public String getCityName() {
         return cityName;
