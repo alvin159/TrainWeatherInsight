@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 import javafx.application.Platform;
 
 public class HomePage extends Application implements MessageCallback{
+
     private static final MessageBroker broker = MessageBroker.getInstance();
     private Label backendLabel;
-
-    private List<Station> stations;
+    private StationInfoFetcher stationInfoFetcher;
 
     @Override
     public void start(Stage primaryStage) {
@@ -60,12 +60,11 @@ public class HomePage extends Application implements MessageCallback{
         TextField arrivalStationField = new TextField();
         arrivalStationField.setPromptText("Helsinki"); // Set hint text
 
-        stations = StationInfoFetcher.fetchStationDataFromAPI();
-        Log.d("Station data fetched from API: " + stations.size());
+        stationInfoFetcher = StationInfoFetcher.getInstance();
+
         ContextMenu contextMenu = new ContextMenu();
         addSearchStationRecommendListener(departingStationField, contextMenu);
         addSearchStationRecommendListener(arrivalStationField, contextMenu);
-        //TODO:
 
         Label departureDateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = new DatePicker();
@@ -179,7 +178,7 @@ public class HomePage extends Application implements MessageCallback{
                     contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
                 } else {
                     // Start showing recommendations when typing more than two characters
-                    List<Station> filteredStations = searchStations(newValue);
+                    List<Station> filteredStations = stationInfoFetcher.searchStations(newValue);
                     Log.i("Filtered stations: " + filteredStations.size());
 
                     if (!filteredStations.isEmpty()) {
@@ -219,13 +218,7 @@ public class HomePage extends Application implements MessageCallback{
         });
     }
 
-    public List<Station> searchStations(String query) {
-        String lowerCaseQuery = query.toLowerCase();
-        return this.stations.stream()
-                .filter(station -> station.getStationName().toLowerCase().contains(lowerCaseQuery)
-                        || station.getStationShortCode().toLowerCase().contains(lowerCaseQuery))
-                .collect(Collectors.toList());
-    }
+
 
     public void sendFetchTrainRequest() {
         Platform.runLater(() -> backendLabel.setText("Sent request to backend...\nWaiting for response..."));
