@@ -1,5 +1,7 @@
 # Ignore target directory
 target/
+Cache/
+station.json
 
 # Ignore IDE-specific files
 .vscode/
