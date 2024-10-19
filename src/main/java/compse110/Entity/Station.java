@@ -1,5 +1,6 @@
 package compse110.Entity;
 
+// IMPORTANT! Gson library is required to run this code. DONT modify this class
 public class Station {
 
     private boolean passengerTraffic;

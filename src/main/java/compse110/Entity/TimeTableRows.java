@@ -3,6 +3,7 @@ package compse110.Entity;
 import java.util.Date;
 import java.util.List;
 
+// IMPORTANT! Gson library is required to run this code. DONT modify this class
 public class TimeTableRows {
     private String stationShortCode;
     private int stationUICCode;

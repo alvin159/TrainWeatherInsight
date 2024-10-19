@@ -1,27 +1,32 @@
 package compse110.frontend.Entity;
 
+import compse110.Entity.Station;
+
 import java.time.LocalDate;
 
 public class SearchInfo {
-    private String departing;
-    private String arriving;
+    private Station departingStation;
+    private Station arrivingStation;
     private LocalDate date;
     private boolean showCoolFacts;
 
-    public String getDepartingCity() {
-        return departing;
+    public SearchInfo() {
     }
 
-    public void setDeparting(String departing) {
-        this.departing = departing;
+    public Station getDepartingStation() {
+        return departingStation;
     }
 
-    public String getArrivingCity() {
-        return arriving;
+    public void setDepartingStation(Station departingStation) {
+        this.departingStation = departingStation;
     }
 
-    public void setArriving(String arriving) {
-        this.arriving = arriving;
+    public Station getArrivingStation() {
+        return arrivingStation;
+    }
+
+    public void setArrivingStation(Station arrivingStation) {
+        this.arrivingStation = arrivingStation;
     }
 
     public LocalDate getDate() {

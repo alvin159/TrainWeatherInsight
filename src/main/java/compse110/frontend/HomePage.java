@@ -34,6 +34,9 @@ public class HomePage extends Application implements MessageCallback{
     private Label backendLabel;
     private StationInfoFetcher stationInfoFetcher;
 
+    private Station departStation;
+    private Station arriveStation;
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("TrainFinder");
@@ -56,9 +59,11 @@ public class HomePage extends Application implements MessageCallback{
         Label departingStationLabel = new Label("Departing station:");
         TextField departingStationField = new TextField();
         departingStationField.setPromptText("Oulu"); // Set hint text
+        departingStationField.setId("departingStationField"); //Set the ID for identification of the drop-down box below
         Label arrivalStationLabel = new Label("Arrival station (optional):");
         TextField arrivalStationField = new TextField();
         arrivalStationField.setPromptText("Helsinki"); // Set hint text
+        arrivalStationField.setId("arrivalStationField");
 
         stationInfoFetcher = StationInfoFetcher.getInstance();
 
@@ -106,8 +111,8 @@ public class HomePage extends Application implements MessageCallback{
                     // Create a message entity
                     SearchInfo message = new SearchInfo();
                     // Put data to message
-                    message.setDeparting(departingStationField.getText());
-                    message.setArriving(arrivalStationField.getText());
+                    message.setDepartingStation(departStation);
+                    message.setArrivingStation(arriveStation);
                     message.setDate(departureDatePicker.getValue());
                     message.setShowCoolFacts(showCoolFactsCheckBox.isSelected());
                     // Open new window
@@ -185,9 +190,17 @@ public class HomePage extends Application implements MessageCallback{
                         contextMenu.getItems().clear();
                         for (Station station : filteredStations) {
                             MenuItem item = new MenuItem(station.getStationName()); // set results
-                            item.setOnAction(event -> {
-                                textField.setText(station.getStationName());
-                                contextMenu.hide();
+                            item.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent event) {
+                                    if (textField.getId().equals("departingStationField")) {
+                                        departStation = station;
+                                    } else {
+                                        arriveStation = station;
+                                    }
+                                    textField.setText(station.getStationName());
+                                    contextMenu.hide();
+                                }
                             });
                             contextMenu.getItems().add(item);
                         }

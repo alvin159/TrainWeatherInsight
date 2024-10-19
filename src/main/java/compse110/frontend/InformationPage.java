@@ -1,5 +1,8 @@
 package compse110.frontend;
 
+import compse110.Entity.Station;
+import compse110.backend.TrainComponent;
+import compse110.frontend.Controllers.TrainListCell;
 import compse110.frontend.Entity.*;
 import compse110.Utils.StringUtils;
 import javafx.application.Application;
@@ -13,14 +16,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class InformationPage extends Application {
 
     private SearchInfo message;
     private VBox root;
-
 
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
@@ -63,24 +68,43 @@ public class InformationPage extends Application {
 
         Label scheduleHeader = new Label();
         // TODO search user input
-        if (message.getArrivingCity().isEmpty()) {
-            scheduleHeader.setText(message.getDepartingCity() + " on track");
+        if (message.getArrivingStation() == null) {
+            scheduleHeader.setText(message.getDepartingStation().getStationName() + " on track");
         } else {
-            scheduleHeader.setText("Trains " + message.getDepartingCity() + " -> " + message.getArrivingCity());
+            scheduleHeader.setText("Trains " + message.getDepartingStation().getStationName() + " -> " + message.getArrivingStation().getStationName());
         }
+        trainScheduleBox.getChildren().add(scheduleHeader);
 
         // TODO change to list view to show
+        ListView<TrainInformation> trainListView = new ListView<>();
+        trainListView.setCellFactory(new Callback<ListView<TrainInformation>, ListCell<TrainInformation>>() {
+            @Override
+            public ListCell<TrainInformation> call(ListView<TrainInformation> param) {
+                return new TrainListCell();
+            }
+        });
 
-        HBox trainInfo = new HBox();
-        trainInfo.setSpacing(50);
-        trainInfo.setAlignment(Pos.CENTER);
+        TrainComponent trainComponent = new TrainComponent();
+        //add data
+        if (message.getArrivingStation() == null) {
+            // if no any arriving city will not show this part
+            trainListView.getItems().addAll(trainComponent.getTrainInformation(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode()));
+        } else {
+            trainListView.getItems().addAll(trainComponent.getTrainInformation(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation().getStationShortCode()));
+        }
 
-        Label departureTime = new Label("12:00 " + message.getDepartingCity());
-        Label duration = new Label("5 hrs 0 minutes");
-        Label arrivalTime = new Label("17:00 " + message.getArrivingCity());
+        trainScheduleBox.getChildren().add(trainListView);
 
-        trainInfo.getChildren().addAll(departureTime, duration, arrivalTime);
-        trainScheduleBox.getChildren().addAll(scheduleHeader, trainInfo);
+//        HBox trainInfo = new HBox();
+//        trainInfo.setSpacing(50);
+//        trainInfo.setAlignment(Pos.CENTER);
+//
+//        Label departureTime = new Label("12:00 " + message.getDepartingStation().getStationName());
+//        Label duration = new Label("5 hrs 0 minutes");
+//        Label arrivalTime = new Label("17:00 " + message.getArrivingStation().getStationName());
+//
+//        trainInfo.getChildren().addAll(departureTime, duration, arrivalTime);
+
 
         // Display cool facts based on SearchInfo's isShowCoolFacts()
         Label coolFactsLabel = new Label();
@@ -102,19 +126,19 @@ public class InformationPage extends Application {
         Forecast forecast = new Forecast(18.2, "Cloudy", "https://openweathermap.org/img/wn/03d@2x.png", new ForecastDetails());
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
 
-        CityInformation cityInformation = new CityInformation(0, message.getDepartingCity(), forecast, cityDetails);
+        CityInformation cityInformation = new CityInformation(0, message.getDepartingStation().getStationName(), forecast, cityDetails);
 
         root.getChildren().add(addCityInformationView(cityInformation));
         root.getChildren().add(trainScheduleBox);
 
-        if (!message.getArrivingCity().isEmpty()) {
+        if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
 
             // TODO this only demo data
             Forecast forecast1 = new Forecast(23.1, "clear sky", "https://openweathermap.org/img/wn/01d@2x.png", new ForecastDetails());
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
 
-            CityInformation cityInformation1 = new CityInformation(0, message.getArrivingCity(), forecast1, cityDetails1);
+            CityInformation cityInformation1 = new CityInformation(0, message.getArrivingStation().getStationName(), forecast1, cityDetails1);
 
             root.getChildren().add(addCityInformationView(cityInformation1));
         }
@@ -128,11 +152,11 @@ public class InformationPage extends Application {
 
         Label departingLabel = new Label("Departing station:");
         TextField departingField = new TextField();
-        departingField.setText(message.getDepartingCity());  // Use departing city from SearchInfo
+        departingField.setText(message.getDepartingStation().getStationName());  // Use departing city from SearchInfo
 
         Label arrivingLabel = new Label("Arrival station (optional):");
         TextField arrivingField = new TextField();
-        arrivingField.setText(message.getArrivingCity());   // Use arriving city from SearchInfo
+        arrivingField.setText(message.getDepartingStation().getStationName());   // Use arriving city from SearchInfo
 
         Label dateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = new DatePicker();
@@ -171,8 +195,9 @@ public class InformationPage extends Application {
                     alert.showAndWait();
                 } else {
                     //reload data
-                    message.setDeparting(departingField.getText());
-                    message.setArriving(arrivingField.getText());
+                    //TODO: update SearchInfo object with new values
+//                    message.setDepartingStation(departingField.getText());
+//                    message.setArrivingStation(arrivingField.getText());
                     message.setDate(departureDatePicker.getValue());
                     initView();
                 }
