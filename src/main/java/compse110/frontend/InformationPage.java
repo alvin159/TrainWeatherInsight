@@ -3,9 +3,19 @@ package compse110.frontend;
 import compse110.Entity.Station;
 import compse110.backend.TrainComponent;
 import compse110.frontend.Controllers.TrainListCell;
+import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
 import compse110.Utils.StringUtils;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
+import compse110.Utils.Events.EventType;
+import compse110.Utils.Log;
+import compse110.messagebroker.MessageBroker;
+import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -21,11 +31,15 @@ import javafx.util.Callback;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-
+import java.util.List;
+import java.util.stream.Collectors;
 public class InformationPage extends Application {
 
     private SearchInfo message;
     private VBox root;
+    private Station departStation;
+    private Station arriveStation;
+    private StationInfoFetcher stationInfoFetcher;
 
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
@@ -41,40 +55,99 @@ public class InformationPage extends Application {
             System.out.println(message);
         }
 
-        // Main layout container
         root = new VBox();
         root.setPadding(new Insets(20));
         root.setSpacing(20);
+
+        stationInfoFetcher = StationInfoFetcher.getInstance(); // Initialize station info fetcher
 
         initView();
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
-        primaryStage.setMaximized(true); // Maximize the stage for full screen
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
-
+    
     @Override
     public void start(Stage primaryStage) {
         // This method is required, but unused in this scenario
         // Leave it empty or redirect to the overloaded start method
     }
 
+    private void addSearchStationRecommendListener(TextField textField, ContextMenu contextMenu) {
+        textField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (newValue.length() < 2) {
+                    contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
+                } else {
+                    // Start showing recommendations when typing more than two characters
+                    List<Station> filteredStations = stationInfoFetcher.searchStations(newValue);
+                    Log.i("Filtered stations: " + filteredStations.size());
+
+                    if (!filteredStations.isEmpty()) {
+                        contextMenu.getItems().clear();
+                        for (Station station : filteredStations) {
+                            MenuItem item = new MenuItem(station.getStationName()); // set results
+                            item.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent event) {
+                                    if (textField.getId().equals("departingStationField")) {
+                                        departStation = station;
+                                    } else {
+                                        arriveStation = station;
+                                    }
+                                    textField.setText(station.getStationName());
+                                    contextMenu.hide();
+                                }
+                            });
+                            contextMenu.getItems().add(item);
+                        }
+
+                        if (!contextMenu.isShowing()) {
+                            // Use localToScreen to get the absolute position of the TextField on the screen
+                            double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
+                            double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
+
+                            // Show ContextMenu below TextField
+                            contextMenu.show(textField, screenX, screenY);
+                        }
+                    } else {
+                        contextMenu.hide();  // Hide ContextMenu when no match
+                    }
+                }
+            }
+        });
+
+        // When the TextField gets focus, display the ContextMenu
+        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    contextMenu.hide();  // Hide ContextMenu when TextField loses focus
+                }
+            }
+        });
+    }
+    
     private void initView() {
-        // Train Schedule Table (simplified for this example)
+        HBox header = addHeaderView(); // Add header for search functionality
+        root.getChildren().clear(); // clear previous children
+        root.getChildren().add(header); // Add the search fields
+
         VBox trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
         trainScheduleBox.setStyle("-fx-background-color: #f0f0f0;");
 
-        Label scheduleHeader = new Label();
-        // TODO search user input
-        if (message.getArrivingStation() == null) {
-            scheduleHeader.setText(message.getDepartingStation().getStationName() + " on track");
+        Label coolFactsLabel = new Label();
+        if (message.isShowCoolFacts()) {
+            coolFactsLabel.setText("Cool facts about cities are enabled.");
         } else {
-            scheduleHeader.setText("Trains " + message.getDepartingStation().getStationName() + " -> " + message.getArrivingStation().getStationName());
+            coolFactsLabel.setText("No cool facts selected.");
         }
-        trainScheduleBox.getChildren().add(scheduleHeader);
-
+        root.getChildren().add(coolFactsLabel);
+        
         // TODO change to list view to show
         ListView<TrainInformation> trainListView = new ListView<>();
         trainListView.setCellFactory(new Callback<ListView<TrainInformation>, ListCell<TrainInformation>>() {
@@ -106,15 +179,6 @@ public class InformationPage extends Application {
 //        trainInfo.getChildren().addAll(departureTime, duration, arrivalTime);
 
 
-        // Display cool facts based on SearchInfo's isShowCoolFacts()
-        Label coolFactsLabel = new Label();
-        if (message.isShowCoolFacts()) {
-            coolFactsLabel.setText("Cool facts about cities are enabled.");
-        } else {
-            coolFactsLabel.setText("No cool facts selected.");
-        }
-        coolFactsLabel.setStyle("-fx-font-size: 14px; -fx-padding: 20px;");
-
 
         // clear children view first
         root.getChildren().clear();
@@ -142,27 +206,28 @@ public class InformationPage extends Application {
 
             root.getChildren().add(addCityInformationView(cityInformation1));
         }
+        // Your other view components like train schedules or city information can be added here...
     }
 
     private HBox addHeaderView() {
-        // Header layout for Departing and Arriving fields
         HBox header = new HBox();
         header.setSpacing(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
         Label departingLabel = new Label("Departing station:");
-        TextField departingField = new TextField();
-        departingField.setText(message.getDepartingStation().getStationName());  // Use departing city from SearchInfo
+        TextField departingStationField = new TextField();
+        departingStationField.setText(message.getDepartingStation().getStationName());
+        departingStationField.setId("departingStationField");
 
         Label arrivingLabel = new Label("Arrival station (optional):");
-        TextField arrivingField = new TextField();
-        arrivingField.setText(message.getDepartingStation().getStationName());   // Use arriving city from SearchInfo
+        TextField arrivalStationField = new TextField();
+        arrivalStationField.setText(message.getArrivingStation() != null ? message.getArrivingStation().getStationName() : "");
+        arrivalStationField.setId("arrivalStationField");
 
         Label dateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = new DatePicker();
-        departureDatePicker.setValue(message.getDate()); // Set default value to today
+        departureDatePicker.setValue(message.getDate());
 
-        // Disable past dates in the DatePicker
         departureDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -171,14 +236,12 @@ public class InformationPage extends Application {
             }
         });
 
-        // Search button
         Button searchButton = new Button("Search");
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //on Click
                 // Check departing Station Field is empty
-                if (departingField.getText().isEmpty()) {
+                if (departingStationField.getText().isEmpty()) {
                     // Show input alert
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Alert");
@@ -186,26 +249,23 @@ public class InformationPage extends Application {
                     alert.setContentText("Please input departing station name or short code");
                     alert.showAndWait();
 
-                } else if (departingField.getText().equals(arrivingField.getText())) {
+                } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
                     // Check Departing and arrive station is same?
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Alert");
                     alert.setHeaderText("Departing station and arrive station can not same name");
                     alert.setContentText("Please input departing station name or short code again");
                     alert.showAndWait();
-                } else {
-                    //reload data
-                    //TODO: update SearchInfo object with new values
-//                    message.setDepartingStation(departingField.getText());
-//                    message.setArrivingStation(arrivingField.getText());
-                    message.setDate(departureDatePicker.getValue());
-                    initView();
-                }
+                } 
             }
         });
 
-        header.getChildren().addAll(departingLabel, departingField, arrivingLabel, arrivingField, dateLabel, departureDatePicker, searchButton);
+        // Add listeners for auto-complete functionality
+        ContextMenu contextMenu = new ContextMenu();
+        addSearchStationRecommendListener(departingStationField, contextMenu);
+        addSearchStationRecommendListener(arrivalStationField, contextMenu);
 
+        header.getChildren().addAll(departingLabel, departingStationField, arrivingLabel, arrivalStationField, dateLabel, departureDatePicker, searchButton);
         return header;
     }
 
