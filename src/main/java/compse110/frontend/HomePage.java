@@ -3,7 +3,9 @@ package compse110.frontend;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
+import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.Station;
+import compse110.Entity.WeatherRequest;
 import compse110.Utils.Log;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.SearchInfo;
@@ -36,6 +38,7 @@ public class HomePage extends Application implements MessageCallback{
 
     private Station departStation;
     private Station arriveStation;
+    private DatePicker departureDatePicker;
 
     @Override
     public void start(Stage primaryStage) {
@@ -72,7 +75,7 @@ public class HomePage extends Application implements MessageCallback{
         addSearchStationRecommendListener(arrivalStationField, contextMenu);
 
         Label departureDateLabel = new Label("Departure date:");
-        DatePicker departureDatePicker = new DatePicker();
+        departureDatePicker = new DatePicker();
         departureDatePicker.setValue(LocalDate.now()); // Set default value to today
 
         // Disable past dates in the DatePicker
@@ -200,6 +203,9 @@ public class HomePage extends Application implements MessageCallback{
                                     }
                                     textField.setText(station.getStationName());
                                     contextMenu.hide();
+                                    
+                                    // Trigger weather request here after the station is selected
+                                    sendWeatherRequest(station.getStationName().trim().split("\\s+")[0]);
                                 }
                             });
                             contextMenu.getItems().add(item);
@@ -231,7 +237,23 @@ public class HomePage extends Application implements MessageCallback{
         });
     }
 
-
+    private void sendWeatherRequest(String stationName) {
+        // Get the selected date from the DatePicker
+        LocalDate selectedDate = departureDatePicker.getValue(); // Ensure this variable is accessible
+    
+        // Create a WeatherRequest object with the selected date and the station name
+        WeatherRequest weatherRequest = new WeatherRequest(selectedDate, stationName);
+    
+        // Create the WeatherRequestEvent.Payload
+        WeatherRequestEvent.Payload weatherPayload = new WeatherRequestEvent.Payload(weatherRequest);
+    
+        // Publish the weather request event through the MessageBroker
+        broker.publish(EventType.WEATHER_REQUEST, weatherPayload);
+        System.out.print("Fetching weather for " + stationName + " on " + selectedDate);
+        // Optionally, update the UI to inform the user that weather data is being fetched
+        Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
+    }
+    
 
     public void sendFetchTrainRequest() {
         Platform.runLater(() -> backendLabel.setText("Sent request to backend...\nWaiting for response..."));
