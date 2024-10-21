@@ -78,14 +78,19 @@ public class HomePage extends Application implements MessageCallback{
         departureDatePicker = new DatePicker();
         departureDatePicker.setValue(LocalDate.now()); // Set default value to today
 
-        // Disable past dates in the DatePicker
+        // Disable past dates and limit to 14 days in the DatePicker
         departureDatePicker.setDayCellFactory(datePicker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                setDisable(empty || date.isBefore(LocalDate.now()));
+                LocalDate today = LocalDate.now();
+                LocalDate maxDate = today.plusDays(14); // Calculate the maximum date (14 days from today)
+
+                // Disable dates that are empty, before today, or after maxDate
+                setDisable(empty || date.isBefore(today) || date.isAfter(maxDate));
             }
         });
+
 
         CheckBox showCoolFactsCheckBox = new CheckBox("Show cool facts about cities");
         
