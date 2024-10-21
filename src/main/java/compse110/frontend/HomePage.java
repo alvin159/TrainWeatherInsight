@@ -121,6 +121,10 @@ public class HomePage extends Application implements MessageCallback{
                     // Put data to message
                     message.setDepartingStation(departStation);
                     message.setArrivingStation(arriveStation);
+                    
+                    sendWeatherRequest(departStation.getStationName().trim().split("\\s+")[0]);
+                    sendWeatherRequest(arriveStation.getStationName().trim().split("\\s+")[0]);
+
                     message.setDate(departureDatePicker.getValue());
                     message.setShowCoolFacts(showCoolFactsCheckBox.isSelected());
                     // Open new window
@@ -208,9 +212,6 @@ public class HomePage extends Application implements MessageCallback{
                                     }
                                     textField.setText(station.getStationName());
                                     contextMenu.hide();
-                                    
-                                    // Trigger weather request here after the station is selected
-                                    sendWeatherRequest(station.getStationName().trim().split("\\s+")[0]);
                                 }
                             });
                             contextMenu.getItems().add(item);
