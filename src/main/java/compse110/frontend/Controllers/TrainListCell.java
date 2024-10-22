@@ -4,6 +4,8 @@ import compse110.frontend.Entity.TrainInformation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 public class TrainListCell extends ListCell<TrainInformation> {
@@ -15,11 +17,13 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private final Label duration;
     private final Label track;
     private final Label arrivalTime;
+    private final ImageView forecastImage;
 
     //onCreateView
     public TrainListCell() {
         //create view
         itemView = new HBox();
+
         itemView.setSpacing(50);
         itemView.setAlignment(Pos.CENTER);
 
@@ -29,8 +33,9 @@ public class TrainListCell extends ListCell<TrainInformation> {
         estimatedTime = new Label("12:00 ");
         track = new Label("Track 1");
         arrivalTime = new Label("17:00 ");
+        forecastImage = new ImageView("https://openweathermap.org/img/wn/03d@2x.png");
 
-        itemView.getChildren().addAll(trainName, departureTime, estimatedTime, track, arrivalTime);
+        itemView.getChildren().addAll(trainName, departureTime, estimatedTime, track, arrivalTime, forecastImage);
 
     }
 

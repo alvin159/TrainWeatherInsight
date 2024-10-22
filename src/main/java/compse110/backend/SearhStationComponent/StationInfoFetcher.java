@@ -25,6 +25,8 @@ public class StationInfoFetcher {
 
     private static final String cacheFilePath = "Cache/station.json";
 
+    private static final int MAX_STATION_RECOMMENDER_COUNT = 15;
+
     private List<Station> stations;
 
     public static StationInfoFetcher getInstance() {
@@ -120,6 +122,7 @@ public class StationInfoFetcher {
         return this.stations.stream()
                 .filter(station -> station.getStationName().toLowerCase().contains(lowerCaseQuery)
                         || station.getStationShortCode().toLowerCase().contains(lowerCaseQuery))
+                .limit(MAX_STATION_RECOMMENDER_COUNT)
                 .collect(Collectors.toList());
     }
 
