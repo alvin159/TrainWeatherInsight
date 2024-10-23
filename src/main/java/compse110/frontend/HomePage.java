@@ -7,7 +7,6 @@ import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.Station;
 import compse110.Entity.WeatherRequest;
 import compse110.Utils.Log;
-import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -34,8 +33,9 @@ public class HomePage extends Application implements MessageCallback{
 
     private static final MessageBroker broker = MessageBroker.getInstance();
     private Label backendLabel;
-    private StationInfoFetcher stationInfoFetcher;
-
+    private TextField departingStationField;
+    private TextField arrivalStationField;
+    private ContextMenu contextMenu;
     private Station departStation;
     private Station arriveStation;
     private DatePicker departureDatePicker;
@@ -46,6 +46,7 @@ public class HomePage extends Application implements MessageCallback{
 
         //Listen for responses from the backend
         broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
+        broker.subscribe(EventType.SEARCH_STATION_RESPONSE, this);
 
         // Create UI elements
         Label titleLabel = new Label("TrainFinder");
@@ -60,17 +61,15 @@ public class HomePage extends Application implements MessageCallback{
 
         Label welcomeLabel = new Label("Welcome to search any train connections and information about your destination");
         Label departingStationLabel = new Label("Departing station:");
-        TextField departingStationField = new TextField();
+        departingStationField = new TextField();
         departingStationField.setPromptText("Oulu"); // Set hint text
         departingStationField.setId("departingStationField"); //Set the ID for identification of the drop-down box below
         Label arrivalStationLabel = new Label("Arrival station (optional):");
-        TextField arrivalStationField = new TextField();
+        arrivalStationField = new TextField();
         arrivalStationField.setPromptText("Helsinki"); // Set hint text
         arrivalStationField.setId("arrivalStationField");
 
-        stationInfoFetcher = StationInfoFetcher.getInstance();
-
-        ContextMenu contextMenu = new ContextMenu();
+        contextMenu = new ContextMenu();
         addSearchStationRecommendListener(departingStationField, contextMenu);
         addSearchStationRecommendListener(arrivalStationField, contextMenu);
 
@@ -195,39 +194,8 @@ public class HomePage extends Application implements MessageCallback{
                     contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
                 } else {
                     // Start showing recommendations when typing more than two characters
-                    List<Station> filteredStations = stationInfoFetcher.searchStations(newValue);
-                    Log.i("Filtered stations: " + filteredStations.size());
-
-                    if (!filteredStations.isEmpty()) {
-                        contextMenu.getItems().clear();
-                        for (Station station : filteredStations) {
-                            MenuItem item = new MenuItem(station.getStationName()); // set results
-                            item.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                    if (textField.getId().equals("departingStationField")) {
-                                        departStation = station;
-                                    } else {
-                                        arriveStation = station;
-                                    }
-                                    textField.setText(station.getStationName());
-                                    contextMenu.hide();
-                                }
-                            });
-                            contextMenu.getItems().add(item);
-                        }
-
-                        if (!contextMenu.isShowing()) {
-                            // Use localToScreen to get the absolute position of the TextField on the screen
-                            double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
-                            double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
-
-                            // Show ContextMenu below TextField
-                            contextMenu.show(textField, screenX, screenY);
-                        }
-                    } else {
-                        contextMenu.hide();  // Hide ContextMenu when no match
-                    }
+                    System.out.println("Searching for stations with name: " + newValue);
+                    broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(newValue, textField.getId()));
                 }
             }
         });
@@ -259,6 +227,48 @@ public class HomePage extends Application implements MessageCallback{
         // Optionally, update the UI to inform the user that weather data is being fetched
         Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
     }
+
+    // Method to handle station search response and update the context menu
+    private void handleStationSearch(Events.SearchStationResponse.Payload responsePayload) {
+        List<Station> filteredStations = responsePayload.getStationList();
+        String textFieldId = responsePayload.getTextFieldId();
+        Platform.runLater(() -> {
+            Log.i("Filtered stations: " + filteredStations.size());
+
+            if (!filteredStations.isEmpty()) {
+                contextMenu.getItems().clear();
+                for (Station station : filteredStations) {
+                    MenuItem item = new MenuItem(station.getStationName()); // set results
+                    item.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            if (textFieldId.equals("departingStationField")) {
+                                departStation = station;
+                            } else {
+                                arriveStation = station;
+                            }
+                            TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
+                            textField.setText(station.getStationName());
+                            contextMenu.hide();
+                        }
+                    });
+                    contextMenu.getItems().add(item);
+                }
+
+                if (!contextMenu.isShowing()) {
+                    // Use localToScreen to get the absolute position of the TextField on the screen
+                    TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
+                    double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
+                    double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
+
+                    // Show ContextMenu below TextField
+                    contextMenu.show(textField, screenX, screenY);
+                }
+            } else {
+                contextMenu.hide();  // Hide ContextMenu when no match
+            }
+        });
+    }
     
 
     public void sendFetchTrainRequest() {
@@ -268,14 +278,9 @@ public class HomePage extends Application implements MessageCallback{
 
     @Override
     public void onMessageReceived(EventType eventType, EventPayload payload) {
-        if (eventType == EventType.ABBREVIATION_RESPONSE) {
-            // Cast the payload to the specific type
-            Events.AbbreviationResponse.Payload responsePayload = (Events.AbbreviationResponse.Payload) payload;
-
-            // Now you can access the data from the payload
-            Station station = responsePayload.getStation();
-
-            Platform.runLater(() -> backendLabel.setText("Received response: " + station.getStationName()));
+        if (eventType == Events.SearchStationResponse.TOPIC && payload instanceof Events.SearchStationResponse.Payload) {
+            Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
+            handleStationSearch(responsePayload);
         }
     }
 

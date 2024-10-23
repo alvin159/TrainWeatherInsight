@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import compse110.backend.SearhStationComponent.SearchStationComponent;
 import compse110.backend.exampleBackend.ExampleBackendComponent;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
@@ -15,6 +16,7 @@ public class MessageBroker implements MessageBrokerInterface {
     private final Map<EventType, Set<MessageCallback>> subscribers = new HashMap<>();
     
     private static ExampleBackendComponent exampleBackendService;
+    private static SearchStationComponent searchStationComponent;
 
     private MessageBroker() {
         //To prevent initialization
@@ -60,6 +62,9 @@ public class MessageBroker implements MessageBrokerInterface {
         private static void initializeBackend() {
         exampleBackendService = new ExampleBackendComponent();
         exampleBackendService.initialize();
+        searchStationComponent = new SearchStationComponent();
+        searchStationComponent.initialize();
+
         // Initialize other backend services here as well
     }
 }

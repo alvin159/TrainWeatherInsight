@@ -7,6 +7,7 @@ import compse110.Entity.TrainRequest;
 import compse110.Entity.TrainResponse;
 import compse110.Entity.DemographicRequest;
 import compse110.Entity.DemographicResponse;
+import java.util.List;
 
 
 // This class defines the events that can be sent and received by the components
@@ -21,6 +22,8 @@ public class Events {
         DEMOGRAPHIC_RESPONSE,
         TRAIN_REQUEST,
         TRAIN_RESPONSE,
+        SEARCH_STATION_REQUEST,
+        SEARCH_STATION_RESPONSE,
         ERROR_RESPONSE
     }
 
@@ -149,6 +152,50 @@ public class Events {
 
             public Station getStation() {
                 return station;
+            }
+        }
+    }
+
+    public static class SearchStationRequest {
+        public static final EventType TOPIC = EventType.SEARCH_STATION_REQUEST;
+
+        public static class Payload implements EventPayload {
+            private final String currentSearchInput;
+            private final String textFieldId;
+
+            public Payload(String currentSearchInput, String textFieldId) {
+                this.currentSearchInput = currentSearchInput;
+                this.textFieldId = textFieldId;
+            }
+
+            public String getCurrentSearchInput() {
+                return currentSearchInput;
+            }
+
+            public String getTextFieldId() {
+                return textFieldId;
+            }
+        }
+    }
+
+    public static class SearchStationResponse {
+        public static final EventType TOPIC = EventType.SEARCH_STATION_RESPONSE;
+
+        public static class Payload implements EventPayload {
+            private final List<Station> stationList;
+            private final String textFieldId;
+
+            public Payload(List<Station> stationList, String textFieldId) {
+                this.stationList = stationList;
+                this.textFieldId = textFieldId;
+            }
+
+            public List<Station> getStationList() {
+                return stationList;
+            }
+
+            public String getTextFieldId() {
+                return textFieldId;
             }
         }
     }
