@@ -143,16 +143,6 @@ public class HomePage extends Application implements MessageCallback{
             }
         });
 
-        // Example button to test connection to backend
-        Button testBackendButton = new Button("Test connection to backend");
-        testBackendButton.setStyle("-fx-background-color: #0BCAFF");
-        testBackendButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                sendFetchTrainRequest();
-            }
-        });
-
         // Label to display the response from the backend to user
         backendLabel = new Label();
         backendLabel.setPrefWidth(400); // Set the preferred width to 400 pixels
@@ -172,7 +162,6 @@ public class HomePage extends Application implements MessageCallback{
         gridPane.add(departureDatePicker, 1, 4);
         gridPane.add(showCoolFactsCheckBox, 0, 5);
         gridPane.add(searchButton, 1, 5);
-        gridPane.add(testBackendButton, 1, 6);
         gridPane.add(backendLabel, 1, 7);
 
         // Create the main layout with a BorderPane
@@ -254,12 +243,6 @@ public class HomePage extends Application implements MessageCallback{
                 contextMenu.hide();  // Hide ContextMenu when no match
             }
         });
-    }
-    
-
-    public void sendFetchTrainRequest() {
-        Platform.runLater(() -> backendLabel.setText("Sent request to backend...\nWaiting for response..."));
-        broker.publish(EventType.ABBREVIATION_REQUEST, new Events.AbbreviationRequest.Payload("HEL"));
     }
 
     @Override
