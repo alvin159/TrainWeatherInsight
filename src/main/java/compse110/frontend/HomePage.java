@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -70,8 +71,8 @@ public class HomePage extends Application implements MessageCallback{
         arrivalStationField.setId("arrivalStationField");
 
         contextMenu = new ContextMenu();
-        addSearchStationRecommendListener(departingStationField, contextMenu);
-        addSearchStationRecommendListener(arrivalStationField, contextMenu);
+        departingStationField.setOnKeyReleased(this::handlePressingFoundStationName);
+        arrivalStationField.setOnKeyReleased(this::handlePressingFoundStationName);
 
         Label departureDateLabel = new Label("Departure date:");
         departureDatePicker = new DatePicker();
@@ -186,31 +187,6 @@ public class HomePage extends Application implements MessageCallback{
         primaryStage.show();
     }
 
-    private void addSearchStationRecommendListener(TextField textField, ContextMenu contextMenu) {
-        textField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue.length() < 2) {
-                    contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
-                } else {
-                    // Start showing recommendations when typing more than two characters
-                    System.out.println("Searching for stations with name: " + newValue);
-                    broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(newValue, textField.getId()));
-                }
-            }
-        });
-
-        // When the TextField gets focus, display the ContextMenu
-        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    contextMenu.hide();  // Hide ContextMenu when TextField loses focus
-                }
-            }
-        });
-    }
-
     private void sendWeatherRequest(String stationName) {
         // Get the selected date from the DatePicker
         LocalDate selectedDate = departureDatePicker.getValue(); // Ensure this variable is accessible
@@ -226,6 +202,16 @@ public class HomePage extends Application implements MessageCallback{
         System.out.print("Fetching weather for " + stationName + " on " + selectedDate);
         // Optionally, update the UI to inform the user that weather data is being fetched
         Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
+    }
+
+    private void handlePressingFoundStationName(KeyEvent event) {
+        TextField source = (TextField) event.getSource();
+        String newValue = source.getText();
+        if (newValue.length() < 2) {
+            contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
+        } else {
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(newValue, source.getId()));
+        }
     }
 
     // Method to handle station search response and update the context menu
