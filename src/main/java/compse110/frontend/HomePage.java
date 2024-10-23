@@ -19,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -71,8 +72,10 @@ public class HomePage extends Application implements MessageCallback{
         arrivalStationField.setId("arrivalStationField");
 
         contextMenu = new ContextMenu();
-        departingStationField.setOnKeyReleased(this::handlePressingFoundStationName);
-        arrivalStationField.setOnKeyReleased(this::handlePressingFoundStationName);
+        departingStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
+        departingStationField.setOnMousePressed(this::handleFocusingOnTextField);
+        arrivalStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
+        arrivalStationField.setOnMousePressed(this::handleFocusingOnTextField);
 
         Label departureDateLabel = new Label("Departure date:");
         departureDatePicker = new DatePicker();
@@ -193,13 +196,22 @@ public class HomePage extends Application implements MessageCallback{
         Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
     }
 
-    private void handlePressingFoundStationName(KeyEvent event) {
+    private void handleTypingOnStationSearch(KeyEvent event) {
         TextField source = (TextField) event.getSource();
         String newValue = source.getText();
         if (newValue.length() < 2) {
             contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
         } else {
             broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(newValue, source.getId()));
+        }
+    }
+
+    private void handleFocusingOnTextField(MouseEvent event) {
+        TextField source = (TextField) event.getSource();
+        if (source.getText().length() < 2) {
+            contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
+        } else if (!contextMenu.isShowing()) { // Don't send request if the context menu is already showing
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(source.getText(), source.getId()));
         }
     }
 
