@@ -4,8 +4,10 @@ import compse110.Entity.TimeTableRows;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import compse110.Entity.TrainData;
+import compse110.Entity.TrainRequestError;
 import compse110.Utils.API_Config;
 import compse110.Utils.Log;
 import compse110.frontend.Entity.TrainInformation;
@@ -45,10 +47,20 @@ public class TrainComponent implements MessageCallback {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected code " + response);
             }
-            // Handle the response
-            // Use gson to transfer response to json
-            return new Gson().fromJson(response.body().string(), new TypeToken<List<TrainData>>() {}.getType());
+            String responseString = response.body().string();
 
+            try {
+                // Try to handle the response
+                // Use gson to transfer response to json
+                List<TrainData> trainDataList = new Gson().fromJson(responseString, new TypeToken<List<TrainData>>() {}.getType());
+                return trainDataList;
+            }
+            catch (JsonSyntaxException e) {
+                // This error message gets thrown for example if no trains were found and the response is different than List<TrainData>
+                TrainRequestError error = new Gson().fromJson(responseString, TrainRequestError.class);
+                System.out.println(error.getCode());
+                return null;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return null;
