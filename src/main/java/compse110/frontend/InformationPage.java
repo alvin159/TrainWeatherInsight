@@ -1,7 +1,6 @@
 package compse110.frontend;
 
 import compse110.Entity.Station;
-import compse110.backend.TrainComponent;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
@@ -32,18 +31,22 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-public class InformationPage extends Application {
+public class InformationPage extends Application implements MessageCallback {
 
+    private static final MessageBroker broker = MessageBroker.getInstance();
     private SearchInfo message;
     private VBox root;
     private Station departStation;
     private Station arriveStation;
     private StationInfoFetcher stationInfoFetcher;
+    ListView<TrainInformation> trainListView;
+    VBox trainScheduleBox;
 
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
+
+        broker.subscribe(EventType.TRAIN_RESPONSE, this);
 
         // throw Exception if message is null
         if (message == null) {
@@ -136,7 +139,7 @@ public class InformationPage extends Application {
         root.getChildren().clear(); // clear previous children
         root.getChildren().add(header); // Add the search fields
 
-        VBox trainScheduleBox = new VBox();
+        trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
         trainScheduleBox.setStyle("-fx-background-color: #f0f0f0;");
 
@@ -149,7 +152,7 @@ public class InformationPage extends Application {
         root.getChildren().add(coolFactsLabel);
         
         // TODO change to list view to show
-        ListView<TrainInformation> trainListView = new ListView<>();
+        trainListView = new ListView<>();
         trainListView.setCellFactory(new Callback<ListView<TrainInformation>, ListCell<TrainInformation>>() {
             @Override
             public ListCell<TrainInformation> call(ListView<TrainInformation> param) {
@@ -157,16 +160,8 @@ public class InformationPage extends Application {
             }
         });
 
-        TrainComponent trainComponent = new TrainComponent();
         //add data
-        if (message.getArrivingStation() == null) {
-            // if no any arriving city will not show this part
-            trainListView.getItems().addAll(trainComponent.getTrainInformation(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode()));
-        } else {
-            trainListView.getItems().addAll(trainComponent.getTrainInformation(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation().getStationShortCode()));
-        }
-
-        trainScheduleBox.getChildren().add(trainListView);
+        broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
 
 //        HBox trainInfo = new HBox();
 //        trainInfo.setSpacing(50);
@@ -327,5 +322,24 @@ public class InformationPage extends Application {
 
         return cityInfoBox;
 
+    }
+
+    /**
+     * Receives Events from message broker.
+     *
+     * @param event   the type of the event received
+     * @param payload the payload of the event
+     */
+    @Override
+    public void onMessageReceived(EventType event, EventPayload payload) {
+        if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
+            Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
+            //TODO: Handle error if no trains were found
+            Platform.runLater(() -> {
+                trainListView.getItems().clear();
+                trainListView.getItems().addAll(responsePayload.getTrainInformationList());
+                trainScheduleBox.getChildren().add(trainListView);
+            });
+        }
     }
 }

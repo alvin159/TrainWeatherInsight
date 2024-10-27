@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import compse110.backend.TrainComponent;
 import compse110.backend.SearhStationComponent.SearchStationComponent;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
@@ -60,6 +61,9 @@ public class MessageBroker implements MessageBrokerInterface {
         private static void initializeBackend() {
         searchStationComponent = new SearchStationComponent();
         searchStationComponent.initialize();
+
+        TrainComponent trainComponent = new TrainComponent();
+        trainComponent.initialize();
 
         // Initialize other backend services here as well
     }

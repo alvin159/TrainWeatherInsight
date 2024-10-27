@@ -2,6 +2,7 @@ package compse110.backend;
 
 import compse110.Entity.TimeTableRows;
 import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -10,8 +11,8 @@ import compse110.Entity.TrainData;
 import compse110.Entity.TrainRequestError;
 import compse110.Utils.API_Config;
 import compse110.Utils.Log;
+import compse110.backend.utils.BackendComponent;
 import compse110.frontend.Entity.TrainInformation;
-import compse110.messagebroker.MessageCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -22,17 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class TrainComponent implements MessageCallback {
-    @Override
-    public void onMessageReceived(EventType event, EventPayload payload) {
+public class TrainComponent extends BackendComponent {
 
-    }
-
-    public List<TrainData> getTrainData(Date departingDate, String departureStationShortCode) {
+    private List<TrainData> getTrainData(Date departingDate, String departureStationShortCode) {
         return getTrainData(departingDate, departureStationShortCode, null);
     }
 
-    public List<TrainData> getTrainData(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
+    private List<TrainData> getTrainData(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
 
         //create a OkHttp client
         OkHttpClient client = new OkHttpClient();
@@ -68,20 +65,13 @@ public class TrainComponent implements MessageCallback {
 
     }
 
-    public List<TrainInformation> getTrainInformation(Date departingDate, String departureStationShortCode) {
-        return getTrainInformation(departingDate, departureStationShortCode, null);
-    }
-
-    public List<TrainInformation> getTrainInformation(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
-
-        List<TrainData> trainDatas = getTrainData(departingDate, departureStationShortCode, arrivalStationShortCode);
-
-        if (trainDatas == null) {
-            return new ArrayList<>();
+    public List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode) {
+        if(trainDataList == null || trainDataList.isEmpty()) {
+            return null;
         }
         List<TrainInformation> trainInformation = new ArrayList<>();
-        for (int i = 0; i < trainDatas.size(); i++) {
-            TrainData trainData = trainDatas.get(i);
+        for (int i = 0; i < trainDataList.size(); i++) {
+            TrainData trainData = trainDataList.get(i);
             TrainInformation information = new TrainInformation();
             information.setId(i);
             information.setTrainName(trainData.getTrainType() + " " + trainData.getTrainNumber());
@@ -116,6 +106,34 @@ public class TrainComponent implements MessageCallback {
             }
         }
         return null;
+    }
+
+    @Override
+    protected void handleEvent(EventType event, EventPayload payload) {
+        if(event == Events.TrainRequestEvent.TOPIC && payload instanceof Events.TrainRequestEvent.Payload) {
+            try {
+                Events.TrainRequestEvent.Payload trainRequestPayload = (Events.TrainRequestEvent.Payload) payload;
+                List<TrainData> trainDataList = getTrainData(trainRequestPayload.getDepartingDate(), trainRequestPayload.getDepartureStationShortCode(), trainRequestPayload.getArrivalStationShortCode());
+                List<TrainInformation> trainInformationList = getTrainInformation(trainDataList, trainRequestPayload.getDepartureStationShortCode());
+                if (trainDataList != null) {
+                    broker.publish(Events.EventType.TRAIN_RESPONSE, new Events.TrainResponseEvent.Payload(trainInformationList));
+                } else {
+                    broker.publish(Events.EventType.ERROR_RESPONSE,null);
+                }
+            } catch (Exception e) {
+                broker.publish(Events.EventType.ERROR_RESPONSE,null);
+            }
+        }
+    }
+
+    @Override
+    public void initialize() {
+        broker.subscribe(EventType.TRAIN_REQUEST, this);
+    }
+
+    @Override
+    public void shutdown() {
+        broker.unsubscribe(EventType.TRAIN_REQUEST, this);
     }
 
 }

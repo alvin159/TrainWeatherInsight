@@ -3,11 +3,11 @@ package compse110.Utils;
 import compse110.Entity.Station;
 import compse110.Entity.WeatherRequest;
 import compse110.Entity.WeatherResponse;
-import compse110.Entity.TrainRequest;
-import compse110.Entity.TrainResponse;
+import compse110.frontend.Entity.TrainInformation;
 import compse110.Entity.DemographicRequest;
 import compse110.Entity.DemographicResponse;
 import java.util.List;
+import java.util.Date;
 
 
 // This class defines the events that can be sent and received by the components
@@ -64,14 +64,26 @@ public class Events {
         public static final EventType TOPIC = EventType.TRAIN_REQUEST;
 
         public static class Payload implements EventPayload {
-            private final TrainRequest trainRequest;
+            private final Date departingDate;
+            private final String departureStationShortCode;
+            private final String arrivalStationShortCode;
 
-            public Payload(TrainRequest trainRequest) {
-                this.trainRequest = trainRequest;
+            public Payload(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
+                this.departingDate = departingDate;
+                this.departureStationShortCode = departureStationShortCode;
+                this.arrivalStationShortCode = arrivalStationShortCode;
             }
 
-            public TrainRequest getTrainRequest() {
-                return trainRequest;
+            public Date getDepartingDate() {
+                return departingDate;
+            }
+
+            public String getDepartureStationShortCode() {
+                return departureStationShortCode;
+            }
+
+            public String getArrivalStationShortCode() {
+                return arrivalStationShortCode;
             }
         }
     }
@@ -80,15 +92,16 @@ public class Events {
         public static final EventType TOPIC = EventType.TRAIN_RESPONSE;
 
         public static class Payload implements EventPayload {
-            private final TrainResponse trainResponse;
+            private final List<TrainInformation> trainInformationList;
 
-            public Payload(TrainResponse trainResponse) {
-                this.trainResponse = trainResponse;
+            public Payload(List<TrainInformation> trainInformationList) {
+                this.trainInformationList = trainInformationList;
             }
 
-            public TrainResponse getTrainResponse() {
-                return trainResponse;
+            public List<TrainInformation> getTrainInformationList() {
+                return trainInformationList;
             }
+
         }
     }
 
