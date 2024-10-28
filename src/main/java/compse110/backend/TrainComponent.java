@@ -108,19 +108,24 @@ public class TrainComponent extends BackendComponent {
         return null;
     }
 
+    /**
+     * Receives Event from message broker and handles that event.
+     * 
+     * @param event   The type of event to handle.
+     * @param payload The payload associated with the event.
+     * 
+     * Note that BackendComponent.java catches any unexpected errors that might appear during this function.
+     * Error handling for this function focuses more on handling known errors that might occur during the function.
+     */
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {
         if(event == Events.TrainRequestEvent.TOPIC && payload instanceof Events.TrainRequestEvent.Payload) {
-            try {
-                Events.TrainRequestEvent.Payload trainRequestPayload = (Events.TrainRequestEvent.Payload) payload;
-                List<TrainData> trainDataList = getTrainData(trainRequestPayload.getDepartingDate(), trainRequestPayload.getDepartureStationShortCode(), trainRequestPayload.getArrivalStationShortCode());
-                List<TrainInformation> trainInformationList = getTrainInformation(trainDataList, trainRequestPayload.getDepartureStationShortCode());
-                if (trainDataList != null) {
-                    broker.publish(Events.EventType.TRAIN_RESPONSE, new Events.TrainResponseEvent.Payload(trainInformationList));
-                } else {
-                    broker.publish(Events.EventType.ERROR_RESPONSE,null);
-                }
-            } catch (Exception e) {
+            Events.TrainRequestEvent.Payload trainRequestPayload = getPayload(event, payload);
+            List<TrainData> trainDataList = getTrainData(trainRequestPayload.getDepartingDate(), trainRequestPayload.getDepartureStationShortCode(), trainRequestPayload.getArrivalStationShortCode());
+            List<TrainInformation> trainInformationList = getTrainInformation(trainDataList, trainRequestPayload.getDepartureStationShortCode());
+            if (trainDataList != null) {
+                broker.publish(Events.EventType.TRAIN_RESPONSE, new Events.TrainResponseEvent.Payload(trainInformationList));
+            } else {
                 broker.publish(Events.EventType.ERROR_RESPONSE,null);
             }
         }

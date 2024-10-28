@@ -12,18 +12,22 @@ import compse110.backend.utils.BackendComponent;
 public class SearchStationComponent extends BackendComponent {
     private StationInfoFetcher stationInfoFetcher;
 
+    /**
+     * Receives Event from message broker and handles that event.
+     * 
+     * @param event   The type of event to handle.
+     * @param payload The payload associated with the event.
+     * 
+     * Note that BackendComponent.java catches any unexpected errors that might appear during this function.
+     * Error handling for this function focuses more on handling known errors that might occur during the function.
+     */
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {
         if(event == EventType.SEARCH_STATION_REQUEST && payload instanceof SearchStationRequest.Payload) {
-            try {
-                Events.SearchStationRequest.Payload searchStationRequest = getPayload(event, payload);
-                List<Station> stationsToReturn = stationInfoFetcher.searchStations(searchStationRequest.getCurrentSearchInput());
-                String textFieldId = searchStationRequest.getTextFieldId();
-                broker.publish(Events.SearchStationResponse.TOPIC, new Events.SearchStationResponse.Payload(stationsToReturn, textFieldId));
-            } catch (Exception e) {
-                // TODO: Publish Events.ErrorResponse.TOPIC instead
-                broker.publish(Events.EventType.ERROR_RESPONSE,null);
-            }
+            Events.SearchStationRequest.Payload searchStationRequest = getPayload(event, payload);
+            List<Station> stationsToReturn = stationInfoFetcher.searchStations(searchStationRequest.getCurrentSearchInput());
+            String textFieldId = searchStationRequest.getTextFieldId();
+            broker.publish(Events.SearchStationResponse.TOPIC, new Events.SearchStationResponse.Payload(stationsToReturn, textFieldId));
 
         }
     }
