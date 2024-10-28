@@ -27,6 +27,7 @@ public class WeatherComponent implements MessageCallback {
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
             // TODO: Implement the logic to fetch weather data
+
         }
     }
 

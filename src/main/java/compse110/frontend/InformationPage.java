@@ -1,6 +1,7 @@
 package compse110.frontend;
 
 import compse110.Entity.Station;
+import compse110.Entity.WeatherRequest;
 import compse110.Entity.WeatherResponse;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
@@ -187,8 +188,8 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(coolFactsLabel);
 
         // TODO this only demo data
-        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(message.getDepartingStation().getStationName()));
-        
+        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName())));
+
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
         CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
@@ -199,7 +200,7 @@ public class InformationPage extends Application implements MessageCallback {
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
 
-            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(message.getArrivingStation().getStationName()));
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
@@ -306,6 +307,11 @@ public class InformationPage extends Application implements MessageCallback {
         departInfoDetails.setSpacing(30);
         departInfoDetails.setAlignment(Pos.CENTER);
 
+        if (cityInformation.getForecast() == null) {
+            return cityInfoBox;
+        }
+
+        //TODO
         InfoBox temperatureBox = new InfoBox(
             String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()), 
             "Temperature"
@@ -382,9 +388,11 @@ public class InformationPage extends Application implements MessageCallback {
         else if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
             Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
             Platform.runLater(() -> {
+
                 trainListView.getItems().clear();
                 trainListView.getItems().addAll(responsePayload.getTrainInformationList());
                 trainScheduleBox.getChildren().add(trainListView);
+
             });
         } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
             WeatherResponse weatherResponse = (WeatherResponse) payload;
@@ -399,4 +407,5 @@ public class InformationPage extends Application implements MessageCallback {
             });
         }
     }
+
 }
