@@ -6,6 +6,7 @@ station.json
 # Ignore IDE-specific files
 .vscode/
 .idea/
+list_files.sh
 
 # Ignore other common generated files
 *.log
