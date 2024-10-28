@@ -1,6 +1,7 @@
 package compse110.frontend;
 
 import compse110.Entity.Station;
+import compse110.Entity.WeatherResponse;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
@@ -8,6 +9,7 @@ import compse110.Utils.StringUtils;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
+import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Utils.Log;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
@@ -41,12 +43,15 @@ public class InformationPage extends Application implements MessageCallback {
     private StationInfoFetcher stationInfoFetcher;
     ListView<TrainInformation> trainListView;
     VBox trainScheduleBox;
+    private VBox departCityInfoView;
+    private VBox arriveCityInfoView;
 
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
 
         broker.subscribe(EventType.TRAIN_RESPONSE, this);
+        broker.subscribe(EventType.WEATHER_RESPONSE, this);
 
         // throw Exception if message is null
         if (message == null) {
@@ -182,26 +187,44 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(coolFactsLabel);
 
         // TODO this only demo data
-        Forecast forecast = new Forecast(18.2, "Cloudy", "https://openweathermap.org/img/wn/03d@2x.png", new ForecastDetails());
+        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(message.getDepartingStation().getStationName()));
+        
+        // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
-
-        CityInformation cityInformation = new CityInformation(0, message.getDepartingStation().getStationName(), forecast, cityDetails);
-
-        root.getChildren().add(addCityInformationView(cityInformation));
+        CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
+        departCityInfoView = addCityInformationView(departingCityInfo);
+        root.getChildren().add(departCityInfoView);
         root.getChildren().add(trainScheduleBox);
 
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
 
-            // TODO this only demo data
-            Forecast forecast1 = new Forecast(23.1, "clear sky", "https://openweathermap.org/img/wn/01d@2x.png", new ForecastDetails());
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(message.getArrivingStation().getStationName()));
+            
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
-
-            CityInformation cityInformation1 = new CityInformation(0, message.getArrivingStation().getStationName(), forecast1, cityDetails1);
-
-            root.getChildren().add(addCityInformationView(cityInformation1));
+            CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
+            arriveCityInfoView = addCityInformationView(arrivingCityInfo);
+            root.getChildren().add(arriveCityInfoView);
         }
         // Your other view components like train schedules or city information can be added here...
+    }
+
+    
+    private VBox createCityInformationView(String loadingText) {
+        VBox cityInfoBox = new VBox();
+        cityInfoBox.setPadding(new Insets(15));
+        cityInfoBox.setSpacing(10);
+        cityInfoBox.setStyle("-fx-background-color: lightblue;");
+
+        Label temperatureLabel = new Label(loadingText);
+        temperatureLabel.setId("temperatureLabel");
+        ImageView weatherIcon = new ImageView();
+        weatherIcon.setId("weatherIcon");
+        Label weatherConditionLabel = new Label();
+        weatherConditionLabel.setId("weatherConditionLabel");
+
+        cityInfoBox.getChildren().addAll(temperatureLabel, weatherIcon, weatherConditionLabel);
+        return cityInfoBox;
     }
 
     private HBox addHeaderView() {
@@ -324,6 +347,21 @@ public class InformationPage extends Application implements MessageCallback {
 
     }
 
+    private void updateCityInformationView(VBox cityInfoBox, WeatherResponse weatherResponse) {
+        Forecast forecast = new Forecast(
+            weatherResponse.getTemperature(),
+            weatherResponse.getWeatherCondition(),
+            "https://openweathermap.org/img/wn/" + weatherResponse.getWeatherIcon() + "@2x.png",
+            new ForecastDetails()
+        );
+    
+        // Update UI components (assuming cityInfoBox has elements like temperature label, weather icon, etc.)
+        ((Label) cityInfoBox.lookup("#temperatureLabel")).setText(forecast.getTemperature() + "°C");
+        ((ImageView) cityInfoBox.lookup("#weatherIcon")).setImage(new Image(forecast.getWeatherImageSrc()));
+        ((Label) cityInfoBox.lookup("#weatherConditionLabel")).setText(forecast.getWeatherStatus());
+    }
+    
+
     /**
      * Receives Events from message broker.
      *
@@ -339,6 +377,25 @@ public class InformationPage extends Application implements MessageCallback {
                 trainListView.getItems().clear();
                 trainListView.getItems().addAll(responsePayload.getTrainInformationList());
                 trainScheduleBox.getChildren().add(trainListView);
+            });
+        }
+        else if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
+            Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
+            Platform.runLater(() -> {
+                trainListView.getItems().clear();
+                trainListView.getItems().addAll(responsePayload.getTrainInformationList());
+                trainScheduleBox.getChildren().add(trainListView);
+            });
+        } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
+            WeatherResponse weatherResponse = (WeatherResponse) payload;
+            Platform.runLater(() -> {
+                // Update the view for departing or arriving city based on the response
+                if (weatherResponse.getCityName().equals(message.getDepartingStation().getStationName())) {
+                    updateCityInformationView(departCityInfoView, weatherResponse);
+                } else if (message.getArrivingStation() != null &&
+                           weatherResponse.getCityName().equals(message.getArrivingStation().getStationName())) {
+                    updateCityInformationView(arriveCityInfoView, weatherResponse);
+                }
             });
         }
     }
