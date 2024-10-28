@@ -162,7 +162,12 @@ public class InformationPage extends Application implements MessageCallback {
 
         //add data
         broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
-
+        Label loadingLabel = new Label("Loading train timetables...");
+        loadingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        loadingLabel.setAlignment(Pos.CENTER);
+        HBox loadingBox = new HBox(loadingLabel);
+        loadingBox.setAlignment(Pos.CENTER);
+        trainScheduleBox.getChildren().add(loadingBox);
 //        HBox trainInfo = new HBox();
 //        trainInfo.setSpacing(50);
 //        trainInfo.setAlignment(Pos.CENTER);
@@ -338,6 +343,7 @@ public class InformationPage extends Application implements MessageCallback {
             Platform.runLater(() -> {
                 trainListView.getItems().clear();
                 trainListView.getItems().addAll(responsePayload.getTrainInformationList());
+                trainScheduleBox.getChildren().clear();
                 trainScheduleBox.getChildren().add(trainListView);
             });
         }
