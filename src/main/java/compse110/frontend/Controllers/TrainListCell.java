@@ -6,11 +6,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 
 public class TrainListCell extends ListCell<TrainInformation> {
-
-    private final HBox itemView;
+    private final GridPane gridPane;
     private final Label trainName;
     private final Label departureTime;
     private final Label estimatedTime;
@@ -19,44 +19,60 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private final Label arrivalTime;
     private final ImageView forecastImage;
 
-    //onCreateView
     public TrainListCell() {
-        //create view
-        itemView = new HBox();
+        // Create view
+        gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
 
-        itemView.setSpacing(50);
-        itemView.setAlignment(Pos.CENTER);
+        trainName = new Label();
+        departureTime = new Label();
+        duration = new Label();
+        estimatedTime = new Label();
+        track = new Label();
+        arrivalTime = new Label();
+        forecastImage = new ImageView();
 
-        trainName = new Label("Train Name");
-        departureTime = new Label("12:00 ");
-        duration = new Label("5 hrs 0 minutes");
-        estimatedTime = new Label("12:00 ");
-        track = new Label("Track 1");
-        arrivalTime = new Label("17:00 ");
-        forecastImage = new ImageView("https://openweathermap.org/img/wn/03d@2x.png");
+        // Set fixed widths for each column
+        ColumnConstraints col1 = new ColumnConstraints(100);
+        ColumnConstraints col2 = new ColumnConstraints(100);
+        ColumnConstraints col3 = new ColumnConstraints(100);
+        ColumnConstraints col4 = new ColumnConstraints(100);
+        ColumnConstraints col5 = new ColumnConstraints(100);
+        ColumnConstraints col6 = new ColumnConstraints(100);
+        ColumnConstraints col7 = new ColumnConstraints(100);
 
-        itemView.getChildren().addAll(trainName, departureTime, estimatedTime, track, arrivalTime, forecastImage);
+        gridPane.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
 
+        // Add components to the grid pane
+        gridPane.add(trainName, 0, 0);
+        gridPane.add(departureTime, 1, 0);
+        gridPane.add(estimatedTime, 2, 0);
+        gridPane.add(duration, 3, 0);
+        gridPane.add(track, 4, 0);
+        gridPane.add(arrivalTime, 5, 0);
+        gridPane.add(forecastImage, 6, 0);
+
+        // Set alignment
+        gridPane.setAlignment(Pos.CENTER);
     }
-
 
     @Override
     protected void updateItem(TrainInformation item, boolean empty) {
         super.updateItem(item, empty);
 
         if (item != null && !empty) {
-            this.trainName.setText(item.getTrainName());
-            this.departureTime.setText(item.getDepartureTime().toString());
-            this.duration.setText(item.getDuration() + " min");
-            if (item.getEstimatedTime() != null) {
-                this.estimatedTime.setText(item.getEstimatedTime().toString());
-            }
-            this.track.setText("Track " + item.getTrack());
-            this.arrivalTime.setText(item.getArriveTime().toString());
+            trainName.setText(item.getTrainName());
+            departureTime.setText(item.getDepartureTime().toString());
+            estimatedTime.setText(item.getEstimatedTime() != null ? item.getEstimatedTime().toString() : "");
+            duration.setText(item.getDuration() + " min");
+            track.setText("Track " + item.getTrack());
+            arrivalTime.setText(item.getArriveTime().toString());
+            forecastImage.setImage(new Image("https://openweathermap.org/img/wn/03d@2x.png"));
 
-            setGraphic(itemView);
+            setGraphic(gridPane);
         } else {
-            setAlignment(null);
+            setGraphic(null);
         }
     }
 }
