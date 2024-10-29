@@ -193,6 +193,8 @@ public class InformationPage extends Application implements MessageCallback {
 
     }
 
+    //TODO refresh data
+
     private HBox addLoadingView() {
         Label loadingLabel = new Label("Loading train timetables...");
         loadingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
@@ -267,7 +269,12 @@ public class InformationPage extends Application implements MessageCallback {
                     alert.setHeaderText("Departing station and arrive station can not same name");
                     alert.setContentText("Please input departing station name or short code again");
                     alert.showAndWait();
-                } 
+                } else {
+                    if (arrivalStationField.getText().isEmpty()) {
+                        message.setArrivingStation(null);
+                    }
+                    initView();
+                }
             }
         });
 
