@@ -1,4 +1,6 @@
-package compse110.frontend.Entity;
+package compse110.Entity;
+
+import compse110.frontend.Entity.Forecast;
 
 import java.util.Date;
 

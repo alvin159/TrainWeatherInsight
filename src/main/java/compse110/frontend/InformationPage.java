@@ -1,6 +1,7 @@
 package compse110.frontend;
 
 import compse110.Entity.Station;
+import compse110.Entity.TrainInformation;
 import compse110.Entity.WeatherRequest;
 import compse110.Entity.WeatherResponse;
 import compse110.frontend.Controllers.TrainListCell;
@@ -166,6 +167,7 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(addHeaderView());
 
         // TODO this only demo data
+        if (message.getArrivingStation() != null)
         //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude())));
         // Add static city details and initialize placeholder departing city information view
@@ -374,6 +376,7 @@ public class InformationPage extends Application implements MessageCallback {
         Label departureTimeLabel = new Label("Departure Time");
         Label estimatedTimeLabel = new Label("Estimated Time");
         Label durationLabel = new Label("Duration");
+        Label arrivalStationLabel = new Label("Arrival Station");
         Label arrivalTimeLabel = new Label("Arrival Time");
         Label arrivalTrackLabel = new Label("Arrival Track");
         Label weatherLabel = new Label("Weather");
@@ -383,9 +386,10 @@ public class InformationPage extends Application implements MessageCallback {
         titleLine.add(departureTimeLabel, 2, 0);
         titleLine.add(estimatedTimeLabel, 3, 0);
         titleLine.add(durationLabel, 4, 0);
-        titleLine.add(arrivalTimeLabel, 5, 0);
-        titleLine.add(arrivalTrackLabel, 6, 0);
-        titleLine.add(weatherLabel, 7, 0);
+        titleLine.add(arrivalStationLabel, 5, 0);
+        titleLine.add(arrivalTimeLabel, 6, 0);
+        titleLine.add(arrivalTrackLabel, 7, 0);
+        titleLine.add(weatherLabel, 8, 0);
 
         return titleLine;
     }

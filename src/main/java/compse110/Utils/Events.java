@@ -3,7 +3,7 @@ package compse110.Utils;
 import compse110.Entity.Station;
 import compse110.Entity.WeatherRequest;
 import compse110.Entity.WeatherResponse;
-import compse110.frontend.Entity.TrainInformation;
+import compse110.Entity.TrainInformation;
 import compse110.Entity.DemographicRequest;
 import compse110.Entity.DemographicResponse;
 import java.util.List;
