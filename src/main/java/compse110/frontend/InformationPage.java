@@ -30,6 +30,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -42,6 +43,7 @@ public class InformationPage extends Application implements MessageCallback {
     private StationInfoFetcher stationInfoFetcher;
     ListView<TrainInformation> trainListView;
     VBox trainScheduleBox;
+    Forecast weatherForecast;
     private VBox departCityInfoView;
     private VBox arriveCityInfoView;
 
@@ -179,7 +181,7 @@ public class InformationPage extends Application implements MessageCallback {
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
-        CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
+        CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), weatherForecast, cityDetails);
 
         departCityInfoView = addCityInformationView(departingCityInfo);
 
@@ -192,7 +194,7 @@ public class InformationPage extends Application implements MessageCallback {
             broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getDepartingStation().getLatitude())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
-            CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
+            CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
             root.getChildren().add(arriveCityInfoView);
         }
@@ -207,24 +209,6 @@ public class InformationPage extends Application implements MessageCallback {
         HBox loadingBox = new HBox(loadingLabel);
         loadingBox.setAlignment(Pos.CENTER);
         return loadingBox;
-    }
-
-    
-    private VBox createCityInformationView(String loadingText) {
-        VBox cityInfoBox = new VBox();
-        cityInfoBox.setPadding(new Insets(15));
-        cityInfoBox.setSpacing(10);
-        cityInfoBox.setStyle("-fx-background-color: lightblue;");
-
-        Label temperatureLabel = new Label(loadingText);
-        temperatureLabel.setId("temperatureLabel");
-        ImageView weatherIcon = new ImageView();
-        weatherIcon.setId("weatherIcon");
-        Label weatherConditionLabel = new Label();
-        weatherConditionLabel.setId("weatherConditionLabel");
-
-        cityInfoBox.getChildren().addAll(temperatureLabel, weatherIcon, weatherConditionLabel);
-        return cityInfoBox;
     }
 
     private HBox addHeaderView() {
@@ -285,15 +269,6 @@ public class InformationPage extends Application implements MessageCallback {
 
         header.getChildren().addAll(departingLabel, departingStationField, arrivingLabel, arrivalStationField, dateLabel, departureDatePicker, searchButton);
         return header;
-    }
-
-    private void weatherForecast( WeatherResponse weatherResponse) {
-        new Forecast(
-            weatherResponse.getTemperature(),
-            weatherResponse.getWeatherCondition(),
-            weatherResponse.getWeatherIcon(),
-            new ForecastDetails()
-        );
     }
 
     private VBox addCityInformationView(CityInformation cityInformation) {
@@ -399,19 +374,6 @@ public class InformationPage extends Application implements MessageCallback {
         return titleLine;
     }
 
-    private void updateCityInformationView(VBox cityInfoBox, WeatherResponse weatherResponse) {
-        Forecast forecast = new Forecast(
-            weatherResponse.getTemperature(),
-            weatherResponse.getWeatherCondition(),
-            weatherResponse.getWeatherIcon(),
-            new ForecastDetails()
-        );
-        // Update UI components (assuming cityInfoBox has elements like temperature label, weather icon, etc.)
-        ((Label) cityInfoBox.lookup("#temperatureLabel")).setText(forecast.getTemperature() + "°C");
-        ((ImageView) cityInfoBox.lookup("#weatherIcon")).setImage(new Image(forecast.getWeatherImageSrc()));
-        ((Label) cityInfoBox.lookup("#weatherConditionLabel")).setText(forecast.getWeatherStatus());
-    }
-
 
     /**
      * Receives Events from message broker.
@@ -455,11 +417,29 @@ public class InformationPage extends Application implements MessageCallback {
             weatherResponse.getWeatherResponse().getWeatherCondition();
             weatherResponse.getWeatherResponse().getWeatherIcon();
             System.out.println("Weather response received: " + weatherResponse.getWeatherResponse().getTemperature() + " " + weatherResponse.getWeatherResponse().getWeatherCondition() + " " + weatherResponse.getWeatherResponse().getWeatherIcon());
-
-            Platform.runLater(() -> {
-                // Update the view for departing or arriving city based on the response
-
-            });
+            
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (weatherResponse.getWeatherResponse() == null) {
+                        // Print an error message when no weather data is available
+                        System.err.println("Error: No weather data received.");
+                    } else {
+                        // Set the weatherForecast array with the weather data received
+                        WeatherResponse response = weatherResponse.getWeatherResponse();
+                        Forecast forecast = new Forecast(
+                            response.getTemperature(),          // assuming getTemperature() returns temperature
+                            response.getWeatherCondition(),     // assuming getWeatherCondition() returns condition
+                            response.getWeatherIcon(),          // assuming getWeatherIcon() returns an icon URL
+                            new ForecastDetails()               // pass any additional details required here
+                        );
+            
+                        // Assign the forecast to weatherForecast (assuming it’s an array of Forecast)
+                        weatherForecast = forecast;
+                        System.out.println("Weather data updated successfully.");
+                    }
+                }
+            });            
         }
     }
 
