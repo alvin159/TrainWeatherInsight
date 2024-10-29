@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class TrainListCell extends ListCell<TrainInformation> {
     private final GridPane gridPane;
@@ -75,11 +76,11 @@ public class TrainListCell extends ListCell<TrainInformation> {
             trainName.setText(item.getTrainName());
             departureTime.setText(getFormatTime(item.getDepartureTime()));
             estimatedTime.setText(item.getEstimatedTime() != null ? getFormatTime(item.getEstimatedTime()) : "");
-            duration.setText(item.getDuration() / (60 * 1000) + " min");
+            duration.setText(getFormatDurationTime(item.getDuration()));
             departureTrack.setText("Track " + item.getDepartureTrack());
             arrivalTrack.setText("Track " + item.getArriveTrack());
             arrivalTime.setText(getFormatTime(item.getArriveTime()));
-            forecastImage.setImage(new Image("https://openweathermap.org/img/wn/02d@2x.png"));
+            forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/02d@2x.png"))));
 
             setGraphic(gridPane);
         } else {
@@ -90,5 +91,17 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private String getFormatTime(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
         return dateFormat.format(date);
+    }
+
+    private String getFormatDurationTime(long duration) {
+        long minutes = duration / (60 * 1000);
+        if (minutes > 60) {
+            long hours = minutes / 60;
+            minutes = minutes % 60;
+            return hours + "h " + minutes + "m";
+        } else {
+            return minutes + "m";
+        }
+
     }
 }
