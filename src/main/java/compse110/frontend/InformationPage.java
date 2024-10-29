@@ -387,7 +387,11 @@ public class InformationPage extends Application implements MessageCallback {
                 Platform.runLater(() -> {
                     trainScheduleBox.getChildren().clear();
                     Label errorLabel = new Label(responsePayload.getErrorMessage());
-                    trainScheduleBox.getChildren().add(errorLabel);
+                    errorLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+                    errorLabel.setAlignment(Pos.CENTER);
+                    HBox errorBox = new HBox(errorLabel);
+                    errorBox.setAlignment(Pos.CENTER);
+                    trainScheduleBox.getChildren().add(errorBox);
                 });
                 return;
             }
