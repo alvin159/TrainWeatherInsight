@@ -26,7 +26,7 @@ public class WeatherComponent extends BackendComponent{
 
     @Override
     public void handleEvent(Events.EventType event, EventPayload payload) {
-        if(event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
+        if(event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent.Payload) {
             try {
                 Events.WeatherRequestEvent.Payload weatherRequestPayload = getPayload(event, payload);
                 String weatherName = weatherRequestPayload.getWeatherRequest().getCityName();
