@@ -10,4 +10,5 @@ module compse.frontend {
     opens compse110.frontend.Entity;
     opens compse110.Entity;
     opens compse110.backend.Entity;
+    exports compse110.Entity;
 }

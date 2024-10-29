@@ -1,6 +1,6 @@
 package compse110.frontend.Controllers;
 
-import compse110.frontend.Entity.TrainInformation;
+import compse110.Entity.TrainInformation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -20,6 +20,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private final Label estimatedTime;
     private final Label duration;
     private final Label departureTrack;
+    private final Label arrivalStation;
     private final Label arrivalTrack;
     private final Label arrivalTime;
     private final ImageView forecastImage;
@@ -34,6 +35,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
         departureTime = new Label();
         duration = new Label();
         estimatedTime = new Label();
+        arrivalStation = new Label();
         departureTrack = new Label();
         arrivalTrack = new Label();
         arrivalTime = new Label();
@@ -43,7 +45,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
         forecastImage.setFitHeight(40);
 
         // Set fixed widths for each column
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 9; i++) {
             ColumnConstraints col = new ColumnConstraints(100);
             gridPane.getColumnConstraints().add(col);
         }
@@ -54,9 +56,10 @@ public class TrainListCell extends ListCell<TrainInformation> {
         gridPane.add(departureTime, 2, 0);
         gridPane.add(estimatedTime, 3, 0);
         gridPane.add(duration, 4, 0);
-        gridPane.add(arrivalTime, 5, 0);
-        gridPane.add(arrivalTrack, 6, 0);
-        gridPane.add(forecastImage, 7, 0);
+        gridPane.add(arrivalStation, 5, 0);
+        gridPane.add(arrivalTime, 6, 0);
+        gridPane.add(arrivalTrack, 7, 0);
+        gridPane.add(forecastImage, 8, 0);
 
         // Set alignment
         gridPane.setAlignment(Pos.CENTER);
@@ -73,6 +76,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
             duration.setText(getFormatDurationTime(item.getDuration()));
             departureTrack.setText("Track " + item.getDepartureTrack());
             arrivalTrack.setText("Track " + item.getArriveTrack());
+            arrivalStation.setText(item.getArriveStationName());
             arrivalTime.setText(getFormatTime(item.getArriveTime()));
             forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/02d@2x.png"))));
 

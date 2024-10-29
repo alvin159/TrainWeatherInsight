@@ -11,8 +11,9 @@ import compse110.Entity.TrainData;
 import compse110.Entity.TrainRequestError;
 import compse110.Utils.API_Config;
 import compse110.Utils.Log;
+import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.backend.utils.BackendComponent;
-import compse110.frontend.Entity.TrainInformation;
+import compse110.Entity.TrainInformation;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,6 +25,13 @@ import java.util.Date;
 import java.util.List;
 
 public class TrainComponent extends BackendComponent {
+
+    StationInfoFetcher stationInfoFetcher;
+
+    public TrainComponent() {
+        super();
+        stationInfoFetcher = StationInfoFetcher.getInstance();
+    }
 
     private List<TrainData> getTrainData(Date departingDate, String departureStationShortCode) {
         return getTrainData(departingDate, departureStationShortCode, null);
@@ -69,6 +77,10 @@ public class TrainComponent extends BackendComponent {
         if(trainDataList == null || trainDataList.isEmpty()) {
             return null;
         }
+        String arriveStationName = null;
+        if (arrivalStationShortCode != null) {
+            arriveStationName = stationInfoFetcher.getStationByShortCode(arrivalStationShortCode).getStationName();
+        }
         List<TrainInformation> trainInformation = new ArrayList<>();
         for (int i = 0; i < trainDataList.size(); i++) {
             TrainData trainData = trainDataList.get(i);
@@ -94,6 +106,12 @@ public class TrainComponent extends BackendComponent {
                 information.setArriveStationName(arriveRows.getStationShortCode());
                 information.setArriveTime(arriveRows.getScheduledTime());
                 information.setDuration(arriveRows.getScheduledTime().getTime() - departureRow.getScheduledTime().getTime());
+            }
+
+            if (arriveStationName != null) {
+                information.setArriveStationName(arriveStationName);
+            } else {
+                information.setArriveStationName(stationInfoFetcher.getStationByShortCode(arriveRows.getStationShortCode()).getStationName());
             }
 
             trainInformation.add(information);
