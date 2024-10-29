@@ -27,15 +27,27 @@ public class WeatherComponent extends BackendComponent{
     @Override
     public void handleEvent(Events.EventType event, EventPayload payload) {
         if(event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
-            Events.WeatherRequestEvent.Payload weatherRequestPayload = getPayload(event, payload);
-            weatherRequestPayload.getWeatherRequest().getCityName();
+            try {
+                Events.WeatherRequestEvent.Payload weatherRequestPayload = getPayload(event, payload);
+                String weatherName = weatherRequestPayload.getWeatherRequest().getCityName();
+            
+                // Format the LocalDate to a String
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Adjust format as needed
+                String weatherDate = weatherRequestPayload.getWeatherRequest().getDate().format(formatter);
+            
+                fetchWeatherData(weatherName, weatherDate);
+            
+            } catch (IOException e) {
+                System.err.println("Error fetching weather data for the city: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
-    private void fetchWeatherData(String cityName) throws IOException {
+    private void fetchWeatherData(String cityName, String date) throws IOException {
         // Build the Weather API URL using the city name
         String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
-                     + cityName + "?key=" + API_KEY;
+                     + cityName + "/" + date + "?key=" + API_KEY;
 
         // Create the request
         Request request = new Request.Builder()
