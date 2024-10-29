@@ -191,7 +191,7 @@ public class InformationPage extends Application implements MessageCallback {
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
 
-            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName())));
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getStationName())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
@@ -289,6 +289,15 @@ public class InformationPage extends Application implements MessageCallback {
         return header;
     }
 
+    private void weatherForecast( WeatherResponse weatherResponse) {
+        new Forecast(
+            weatherResponse.getTemperature(),
+            weatherResponse.getWeatherCondition(),
+            weatherResponse.getWeatherIcon(),
+            new ForecastDetails()
+        );
+    }
+
     private VBox addCityInformationView(CityInformation cityInformation) {
 
         if (cityInformation == null) {
@@ -366,7 +375,7 @@ public class InformationPage extends Application implements MessageCallback {
         Forecast forecast = new Forecast(
             weatherResponse.getTemperature(),
             weatherResponse.getWeatherCondition(),
-            "https://openweathermap.org/img/wn/" + weatherResponse.getWeatherIcon() + "@2x.png",
+            weatherResponse.getWeatherIcon(),
             new ForecastDetails()
         );
     
@@ -432,14 +441,15 @@ public class InformationPage extends Application implements MessageCallback {
             // These are example getters and you can replace them
             weatherResponse.getWeatherResponse().getCityName();
             weatherResponse.getWeatherResponse().getTemperature();
+            weatherResponse.getWeatherResponse().getWeatherCondition();
+            weatherResponse.getWeatherResponse().getWeatherIcon();
 
             Platform.runLater(() -> {
                 // Update the view for departing or arriving city based on the response
-                if (weatherResponse.getCityName().equals(message.getDepartingStation().getStationName())) {
-                    updateCityInformationView(departCityInfoView, weatherResponse);
-                } else if (message.getArrivingStation() != null &&
-                           weatherResponse.getCityName().equals(message.getArrivingStation().getStationName())) {
-                    updateCityInformationView(arriveCityInfoView, weatherResponse);
+                if (weatherResponse.getWeatherResponse().getCityName().equals(message.getDepartingStation().getStationName())) {
+                    updateCityInformationView(departCityInfoView, weatherResponse.getWeatherResponse());
+                } else if (message.getArrivingStation() != null && weatherResponse.getWeatherResponse().getCityName().equals(message.getArrivingStation().getStationName())) {
+                    updateCityInformationView(arriveCityInfoView, weatherResponse.getWeatherResponse());
                 }
             });
         }
