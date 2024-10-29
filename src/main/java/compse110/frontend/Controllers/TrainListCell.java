@@ -43,16 +43,10 @@ public class TrainListCell extends ListCell<TrainInformation> {
         forecastImage.setFitHeight(40);
 
         // Set fixed widths for each column
-        ColumnConstraints col1 = new ColumnConstraints(100);
-        ColumnConstraints col2 = new ColumnConstraints(100);
-        ColumnConstraints col3 = new ColumnConstraints(100);
-        ColumnConstraints col4 = new ColumnConstraints(100);
-        ColumnConstraints col5 = new ColumnConstraints(100);
-        ColumnConstraints col6 = new ColumnConstraints(100);
-        ColumnConstraints col7 = new ColumnConstraints(100);
-        ColumnConstraints col8 = new ColumnConstraints(100);
-
-        gridPane.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7, col8);
+        for (int i = 0; i < 8; i++) {
+            ColumnConstraints col = new ColumnConstraints(100);
+            gridPane.getColumnConstraints().add(col);
+        }
 
         // Add components to the grid pane
         gridPane.add(trainName, 0, 0);

@@ -187,7 +187,9 @@ public class InformationPage extends Application implements MessageCallback {
         CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
 
         departCityInfoView = addCityInformationView(departingCityInfo);
+
         root.getChildren().add(departCityInfoView);
+        root.getChildren().add(addTrainScheduleTitleLine());
         root.getChildren().add(trainScheduleBox);
 
         if (message.getArrivingStation() != null) {
@@ -371,6 +373,36 @@ public class InformationPage extends Application implements MessageCallback {
 
         return cityInfoBox;
 
+    }
+
+    private GridPane addTrainScheduleTitleLine() {
+        GridPane titleLine = new GridPane();
+        titleLine.setAlignment(Pos.CENTER);
+
+        for (int i = 0; i < 8; i++) {
+            ColumnConstraints col = new ColumnConstraints(120);
+            titleLine.getColumnConstraints().add(col);
+        }
+
+        Label trainNameLabel = new Label("Train Name");
+        Label departureTrackLabel = new Label("Departure Track");
+        Label departureTimeLabel = new Label("Departure Time");
+        Label estimatedTimeLabel = new Label("Estimated Time");
+        Label durationLabel = new Label("Duration");
+        Label arrivalTimeLabel = new Label("Arrival Time");
+        Label arrivalTrackLabel = new Label("Arrival Track");
+        Label weatherLabel = new Label("Weather");
+
+        titleLine.add(trainNameLabel, 0, 0);
+        titleLine.add(departureTrackLabel, 1, 0);
+        titleLine.add(departureTimeLabel, 2, 0);
+        titleLine.add(estimatedTimeLabel, 3, 0);
+        titleLine.add(durationLabel, 4, 0);
+        titleLine.add(arrivalTimeLabel, 5, 0);
+        titleLine.add(arrivalTrackLabel, 6, 0);
+        titleLine.add(weatherLabel, 7, 0);
+
+        return titleLine;
     }
 
     private void updateCityInformationView(VBox cityInfoBox, WeatherResponse weatherResponse) {
