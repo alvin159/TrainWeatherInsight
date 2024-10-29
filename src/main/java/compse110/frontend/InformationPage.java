@@ -191,7 +191,6 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(addHeaderView());
 
         // TODO this only demo data
-        if (message.getArrivingStation() != null)
         //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude(), message.getDepartingStation().getStationName())));
         // Add static city details and initialize placeholder departing city information view
