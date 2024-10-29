@@ -190,8 +190,6 @@ public class InformationPage extends Application implements MessageCallback {
         // Adding all sections to the root layout
         root.getChildren().add(addHeaderView());
 
-        // TODO this only demo data
-        //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude(), message.getDepartingStation().getStationName())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
@@ -224,10 +222,7 @@ public class InformationPage extends Application implements MessageCallback {
 
     // Function to fetch Icons
     private ImageView createWeatherIcon(String iconName) {
-        // Construct the path relative to the resources folder
         String iconPath = "/icon/" + iconName + ".png";
-
-        // Load the image
         Image icon = new Image(getClass().getResourceAsStream(iconPath));
         return new ImageView(icon);
     }
@@ -466,7 +461,7 @@ public class InformationPage extends Application implements MessageCallback {
                         WeatherResponse response = weatherResponse.getWeatherResponse();
                         System.out.println("Received information for " + weatherResponse.getStationName() + ": " + response.toString());
                         Forecast forecast = new Forecast(
-                            response.getTemperature(),
+                            (response.getTemperature() - 32) * 5 / 9,
                             response.getWeatherCondition(),
                             createWeatherIcon(response.getWeatherIcon()),
                             new ForecastDetails()
