@@ -86,13 +86,6 @@ public class WeatherComponent extends BackendComponent{
         String weatherCondition = currentConditions.get("conditions").getAsString();
         String weatherIcon = currentConditions.get("icon").getAsString();
 
-        // Log or print the weather details to console (optional)
-        System.out.println("Weather for " + cityName + " at "
-                + currentFinnishTime.format(DateTimeFormatter.ofPattern("HH:mm")) + ":");
-        System.out.println("Temperature: " + temperature + "°C");
-        System.out.println("Conditions: " + weatherCondition);
-        System.out.println("Weather Icon: " + weatherIcon);
-
         // Create a WeatherResponse and send it to the MessageBroker
         WeatherResponse WeatherResponse = new WeatherResponse(cityName, temperature, weatherCondition, weatherIcon);
         sendWeatherResponse(WeatherResponse);
@@ -101,9 +94,6 @@ public class WeatherComponent extends BackendComponent{
     private void sendWeatherResponse(WeatherResponse weatherResponse) {
         // Publish the weather data through the MessageBroker
         broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse) );
-
-        // Optional logging
-        System.out.println("Published WEATHER_RESPONSE event with payload: " + weatherResponse);
     }
 
     public void initialize() {

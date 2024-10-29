@@ -463,13 +463,14 @@ public class InformationPage extends Application implements MessageCallback {
                 }
             });
 
-        } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
+        } else if (event == EventType.WEATHER_RESPONSE && payload instanceof Events.WeatherResponseEvent.Payload) {
             Events.WeatherResponseEvent.Payload weatherResponse = (Events.WeatherResponseEvent.Payload) payload;
             // These are example getters and you can replace them
             weatherResponse.getWeatherResponse().getCityName();
             weatherResponse.getWeatherResponse().getTemperature();
             weatherResponse.getWeatherResponse().getWeatherCondition();
             weatherResponse.getWeatherResponse().getWeatherIcon();
+            System.out.println("Weather response received: " + weatherResponse.getWeatherResponse().getCityName() + " " + weatherResponse.getWeatherResponse().getTemperature() + " " + weatherResponse.getWeatherResponse().getWeatherCondition() + " " + weatherResponse.getWeatherResponse().getWeatherIcon());
 
             Platform.runLater(() -> {
                 // Update the view for departing or arriving city based on the response
