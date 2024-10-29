@@ -175,8 +175,8 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(coolFactsLabel);
 
         // TODO this only demo data
-        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
-
+        //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
+        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
         CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
@@ -189,7 +189,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
-            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getStationName().trim().split("\\s+")[0])));
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getDepartingStation().getLatitude())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
@@ -411,22 +411,7 @@ public class InformationPage extends Application implements MessageCallback {
         ((ImageView) cityInfoBox.lookup("#weatherIcon")).setImage(new Image(forecast.getWeatherImageSrc()));
         ((Label) cityInfoBox.lookup("#weatherConditionLabel")).setText(forecast.getWeatherStatus());
     }
-    
-    private void sendWeatherRequest(String stationName) {
-        // Get the selected date from the DatePicker
-        LocalDate selectedDate = message.getDate(); // Ensure this variable is accessible
-        // Create a WeatherRequest object with the selected date and the station name
-        WeatherRequest weatherRequest = new WeatherRequest(selectedDate, stationName);
-    
-        // Create the WeatherRequestEvent.Payload
-        WeatherRequestEvent.Payload weatherPayload = new WeatherRequestEvent.Payload(weatherRequest);
-    
-        // Publish the weather request event through the MessageBroker
-        broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
-        System.out.print("Fetching weather for " + stationName + " on " + selectedDate);
-        // Optionally, update the UI to inform the user that weather data is being fetched
-//        Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
-    }
+
 
     /**
      * Receives Events from message broker.
@@ -466,19 +451,14 @@ public class InformationPage extends Application implements MessageCallback {
         } else if (event == EventType.WEATHER_RESPONSE && payload instanceof Events.WeatherResponseEvent.Payload) {
             Events.WeatherResponseEvent.Payload weatherResponse = (Events.WeatherResponseEvent.Payload) payload;
             // These are example getters and you can replace them
-            weatherResponse.getWeatherResponse().getCityName();
             weatherResponse.getWeatherResponse().getTemperature();
             weatherResponse.getWeatherResponse().getWeatherCondition();
             weatherResponse.getWeatherResponse().getWeatherIcon();
-            System.out.println("Weather response received: " + weatherResponse.getWeatherResponse().getCityName() + " " + weatherResponse.getWeatherResponse().getTemperature() + " " + weatherResponse.getWeatherResponse().getWeatherCondition() + " " + weatherResponse.getWeatherResponse().getWeatherIcon());
+            System.out.println("Weather response received: " + weatherResponse.getWeatherResponse().getTemperature() + " " + weatherResponse.getWeatherResponse().getWeatherCondition() + " " + weatherResponse.getWeatherResponse().getWeatherIcon());
 
             Platform.runLater(() -> {
                 // Update the view for departing or arriving city based on the response
-                if (weatherResponse.getWeatherResponse().getCityName().equals(message.getDepartingStation().getStationName())) {
-                    updateCityInformationView(departCityInfoView, weatherResponse.getWeatherResponse());
-                } else if (message.getArrivingStation() != null && weatherResponse.getWeatherResponse().getCityName().equals(message.getArrivingStation().getStationName())) {
-                    updateCityInformationView(arriveCityInfoView, weatherResponse.getWeatherResponse());
-                }
+
             });
         }
     }
