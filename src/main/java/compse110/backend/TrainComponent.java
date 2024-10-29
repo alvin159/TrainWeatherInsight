@@ -65,7 +65,7 @@ public class TrainComponent extends BackendComponent {
 
     }
 
-    private List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode) {
+    public List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode, String arrivalStationShortCode) {
         if(trainDataList == null || trainDataList.isEmpty()) {
             return null;
         }
@@ -75,16 +75,27 @@ public class TrainComponent extends BackendComponent {
             TrainInformation information = new TrainInformation();
             information.setId(i);
             information.setTrainName(trainData.getTrainType() + trainData.getTrainNumber());
-            information.setDepartureTime(trainData.getDepartureDate());
-            TimeTableRows rows = getTimeTableRowsFromTrainData(trainData, departureStationShortCode);
-            if (rows != null) {
-                information.setEstimatedTime(rows.getLiveEstimateTime());
-                information.setTrack(rows.getCommercialTrack());
+
+            TimeTableRows departureRow = getTimeTableRowsFromTrainData(trainData, departureStationShortCode);
+            if (departureRow != null) {
+                information.setEstimatedTime(departureRow.getLiveEstimateTime());
+                information.setDepartureTrack(departureRow.getCommercialTrack());
+                information.setDepartureTime(departureRow.getScheduledTime());
             }
+            TimeTableRows arriveRows;
             //get arriver station information
-            TimeTableRows arriveRows = trainData.getTimeTableRows().get(trainData.getTimeTableRows().size() - 1);
-            information.setArriveStationName(arriveRows.getStationShortCode());
-            information.setArriveTime(arriveRows.getScheduledTime());
+            if (arrivalStationShortCode == null) {
+                arriveRows = trainData.getTimeTableRows().get(trainData.getTimeTableRows().size() - 1);
+            } else {
+                arriveRows = getTimeTableRowsFromTrainData(trainData, arrivalStationShortCode);
+            }
+            if (arriveRows != null) {
+                information.setArriveTrack(arriveRows.getCommercialTrack());
+                information.setArriveStationName(arriveRows.getStationShortCode());
+                information.setArriveTime(arriveRows.getScheduledTime());
+                information.setDuration(arriveRows.getScheduledTime().getTime() - departureRow.getScheduledTime().getTime());
+            }
+
             trainInformation.add(information);
         }
         return trainInformation;
@@ -120,9 +131,11 @@ public class TrainComponent extends BackendComponent {
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {
         if(event == Events.TrainRequestEvent.TOPIC && payload instanceof Events.TrainRequestEvent.Payload) {
+
             Events.TrainRequestEvent.Payload trainRequestPayload = getPayload(event, payload);
             List<TrainData> trainDataList = getTrainData(trainRequestPayload.getDepartingDate(), trainRequestPayload.getDepartureStationShortCode(), trainRequestPayload.getArrivalStationShortCode());
-            List<TrainInformation> trainInformationList = getTrainInformation(trainDataList, trainRequestPayload.getDepartureStationShortCode());
+            List<TrainInformation> trainInformationList = getTrainInformation(trainDataList, trainRequestPayload.getDepartureStationShortCode(), trainRequestPayload.getArrivalStationShortCode());
+
             if (trainDataList != null) {
                 broker.publish(Events.EventType.TRAIN_RESPONSE, new Events.TrainResponseEvent.Payload(trainInformationList));
             } else {

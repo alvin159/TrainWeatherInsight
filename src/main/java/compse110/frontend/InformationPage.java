@@ -165,7 +165,9 @@ public class InformationPage extends Application implements MessageCallback {
         });
 
         sendWeatherRequest(message.getDepartingStation().getStationName().trim().split("\\s+")[0]);
-        sendWeatherRequest(message.getArrivingStation().getStationName().trim().split("\\s+")[0]);
+        if (message.getArrivingStation() != null) {
+            sendWeatherRequest(message.getArrivingStation().getStationName().trim().split("\\s+")[0]);
+        }
 
         //add data
         broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));

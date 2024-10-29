@@ -18,7 +18,8 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private final Label departureTime;
     private final Label estimatedTime;
     private final Label duration;
-    private final Label track;
+    private final Label departureTrack;
+    private final Label arrivalTrack;
     private final Label arrivalTime;
     private final ImageView forecastImage;
 
@@ -32,7 +33,8 @@ public class TrainListCell extends ListCell<TrainInformation> {
         departureTime = new Label();
         duration = new Label();
         estimatedTime = new Label();
-        track = new Label();
+        departureTrack = new Label();
+        arrivalTrack = new Label();
         arrivalTime = new Label();
         forecastImage = new ImageView();
 
@@ -47,17 +49,19 @@ public class TrainListCell extends ListCell<TrainInformation> {
         ColumnConstraints col5 = new ColumnConstraints(100);
         ColumnConstraints col6 = new ColumnConstraints(100);
         ColumnConstraints col7 = new ColumnConstraints(100);
+        ColumnConstraints col8 = new ColumnConstraints(100);
 
-        gridPane.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7);
+        gridPane.getColumnConstraints().addAll(col1, col2, col3, col4, col5, col6, col7, col8);
 
         // Add components to the grid pane
         gridPane.add(trainName, 0, 0);
-        gridPane.add(departureTime, 1, 0);
-        gridPane.add(estimatedTime, 2, 0);
-        gridPane.add(duration, 3, 0);
-        gridPane.add(track, 4, 0);
+        gridPane.add(departureTrack, 1, 0);
+        gridPane.add(departureTime, 2, 0);
+        gridPane.add(estimatedTime, 3, 0);
+        gridPane.add(duration, 4, 0);
         gridPane.add(arrivalTime, 5, 0);
-        gridPane.add(forecastImage, 6, 0);
+        gridPane.add(arrivalTrack, 6, 0);
+        gridPane.add(forecastImage, 7, 0);
 
         // Set alignment
         gridPane.setAlignment(Pos.CENTER);
@@ -71,8 +75,9 @@ public class TrainListCell extends ListCell<TrainInformation> {
             trainName.setText(item.getTrainName());
             departureTime.setText(getFormatTime(item.getDepartureTime()));
             estimatedTime.setText(item.getEstimatedTime() != null ? getFormatTime(item.getEstimatedTime()) : "");
-            duration.setText(item.getDuration() + " min");
-            track.setText("Track " + item.getTrack());
+            duration.setText(item.getDuration() / (60 * 1000) + " min");
+            departureTrack.setText("Track " + item.getDepartureTrack());
+            arrivalTrack.setText("Track " + item.getArriveTrack());
             arrivalTime.setText(getFormatTime(item.getArriveTime()));
             forecastImage.setImage(new Image("https://openweathermap.org/img/wn/02d@2x.png"));
 

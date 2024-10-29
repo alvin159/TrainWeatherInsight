@@ -14,25 +14,29 @@ public class TrainInformation {
 
     private Date estimatedTime; // Can be null
 
-    private String track; //i.e. Track 1 or Track 2A 3B
+    private String departureTrack; //i.e. Track 1 or Track 2A 3B
 
     private String arriveStationName;
 
     private Date arriveTime;
+
+    private String arriveTrack;
 
     private Forecast forecast;
 
     public TrainInformation() {
     }
 
-    public TrainInformation(int id, String trainName, Date departureTime, Date estimatedTime, String track, String arriveStationName, Date arriveTime, Forecast forecast) {
+    public TrainInformation(int id, String trainName, Date departureTime, long duration, Date estimatedTime, String departureTrack, String arriveStationName, Date arriveTime, String arriveTrack, Forecast forecast) {
         Id = id;
         this.trainName = trainName;
         this.departureTime = departureTime;
+        this.duration = duration;
         this.estimatedTime = estimatedTime;
-        this.track = track;
+        this.departureTrack = departureTrack;
         this.arriveStationName = arriveStationName;
         this.arriveTime = arriveTime;
+        this.arriveTrack = arriveTrack;
         this.forecast = forecast;
     }
 
@@ -76,12 +80,12 @@ public class TrainInformation {
         this.estimatedTime = estimatedTime;
     }
 
-    public String getTrack() {
-        return track;
+    public String getDepartureTrack() {
+        return departureTrack;
     }
 
-    public void setTrack(String track) {
-        this.track = track;
+    public void setDepartureTrack(String departureTrack) {
+        this.departureTrack = departureTrack;
     }
 
     public String getArriveStationName() {
@@ -98,6 +102,14 @@ public class TrainInformation {
 
     public void setArriveTime(Date arriveTime) {
         this.arriveTime = arriveTime;
+    }
+
+    public String getArriveTrack() {
+        return arriveTrack;
+    }
+
+    public void setArriveTrack(String arriveTrack) {
+        this.arriveTrack = arriveTrack;
     }
 
     public Forecast getForecast() {
