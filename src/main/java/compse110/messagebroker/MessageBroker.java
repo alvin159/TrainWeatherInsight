@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import compse110.backend.TrainComponent;
+import compse110.backend.WeatherComponent;
 import compse110.backend.SearhStationComponent.SearchStationComponent;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events.EventType;
@@ -91,6 +92,9 @@ public class MessageBroker implements MessageBrokerInterface {
 
         TrainComponent trainComponent = new TrainComponent();
         trainComponent.initialize();
+
+        WeatherComponent weatherComponent = new WeatherComponent();
+        weatherComponent.initialize();
 
         // Initialize other backend services here as well
     }
