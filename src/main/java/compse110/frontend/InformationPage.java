@@ -68,7 +68,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         stationInfoFetcher = StationInfoFetcher.getInstance(); // Initialize station info fetcher
 
-        initView();
+        initView(primaryStage);
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
@@ -138,10 +138,25 @@ public class InformationPage extends Application implements MessageCallback {
         });
     }
     
-    private void initView() {
+    private void initView(Stage primaryStage) {
         HBox header = addHeaderView(); // Add header for search functionality
         root.getChildren().clear(); // clear previous children
         root.getChildren().add(header); // Add the search fields
+
+        Button backToHomePageButton = new Button("Back to Home Page");
+        backToHomePageButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    HomePage homePage = new HomePage();
+                    Stage homeStage = new Stage();
+                    homePage.start(homeStage);
+                    primaryStage.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
@@ -162,6 +177,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         // clear children view first
         root.getChildren().clear();
+        root.getChildren().add(backToHomePageButton);
         // Adding all sections to the root layout
         root.getChildren().add(addHeaderView());
 
