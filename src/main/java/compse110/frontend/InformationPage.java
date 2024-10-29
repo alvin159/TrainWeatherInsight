@@ -1,10 +1,7 @@
 package compse110.frontend;
 
 import compse110.Entity.Station;
-<<<<<<< HEAD
-=======
 import compse110.Entity.WeatherRequest;
->>>>>>> 7fe035ac9f0335aacc2474d1125eb997ba7666ce
 import compse110.Entity.WeatherResponse;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
@@ -42,8 +39,6 @@ public class InformationPage extends Application implements MessageCallback {
     private static final MessageBroker broker = MessageBroker.getInstance();
     private SearchInfo message;
     private VBox root;
-    private Station departStation;
-    private Station arriveStation;
     private StationInfoFetcher stationInfoFetcher;
     ListView<TrainInformation> trainListView;
     VBox trainScheduleBox;
@@ -106,9 +101,9 @@ public class InformationPage extends Application implements MessageCallback {
                                 @Override
                                 public void handle(ActionEvent event) {
                                     if (textField.getId().equals("departingStationField")) {
-                                        departStation = station;
+                                        message.setDepartingStation(station);
                                     } else {
-                                        arriveStation = station;
+                                        message.setArrivingStation(station);
                                     }
                                     textField.setText(station.getStationName());
                                     contextMenu.hide();
@@ -169,8 +164,8 @@ public class InformationPage extends Application implements MessageCallback {
             }
         });
 
-        sendWeatherRequest(departStation.getStationName().trim().split("\\s+")[0]);
-        sendWeatherRequest(arriveStation.getStationName().trim().split("\\s+")[0]);
+        sendWeatherRequest(message.getDepartingStation().getStationName().trim().split("\\s+")[0]);
+        sendWeatherRequest(message.getArrivingStation().getStationName().trim().split("\\s+")[0]);
 
         //add data
         broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
@@ -394,7 +389,7 @@ public class InformationPage extends Application implements MessageCallback {
         broker.publish(EventType.WEATHER_REQUEST, weatherPayload);
         System.out.print("Fetching weather for " + stationName + " on " + selectedDate);
         // Optionally, update the UI to inform the user that weather data is being fetched
-        Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
+//        Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
     }
 
     /**
