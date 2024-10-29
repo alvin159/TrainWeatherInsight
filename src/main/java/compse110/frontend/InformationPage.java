@@ -46,6 +46,8 @@ public class InformationPage extends Application implements MessageCallback {
     Forecast weatherForecast;
     private VBox departCityInfoView;
     private VBox arriveCityInfoView;
+    CityInformation departingCityInfo;
+    CityInformation arrivingCityInfo;
 
     private Stage primaryStage;
 
@@ -193,7 +195,7 @@ public class InformationPage extends Application implements MessageCallback {
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
-        CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), weatherForecast, cityDetails);
+        departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), weatherForecast, cityDetails);
 
         departCityInfoView = addCityInformationView(departingCityInfo);
 
@@ -206,7 +208,7 @@ public class InformationPage extends Application implements MessageCallback {
             broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getDepartingStation().getLatitude())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
-            CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
+            arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
             root.getChildren().add(arriveCityInfoView);
         }
@@ -214,7 +216,11 @@ public class InformationPage extends Application implements MessageCallback {
 
     }
 
-    //TODO refresh data
+    private void updateCityWeather(CityInformation arrivalOrDepartingCityInfo, VBox arrivalOrDepartingInfoView, Forecast weatherForecast) {
+        arrivalOrDepartingCityInfo.setForecast(weatherForecast);
+        arrivalOrDepartingInfoView.getChildren().clear();
+        arrivalOrDepartingInfoView = addCityInformationView(departingCityInfo);
+    }
 
     private HBox addLoadingView() {
         Label loadingLabel = new Label("Loading train timetables...");
@@ -456,8 +462,10 @@ public class InformationPage extends Application implements MessageCallback {
                         );
             
                         // Assign the forecast to weatherForecast (assuming it’s an array of Forecast)
-                        weatherForecast = forecast;
-                        System.out.println("Weather data updated successfully.");
+                        //if(departingCityInfo != null) {
+                        //    updateCityWeather(departingCityInfo, departCityInfoView, forecast);
+                        //    System.out.println("Weather data updated successfully.");
+                        //}
                     }
                 }
             });            
