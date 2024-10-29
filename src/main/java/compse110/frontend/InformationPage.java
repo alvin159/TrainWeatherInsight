@@ -31,7 +31,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -50,12 +49,16 @@ public class InformationPage extends Application implements MessageCallback {
     CityInformation departingCityInfo;
     CityInformation arrivingCityInfo;
 
+    private Stage primaryStage;
+
     // Main method to start with SearchInfo object
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
 
         broker.subscribe(EventType.TRAIN_RESPONSE, this);
         broker.subscribe(EventType.WEATHER_RESPONSE, this);
+
+        this.primaryStage = primaryStage;
 
         // throw Exception if message is null
         if (message == null) {
@@ -73,7 +76,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         stationInfoFetcher = StationInfoFetcher.getInstance(); // Initialize station info fetcher
 
-        initView(primaryStage);
+        initView();
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);
@@ -143,7 +146,7 @@ public class InformationPage extends Application implements MessageCallback {
         });
     }
     
-    private void initView(Stage primaryStage) {
+    private void initView() {
         HBox header = addHeaderView(); // Add header for search functionality
         root.getChildren().clear(); // clear previous children
         root.getChildren().add(header); // Add the search fields
@@ -275,7 +278,12 @@ public class InformationPage extends Application implements MessageCallback {
                     alert.setHeaderText("Departing station and arrive station can not same name");
                     alert.setContentText("Please input departing station name or short code again");
                     alert.showAndWait();
-                } 
+                } else {
+                    if (arrivalStationField.getText().isEmpty()) {
+                        message.setArrivingStation(null);
+                    }
+                    initView();
+                }
             }
         });
 
