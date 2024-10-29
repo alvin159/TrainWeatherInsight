@@ -48,8 +48,8 @@ public class WeatherComponent extends BackendComponent{
         // Build the Weather API URL using the city name
         String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
                      + cityName + "/" + date + "?key=" + API_KEY;
-
-        // Create the request
+        System.out.print(url);
+                     // Create the request
         Request request = new Request.Builder()
                 .url(url)
                 .build();
