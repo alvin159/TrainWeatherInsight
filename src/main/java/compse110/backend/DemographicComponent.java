@@ -14,6 +14,7 @@ import compse110.Entity.*;
 import compse110.messagebroker.MessageBroker;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class DemographicComponent extends BackendComponent {
 
@@ -23,10 +24,21 @@ public class DemographicComponent extends BackendComponent {
     protected void handleEvent(EventType event, EventPayload payload) {
         if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent) {
             // TODO: Implement the logic to fetch demographic data
+            Events.DemographicRequestEvent.Payload demographicRequestPayload = getPayload(event, payload);
+            String cityName = demographicRequestPayload.getDemographicRequest().getCityName();
+            DemographicResponse response = fetchDemographicData(cityName);
+            if ( response!= null) {
+                broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response));
+            } else {
+
+                Events.DemographicResponseEvent.Payload errorPayload = new Events.DemographicResponseEvent.Payload(null);
+                errorPayload.setErrorMessage("No demographic information found in " + cityName);
+                broker.publish(EventType.DEMOGRAPHIC_RESPONSE, errorPayload);
+            }
         }
     }
 
-    private void fetchDemographicData(String cityName) throws IOException {
+    private DemographicResponse fetchDemographicData(String cityName) {
 
         try {
             FileReader reader = new FileReader("src/main/resources/data/demographic.json");
@@ -61,26 +73,28 @@ public class DemographicComponent extends BackendComponent {
                 double populationDensity = values.get(index * 4 + 3).getAsDouble(); // Population Density
 
                 DemographicResponse response = new DemographicResponse(population, landArea, populationDensity);
-                sendDemographicResponse(response);
 
                 System.out.println("City: " + cityName);
                 System.out.println("Population: " + population);
                 System.out.println("Land Area: " + landArea);
                 System.out.println("Population Density: " + populationDensity);
+                return response;
 
             } else {
                 System.out.println("City not found.");
+                return null;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
-
+/*
     private void sendDemographicResponse(DemographicResponse response) {
         broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response));
         System.out.println("Published DEMOGRAPHIC_RESPONSE event with payload: " + response);
     }
-
+*/
     @Override
     public void initialize() {
         broker.subscribe(EventType.DEMOGRAPHIC_REQUEST, this);
