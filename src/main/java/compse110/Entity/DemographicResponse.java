@@ -1,8 +1,6 @@
 package compse110.Entity;
 
-import compse110.Utils.EventPayload;
-
-public class DemographicResponse implements EventPayload {
+public class DemographicResponse {
     private int population;
     private double landArea;
     private double populationDensity;

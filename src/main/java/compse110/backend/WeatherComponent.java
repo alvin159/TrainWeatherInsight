@@ -3,6 +3,7 @@ package compse110.backend;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.*;
@@ -85,12 +86,12 @@ public class WeatherComponent implements MessageCallback {
         sendWeatherResponse(WeatherResponse);
     }
 
-    private void sendWeatherResponse(WeatherResponse WeatherResponse) {
+    private void sendWeatherResponse(WeatherResponse weatherResponse) {
         // Publish the weather data through the MessageBroker
-        broker.publish(EventType.WEATHER_RESPONSE, WeatherResponse);
+        broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse) );
 
         // Optional logging
-        System.out.println("Published WEATHER_RESPONSE event with payload: " + WeatherResponse);
+        System.out.println("Published WEATHER_RESPONSE event with payload: " + weatherResponse);
     }
 
     public void initialize() {

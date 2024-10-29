@@ -3,6 +3,7 @@ package compse110.backend;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import compse110.messagebroker.MessageCallback;
 import com.google.gson.JsonObject;
@@ -75,7 +76,7 @@ public class DemographicComponent implements MessageCallback {
     }
 
     private void sendDemographicResponse(DemographicResponse response) {
-        broker.publish(EventType.DEMOGRAPHIC_RESPONSE, response);
+        broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response));
         System.out.println("Published DEMOGRAPHIC_RESPONSE event with payload: " + response);
     }
 
