@@ -126,8 +126,10 @@ public class StationInfoFetcher {
                 .collect(Collectors.toList());
     }
 
-
-
-
-
+    public Station getStationByShortCode(String shortCode) {
+        return this.stations.stream()
+                .filter(station -> station.getStationShortCode().equals(shortCode))
+                .findFirst()
+                .orElse(null);
+    }
 }
