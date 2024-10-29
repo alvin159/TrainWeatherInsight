@@ -26,18 +26,9 @@ public class WeatherComponent extends BackendComponent{
 
     @Override
     public void handleEvent(Events.EventType event, EventPayload payload) {
-        // Delegate to the onMessageReceived method
-        onMessageReceived(event, payload);
-    }
-
-    @Override
-    public void onMessageReceived(EventType event, EventPayload payload) {
-        if (event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
-            try {
-                fetchWeatherData(EventType.WEATHER_REQUEST.name());
-            } catch (IOException e) {
-                e.printStackTrace(); // Or handle the exception as needed
-            }         
+        if(event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
+            Events.WeatherRequestEvent.Payload weatherRequestPayload = getPayload(event, payload);
+            weatherRequestPayload.getWeatherRequest().getCityName();
         }
     }
 
