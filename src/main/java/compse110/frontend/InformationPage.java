@@ -198,6 +198,7 @@ public class InformationPage extends Application implements MessageCallback {
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
         CityInformation departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), null, cityDetails);
+
         departCityInfoView = addCityInformationView(departingCityInfo);
         root.getChildren().add(departCityInfoView);
         root.getChildren().add(trainScheduleBox);
@@ -212,7 +213,8 @@ public class InformationPage extends Application implements MessageCallback {
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
             root.getChildren().add(arriveCityInfoView);
         }
-        // Your other view components like train schedules or city information can be added here...
+        // Your other view components like train schedules or city information can be added here..
+
     }
 
     
@@ -382,36 +384,32 @@ public class InformationPage extends Application implements MessageCallback {
     @Override
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
-            Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
-            if(responsePayload.getTrainInformationList() == null) {
-                Platform.runLater(() -> {
-                    trainScheduleBox.getChildren().clear();
-                    Label errorLabel = new Label(responsePayload.getErrorMessage());
-                    errorLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
-                    errorLabel.setAlignment(Pos.CENTER);
-                    HBox errorBox = new HBox(errorLabel);
-                    errorBox.setAlignment(Pos.CENTER);
-                    trainScheduleBox.getChildren().add(errorBox);
-                });
-                return;
-            }
-            
-            Platform.runLater(() -> {
-                trainListView.getItems().clear();
-                trainListView.getItems().addAll(responsePayload.getTrainInformationList());
-                trainScheduleBox.getChildren().clear();
-                trainScheduleBox.getChildren().add(trainListView);
-            });
-        }
-        else if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
-            Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
-            Platform.runLater(() -> {
+            // Train information update
 
-                trainListView.getItems().clear();
-                trainListView.getItems().addAll(responsePayload.getTrainInformationList());
-                trainScheduleBox.getChildren().add(trainListView);
+            Events.TrainResponseEvent.Payload responseData = (Events.TrainResponseEvent.Payload) payload;
 
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if(responseData.getTrainInformationList() == null) {
+                        // No any train show no train view
+                        trainScheduleBox.getChildren().clear();
+                        Label errorLabel = new Label(responseData.getErrorMessage());
+                        errorLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+                        errorLabel.setAlignment(Pos.CENTER);
+                        HBox errorBox = new HBox(errorLabel);
+                        errorBox.setAlignment(Pos.CENTER);
+                        trainScheduleBox.getChildren().add(errorBox);
+                    } else {
+                        // Load Schedule to train list
+                        trainListView.getItems().clear();
+                        trainListView.getItems().addAll(responseData.getTrainInformationList());
+                        trainScheduleBox.getChildren().clear();
+                        trainScheduleBox.getChildren().add(trainListView);
+                    }
+                }
             });
+
         } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
             WeatherResponse weatherResponse = (WeatherResponse) payload;
             Platform.runLater(() -> {
