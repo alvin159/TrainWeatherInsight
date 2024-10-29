@@ -174,23 +174,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         //add data
         broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
-        Label loadingLabel = new Label("Loading train timetables...");
-        loadingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
-        loadingLabel.setAlignment(Pos.CENTER);
-        HBox loadingBox = new HBox(loadingLabel);
-        loadingBox.setAlignment(Pos.CENTER);
-        trainScheduleBox.getChildren().add(loadingBox);
-//        HBox trainInfo = new HBox();
-//        trainInfo.setSpacing(50);
-//        trainInfo.setAlignment(Pos.CENTER);
-//
-//        Label departureTime = new Label("12:00 " + message.getDepartingStation().getStationName());
-//        Label duration = new Label("5 hrs 0 minutes");
-//        Label arrivalTime = new Label("17:00 " + message.getArrivingStation().getStationName());
-//
-//        trainInfo.getChildren().addAll(departureTime, duration, arrivalTime);
-
-
+        trainScheduleBox.getChildren().add(addLoadingView());
 
         // clear children view first
         root.getChildren().clear();
@@ -221,6 +205,15 @@ public class InformationPage extends Application implements MessageCallback {
         }
         // Your other view components like train schedules or city information can be added here..
 
+    }
+
+    private HBox addLoadingView() {
+        Label loadingLabel = new Label("Loading train timetables...");
+        loadingLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        loadingLabel.setAlignment(Pos.CENTER);
+        HBox loadingBox = new HBox(loadingLabel);
+        loadingBox.setAlignment(Pos.CENTER);
+        return loadingBox;
     }
 
     
@@ -321,7 +314,15 @@ public class InformationPage extends Application implements MessageCallback {
         departInfoDetails.setAlignment(Pos.CENTER);
 
         if (cityInformation.getForecast() == null) {
-            return cityInfoBox;
+
+            //TODO fake data
+            Forecast forecast = new Forecast(
+                5,
+                "Sunny",
+                "https://openweathermap.org/img/wn/01d.png",
+                new ForecastDetails()
+            );
+            cityInformation.setForecast(forecast);
         }
 
         //TODO

@@ -75,4 +75,8 @@ public class Log {
         }
     }
 
+    public static boolean getIsDebug() {
+        return isDebug;
+    }
+
 }

@@ -71,6 +71,12 @@ public class HomePage extends Application implements MessageCallback{
         arrivalStationField.setPromptText("Helsinki"); // Set hint text
         arrivalStationField.setId("arrivalStationField");
 
+        // TODO if not debug remove it!!
+        if (Log.getIsDebug()) {
+            departingStationField.setText("Oulu asema");
+            arrivalStationField.setText("Helsinki asema");
+        }
+
         contextMenu = new ContextMenu();
         departingStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
         departingStationField.setOnMousePressed(this::handleFocusingOnTextField);

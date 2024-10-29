@@ -18,6 +18,7 @@ public class InfoBox extends VBox{
                 "-fx-background-color: #d96ce3;" +  // dynamic color
                 "-fx-background-radius: 50%;" +                     // round border
                 "-fx-min-width: 100px;" +                           // min width
+                "-fx-min-height: 100px;" +                          // min height
                 "-fx-max-height: 100px;" +                          // max height
                 "-fx-max-width: 100px;" +                           // max width
                 "-fx-alignment: center;"                            // center alignment

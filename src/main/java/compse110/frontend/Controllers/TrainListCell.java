@@ -9,6 +9,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class TrainListCell extends ListCell<TrainInformation> {
     private final GridPane gridPane;
     private final Label trainName;
@@ -32,6 +35,9 @@ public class TrainListCell extends ListCell<TrainInformation> {
         track = new Label();
         arrivalTime = new Label();
         forecastImage = new ImageView();
+
+        forecastImage.setFitWidth(40);
+        forecastImage.setFitHeight(40);
 
         // Set fixed widths for each column
         ColumnConstraints col1 = new ColumnConstraints(100);
@@ -63,16 +69,21 @@ public class TrainListCell extends ListCell<TrainInformation> {
 
         if (item != null && !empty) {
             trainName.setText(item.getTrainName());
-            departureTime.setText(item.getDepartureTime().toString());
-            estimatedTime.setText(item.getEstimatedTime() != null ? item.getEstimatedTime().toString() : "");
+            departureTime.setText(getFormatTime(item.getDepartureTime()));
+            estimatedTime.setText(item.getEstimatedTime() != null ? getFormatTime(item.getEstimatedTime()) : "");
             duration.setText(item.getDuration() + " min");
             track.setText("Track " + item.getTrack());
-            arrivalTime.setText(item.getArriveTime().toString());
-            forecastImage.setImage(new Image("https://openweathermap.org/img/wn/03d@2x.png"));
+            arrivalTime.setText(getFormatTime(item.getArriveTime()));
+            forecastImage.setImage(new Image("https://openweathermap.org/img/wn/02d@2x.png"));
 
             setGraphic(gridPane);
         } else {
             setGraphic(null);
         }
+    }
+
+    private String getFormatTime(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        return dateFormat.format(date);
     }
 }
