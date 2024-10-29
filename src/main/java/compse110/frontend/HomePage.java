@@ -109,7 +109,7 @@ public class HomePage extends Application implements MessageCallback{
             @Override
             public void handle(ActionEvent event) {
                 // Check departing Station Field is empty
-                if (departingStationField.getText().isEmpty()) {
+                if (departingStationField.getText().isEmpty() || departStation == null) {
                     // Show input alert
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Alert");
