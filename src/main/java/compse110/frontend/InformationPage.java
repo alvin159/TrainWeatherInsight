@@ -146,14 +146,6 @@ public class InformationPage extends Application implements MessageCallback {
         trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
         trainScheduleBox.setStyle("-fx-background-color: #f0f0f0;");
-
-        Label coolFactsLabel = new Label();
-        if (message.isShowCoolFacts()) {
-            coolFactsLabel.setText("Cool facts about cities are enabled.");
-        } else {
-            coolFactsLabel.setText("No cool facts selected.");
-        }
-        root.getChildren().add(coolFactsLabel);
         
         // TODO change to list view to show
         trainListView = new ListView<>();
@@ -172,7 +164,6 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().clear();
         // Adding all sections to the root layout
         root.getChildren().add(addHeaderView());
-        root.getChildren().add(coolFactsLabel);
 
         // TODO this only demo data
         //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));

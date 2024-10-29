@@ -99,9 +99,6 @@ public class HomePage extends Application implements MessageCallback{
                 setDisable(empty || date.isBefore(today) || date.isAfter(maxDate));
             }
         });
-
-
-        CheckBox showCoolFactsCheckBox = new CheckBox("Show cool facts about cities");
         
         Button searchButton = new Button("Search");
         searchButton.setStyle("-fx-background-color: #0BCAFF");
@@ -132,7 +129,6 @@ public class HomePage extends Application implements MessageCallback{
                     message.setArrivingStation(arriveStation);
                     
                     message.setDate(departureDatePicker.getValue());
-                    message.setShowCoolFacts(showCoolFactsCheckBox.isSelected());
                     // Open new window
                     InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
                     Stage infoStage = new Stage(); // Create a new Stage (window)
@@ -166,7 +162,6 @@ public class HomePage extends Application implements MessageCallback{
         gridPane.add(arrivalStationField, 1, 3);
         gridPane.add(departureDateLabel, 0, 4);
         gridPane.add(departureDatePicker, 1, 4);
-        gridPane.add(showCoolFactsCheckBox, 0, 5);
         gridPane.add(searchButton, 1, 5);
         gridPane.add(backendLabel, 1, 7);
 
