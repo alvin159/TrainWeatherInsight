@@ -78,7 +78,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
             arrivalTrack.setText("Track " + item.getArriveTrack());
             arrivalStation.setText(item.getArriveStationName());
             arrivalTime.setText(getFormatTime(item.getArriveTime()));
-            forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/02d@2x.png"))));
+            forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/partly-cloudy-day.png"))));
 
             setGraphic(gridPane);
         } else {
