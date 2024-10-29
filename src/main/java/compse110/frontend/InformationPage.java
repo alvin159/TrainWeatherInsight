@@ -191,7 +191,7 @@ public class InformationPage extends Application implements MessageCallback {
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
 
-            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName())));
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getStationName())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             CityInformation arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), null, cityDetails1);
@@ -438,7 +438,7 @@ public class InformationPage extends Application implements MessageCallback {
                     updateCityInformationView(arriveCityInfoView, weatherResponse);
                 }
             });
-        }
+        } 
         else if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
             Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
             Platform.runLater(() -> {
