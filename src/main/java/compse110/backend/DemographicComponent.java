@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
+import compse110.backend.utils.BackendComponent;
 import compse110.messagebroker.MessageCallback;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,12 +15,12 @@ import compse110.messagebroker.MessageBroker;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class DemographicComponent implements MessageCallback {
+public class DemographicComponent extends BackendComponent {
 
     private static final MessageBroker broker = MessageBroker.getInstance();
 
     @Override
-    public void onMessageReceived(EventType event, EventPayload payload) {
+    protected void handleEvent(EventType event, EventPayload payload) {
         if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent) {
             // TODO: Implement the logic to fetch demographic data
         }
@@ -80,12 +81,15 @@ public class DemographicComponent implements MessageCallback {
         System.out.println("Published DEMOGRAPHIC_RESPONSE event with payload: " + response);
     }
 
+    @Override
     public void initialize() {
         broker.subscribe(EventType.DEMOGRAPHIC_REQUEST, this);
     }
 
+    @Override
     public void shutdown() {
         broker.unsubscribe(EventType.DEMOGRAPHIC_REQUEST, this);
     }
+
 }
 
