@@ -125,9 +125,6 @@ public class HomePage extends Application implements MessageCallback{
                     message.setDepartingStation(departStation);
                     message.setArrivingStation(arriveStation);
                     
-                    sendWeatherRequest(departStation.getStationName().trim().split("\\s+")[0]);
-                    sendWeatherRequest(arriveStation.getStationName().trim().split("\\s+")[0]);
-
                     message.setDate(departureDatePicker.getValue());
                     message.setShowCoolFacts(showCoolFactsCheckBox.isSelected());
                     // Open new window
@@ -177,23 +174,6 @@ public class HomePage extends Application implements MessageCallback{
 
         primaryStage.setMaximized(true); // Maximize the stage for full screen
         primaryStage.show();
-    }
-
-    private void sendWeatherRequest(String stationName) {
-        // Get the selected date from the DatePicker
-        LocalDate selectedDate = departureDatePicker.getValue(); // Ensure this variable is accessible
-    
-        // Create a WeatherRequest object with the selected date and the station name
-        WeatherRequest weatherRequest = new WeatherRequest(selectedDate, stationName);
-    
-        // Create the WeatherRequestEvent.Payload
-        WeatherRequestEvent.Payload weatherPayload = new WeatherRequestEvent.Payload(weatherRequest);
-    
-        // Publish the weather request event through the MessageBroker
-        broker.publish(EventType.WEATHER_REQUEST, weatherPayload);
-        System.out.print("Fetching weather for " + stationName + " on " + selectedDate);
-        // Optionally, update the UI to inform the user that weather data is being fetched
-        Platform.runLater(() -> backendLabel.setText("Fetching weather for " + stationName + " on " + selectedDate));
     }
 
     private void handleTypingOnStationSearch(KeyEvent event) {

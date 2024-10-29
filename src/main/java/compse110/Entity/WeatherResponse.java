@@ -1,9 +1,6 @@
 package compse110.Entity;
 
-
-import compse110.Utils.EventPayload;
-
-public class WeatherResponse implements EventPayload {
+public class WeatherResponse {
     private final String cityName;
     private final double temperature;
     private final String weatherCondition;

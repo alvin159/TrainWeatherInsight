@@ -3,30 +3,41 @@ package compse110.backend;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.*;
 import compse110.messagebroker.MessageBroker;
-import compse110.messagebroker.MessageCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import compse110.backend.utils.BackendComponent;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-public class WeatherComponent implements MessageCallback {
+public class WeatherComponent extends BackendComponent{
 
     private static final String API_KEY = "XRDPDDZZDR7SX9EMEYPPS9CTK";
     private static final MessageBroker broker = MessageBroker.getInstance();
     private static final OkHttpClient client = new OkHttpClient();
 
     @Override
+    public void handleEvent(Events.EventType event, EventPayload payload) {
+        // Delegate to the onMessageReceived method
+        onMessageReceived(event, payload);
+    }
+
+    @Override
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent) {
-            // TODO: Implement the logic to fetch weather data
+            try {
+                fetchWeatherData(EventType.WEATHER_REQUEST.name());
+            } catch (IOException e) {
+                e.printStackTrace(); // Or handle the exception as needed
+            }         
         }
     }
 
@@ -84,12 +95,12 @@ public class WeatherComponent implements MessageCallback {
         sendWeatherResponse(WeatherResponse);
     }
 
-    private void sendWeatherResponse(WeatherResponse WeatherResponse) {
+    private void sendWeatherResponse(WeatherResponse weatherResponse) {
         // Publish the weather data through the MessageBroker
-        broker.publish(EventType.WEATHER_RESPONSE, WeatherResponse);
+        broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse) );
 
         // Optional logging
-        System.out.println("Published WEATHER_RESPONSE event with payload: " + WeatherResponse);
+        System.out.println("Published WEATHER_RESPONSE event with payload: " + weatherResponse);
     }
 
     public void initialize() {

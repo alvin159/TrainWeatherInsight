@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Date;
 
 
-// This class defines the events that can be sent and received by the components
 public class Events {
-    // Define the types of events that can be sent and received
     public enum EventType {
         ABBREVIATION_REQUEST,
         ABBREVIATION_RESPONSE,
@@ -23,8 +21,7 @@ public class Events {
         TRAIN_REQUEST,
         TRAIN_RESPONSE,
         SEARCH_STATION_REQUEST,
-        SEARCH_STATION_RESPONSE,
-        ERROR_RESPONSE
+        SEARCH_STATION_RESPONSE
     }
 
     public static class WeatherRequestEvent {
@@ -32,15 +29,25 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final WeatherRequest weatherRequest;
+            private String errorMessage;
 
             public Payload(WeatherRequest weatherRequest) {
                 this.weatherRequest = weatherRequest;
             }
 
-            public compse110.Entity.WeatherRequest getWeatherRequest() {
+            public WeatherRequest getWeatherRequest() {
                 return weatherRequest;
             }
 
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
 
@@ -49,13 +56,24 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final WeatherResponse weatherResponse;
+            private String errorMessage;
 
             public Payload(WeatherResponse weatherResponse) {
                 this.weatherResponse = weatherResponse;
             }
 
-            public compse110.Entity.WeatherResponse getWeatherResponse() {
+            public WeatherResponse getWeatherResponse() {
                 return weatherResponse;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
             }
         }
     }
@@ -67,6 +85,7 @@ public class Events {
             private final Date departingDate;
             private final String departureStationShortCode;
             private final String arrivalStationShortCode;
+            private String errorMessage;
 
             public Payload(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
                 this.departingDate = departingDate;
@@ -85,6 +104,16 @@ public class Events {
             public String getArrivalStationShortCode() {
                 return arrivalStationShortCode;
             }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
 
@@ -93,6 +122,7 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final List<TrainInformation> trainInformationList;
+            private String errorMessage;
 
             public Payload(List<TrainInformation> trainInformationList) {
                 this.trainInformationList = trainInformationList;
@@ -102,6 +132,15 @@ public class Events {
                 return trainInformationList;
             }
 
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
 
@@ -110,6 +149,7 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final DemographicRequest demographicRequest;
+            private String errorMessage;
 
             public Payload(DemographicRequest demographicRequest) {
                 this.demographicRequest = demographicRequest;
@@ -117,6 +157,16 @@ public class Events {
 
             public DemographicRequest getDemographicRequest() {
                 return demographicRequest;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
             }
         }
     }
@@ -126,6 +176,7 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final DemographicResponse demographicResponse;
+            private String errorMessage;
 
             public Payload(DemographicResponse demographicResponse) {
                 this.demographicResponse = demographicResponse;
@@ -133,6 +184,16 @@ public class Events {
 
             public DemographicResponse getDemographicResponse() {
                 return demographicResponse;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
             }
         }
     }
@@ -142,6 +203,7 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final String stationShortCode;
+            private String errorMessage;
 
             public Payload(String stationShortCode) {
                 this.stationShortCode = stationShortCode;
@@ -150,14 +212,25 @@ public class Events {
             public String getStationShortCode() {
                 return stationShortCode;
             }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
 
     public static class AbbreviationResponse {
         public static final EventType TOPIC = EventType.ABBREVIATION_RESPONSE;
 
-        public static class Payload  implements EventPayload {
+        public static class Payload implements EventPayload {
             private final Station station;
+            private String errorMessage;
 
             public Payload(Station station) {
                 this.station = station;
@@ -165,6 +238,16 @@ public class Events {
 
             public Station getStation() {
                 return station;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
             }
         }
     }
@@ -175,6 +258,7 @@ public class Events {
         public static class Payload implements EventPayload {
             private final String currentSearchInput;
             private final String textFieldId;
+            private String errorMessage;
 
             public Payload(String currentSearchInput, String textFieldId) {
                 this.currentSearchInput = currentSearchInput;
@@ -188,6 +272,16 @@ public class Events {
             public String getTextFieldId() {
                 return textFieldId;
             }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
 
@@ -197,6 +291,7 @@ public class Events {
         public static class Payload implements EventPayload {
             private final List<Station> stationList;
             private final String textFieldId;
+            private String errorMessage;
 
             public Payload(List<Station> stationList, String textFieldId) {
                 this.stationList = stationList;
@@ -210,7 +305,16 @@ public class Events {
             public String getTextFieldId() {
                 return textFieldId;
             }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
         }
     }
-
 }
