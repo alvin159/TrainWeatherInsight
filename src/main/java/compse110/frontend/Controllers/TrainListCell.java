@@ -41,8 +41,8 @@ public class TrainListCell extends ListCell<TrainInformation> {
         arrivalTime = new Label();
         forecastImage = new ImageView();
 
-        forecastImage.setFitWidth(40);
-        forecastImage.setFitHeight(40);
+        forecastImage.setFitWidth(50);
+        forecastImage.setFitHeight(30);
 
         // Set fixed widths for each column
         for (int i = 0; i < 9; i++) {
