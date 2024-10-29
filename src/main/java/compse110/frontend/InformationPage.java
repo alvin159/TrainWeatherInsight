@@ -428,26 +428,11 @@ public class InformationPage extends Application implements MessageCallback {
             });
 
         } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
-            WeatherResponse weatherResponse = (WeatherResponse) payload;
-            Platform.runLater(() -> {
-                // Update the view for departing or arriving city based on the response
-                if (weatherResponse.getCityName().equals(message.getDepartingStation().getStationName())) {
-                    updateCityInformationView(departCityInfoView, weatherResponse);
-                } else if (message.getArrivingStation() != null &&
-                           weatherResponse.getCityName().equals(message.getArrivingStation().getStationName())) {
-                    updateCityInformationView(arriveCityInfoView, weatherResponse);
-                }
-            });
-        }
-        else if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
-            Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
-            Platform.runLater(() -> {
-                trainListView.getItems().clear();
-                trainListView.getItems().addAll(responsePayload.getTrainInformationList());
-                trainScheduleBox.getChildren().add(trainListView);
-            });
-        } else if (event == EventType.WEATHER_RESPONSE && payload instanceof WeatherResponse) {
-            WeatherResponse weatherResponse = (WeatherResponse) payload;
+            Events.WeatherResponseEvent.Payload weatherResponse = (Events.WeatherResponseEvent.Payload) payload;
+            // These are example getters and you can replace them
+            weatherResponse.getWeatherResponse().getCityName();
+            weatherResponse.getWeatherResponse().getTemperature();
+
             Platform.runLater(() -> {
                 // Update the view for departing or arriving city based on the response
                 if (weatherResponse.getCityName().equals(message.getDepartingStation().getStationName())) {
