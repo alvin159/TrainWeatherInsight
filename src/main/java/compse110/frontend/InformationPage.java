@@ -216,6 +216,16 @@ public class InformationPage extends Application implements MessageCallback {
 
     }
 
+    // Function to fetch Icons
+    private ImageView createWeatherIcon(String iconName) {
+        // Construct the path relative to the resources folder
+        String iconPath = "/icon/" + iconName + ".png";
+
+        // Load the image
+        Image icon = new Image(getClass().getResourceAsStream(iconPath));
+        return new ImageView(icon);
+    }
+
     private void updateCityWeather(CityInformation arrivalOrDepartingCityInfo, VBox arrivalOrDepartingInfoView, Forecast weatherForecast) {
         arrivalOrDepartingCityInfo.setForecast(weatherForecast);
         arrivalOrDepartingInfoView.getChildren().clear();
@@ -321,7 +331,7 @@ public class InformationPage extends Application implements MessageCallback {
             Forecast forecast = new Forecast(
                 5,
                 "Sunny",
-                "https://openweathermap.org/img/wn/01d.png",
+                createWeatherIcon("partly-cloudy-night"),
                 new ForecastDetails()
             );
             cityInformation.setForecast(forecast);
@@ -334,7 +344,7 @@ public class InformationPage extends Application implements MessageCallback {
         );
 
         // Placeholder for weather icon and condition (we can dynamically load this if needed)
-        VBox weatherBox = new VBox(new ImageView(new Image(cityInformation.getForecast().getWeatherImageSrc())),
+        VBox weatherBox = new VBox(cityInformation.getForecast().getWeatherImage(),
                 new Label(cityInformation.getForecast().getWeatherStatus()));
         weatherBox.setAlignment(Pos.CENTER);
 
@@ -457,7 +467,7 @@ public class InformationPage extends Application implements MessageCallback {
                         Forecast forecast = new Forecast(
                             response.getTemperature(),          // assuming getTemperature() returns temperature
                             response.getWeatherCondition(),     // assuming getWeatherCondition() returns condition
-                            response.getWeatherIcon(),          // assuming getWeatherIcon() returns an icon URL
+                            createWeatherIcon(response.getWeatherIcon()),          // assuming getWeatherIcon() returns an icon URL
                             new ForecastDetails()               // pass any additional details required here
                         );
             

@@ -1,19 +1,21 @@
 package compse110.frontend.Entity;
 
+import javafx.scene.image.ImageView;
+
 public class Forecast {
 
     private double temperature;
 
     private String weatherStatus;
 
-    private String weatherImageSrc;
+    private ImageView weatherImage;
 
     private ForecastDetails details;
 
-    public Forecast(double temperature, String weatherStatus, String weatherImageSrc, ForecastDetails details) {
+    public Forecast(double temperature, String weatherStatus, ImageView weatherImage, ForecastDetails details) {
         this.temperature = temperature;
         this.weatherStatus = weatherStatus;
-        this.weatherImageSrc = weatherImageSrc;
+        this.weatherImage = weatherImage;
         this.details = details;
     }
 
@@ -33,12 +35,12 @@ public class Forecast {
         this.weatherStatus = weatherStatus;
     }
 
-    public String getWeatherImageSrc() {
-        return weatherImageSrc;
+    public ImageView getWeatherImage() {
+        return weatherImage;
     }
 
-    public void setWeatherImageSrc(String weatherImageSrc) {
-        this.weatherImageSrc = weatherImageSrc;
+    public void setWeatherImage(ImageView weatherImage) {
+        this.weatherImage = weatherImage;
     }
 
     public ForecastDetails getDetails() {
