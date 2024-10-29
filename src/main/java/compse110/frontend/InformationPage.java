@@ -365,10 +365,6 @@ public class InformationPage extends Application implements MessageCallback {
             weatherResponse.getWeatherIcon(),
             new ForecastDetails()
         );
-        InfoBox temperatureBox = new InfoBox(
-            String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()), 
-            "Temperature"
-        );
         // Update UI components (assuming cityInfoBox has elements like temperature label, weather icon, etc.)
         ((Label) cityInfoBox.lookup("#temperatureLabel")).setText(forecast.getTemperature() + "°C");
         ((ImageView) cityInfoBox.lookup("#weatherIcon")).setImage(new Image(forecast.getWeatherImageSrc()));
