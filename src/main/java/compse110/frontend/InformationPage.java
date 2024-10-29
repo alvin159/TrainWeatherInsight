@@ -383,7 +383,15 @@ public class InformationPage extends Application implements MessageCallback {
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
             Events.TrainResponseEvent.Payload responsePayload = (Events.TrainResponseEvent.Payload) payload;
-            //TODO: Handle error if no trains were found
+            if(responsePayload.getTrainInformationList() == null) {
+                Platform.runLater(() -> {
+                    trainScheduleBox.getChildren().clear();
+                    Label errorLabel = new Label(responsePayload.getErrorMessage());
+                    trainScheduleBox.getChildren().add(errorLabel);
+                });
+                return;
+            }
+            
             Platform.runLater(() -> {
                 trainListView.getItems().clear();
                 trainListView.getItems().addAll(responsePayload.getTrainInformationList());

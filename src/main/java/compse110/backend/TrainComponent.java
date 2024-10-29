@@ -126,7 +126,10 @@ public class TrainComponent extends BackendComponent {
             if (trainDataList != null) {
                 broker.publish(Events.EventType.TRAIN_RESPONSE, new Events.TrainResponseEvent.Payload(trainInformationList));
             } else {
-                broker.publish(Events.EventType.ERROR_RESPONSE,null);
+
+                Events.TrainResponseEvent.Payload errorPayload = new Events.TrainResponseEvent.Payload(null);
+                errorPayload.setErrorMessage("No trains were found between " + trainRequestPayload.getDepartureStationShortCode() + " and " + trainRequestPayload.getArrivalStationShortCode() + " on " + covertDateToString(trainRequestPayload.getDepartingDate()));
+                broker.publish(Events.EventType.TRAIN_RESPONSE, errorPayload);
             }
         }
     }

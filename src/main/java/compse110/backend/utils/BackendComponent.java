@@ -26,8 +26,6 @@ public abstract class BackendComponent implements MessageCallback {
                 handleEvent(event, payload);
             } catch (Exception e) {
                 e.printStackTrace();
-                // TODO: Log error
-                broker.publish(EventType.ERROR_RESPONSE, null);
             }
         });
     }
