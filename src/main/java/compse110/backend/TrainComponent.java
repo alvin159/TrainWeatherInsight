@@ -65,7 +65,7 @@ public class TrainComponent extends BackendComponent {
 
     }
 
-    public List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode) {
+    private List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode) {
         if(trainDataList == null || trainDataList.isEmpty()) {
             return null;
         }
