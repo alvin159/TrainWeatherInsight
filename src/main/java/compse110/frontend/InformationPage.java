@@ -181,7 +181,15 @@ public class InformationPage extends Application implements MessageCallback {
         });
 
         //add data
-        broker.publish(Events.TrainRequestEvent.TOPIC, new Events.TrainRequestEvent.Payload(Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()), message.getDepartingStation().getStationShortCode(), message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null));
+        broker.publish(
+            Events.TrainRequestEvent.TOPIC, 
+            new Events.TrainRequestEvent.Payload(
+                Date.from(message.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                message.getDepartingStation().getStationShortCode(),
+                message.getArrivingStation() != null ? message.getArrivingStation().getStationShortCode() : null
+            )
+        );
+
         trainScheduleBox.getChildren().add(addLoadingView());
 
         // clear children view first
