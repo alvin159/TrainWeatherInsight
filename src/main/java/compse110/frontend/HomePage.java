@@ -83,7 +83,7 @@ public class HomePage extends Application implements MessageCallback{
         arrivalStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
         arrivalStationField.setOnMousePressed(this::handleFocusingOnTextField);
 
-        Label departureDateLabel = new Label("Departure date:");
+        Label departureDateLabel = new Label("Departure date:\n(require arrive station)");
         departureDatePicker = new DatePicker();
         departureDatePicker.setValue(LocalDate.now()); // Set default value to today
 

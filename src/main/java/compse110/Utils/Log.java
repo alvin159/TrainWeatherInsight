@@ -3,7 +3,7 @@ package compse110.Utils;
 // ref: https://developer.android.com/reference/android/util/Log
 public class Log {
 
-    private final static boolean isDebug = false;
+    private final static boolean isDebug = true;
 
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
