@@ -48,6 +48,7 @@ public class InformationPage extends Application implements MessageCallback {
     private VBox arriveCityInfoView;
     CityInformation departingCityInfo;
     CityInformation arrivingCityInfo;
+    GridPane gridpane;
 
     private Stage primaryStage;
 
@@ -189,47 +190,50 @@ public class InformationPage extends Application implements MessageCallback {
         // Adding all sections to the root layout
         root.getChildren().add(addHeaderView());
 
-        // TODO this only demo data
-        if (message.getArrivingStation() != null)
-        //broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getStationName().trim().split("\\s+")[0])));
-        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude())));
+        broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude(), message.getDepartingStation().getStationName())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
         departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), weatherForecast, cityDetails);
 
+        gridpane = new GridPane();
+        gridpane.setAlignment(Pos.CENTER);
+        
         departCityInfoView = addCityInformationView(departingCityInfo);
 
-        root.getChildren().add(departCityInfoView);
-        root.getChildren().add(addTrainScheduleTitleLine());
-        root.getChildren().add(trainScheduleBox);
+        gridpane.add(departCityInfoView, 0, 0);
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(100);
+        gridpane.getColumnConstraints().add(column);
+        GridPane.setHgrow(departCityInfoView, Priority.ALWAYS);
+        gridpane.add(addTrainScheduleTitleLine(),0,1);
+        gridpane.add(trainScheduleBox, 0, 2);
 
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
-            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getDepartingStation().getLatitude())));
+            broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getArrivingStation().getLatitude(), message.getArrivingStation().getStationName())));
             
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
-            root.getChildren().add(arriveCityInfoView);
+            gridpane.add(arriveCityInfoView, 0, 3);
         }
-        // Your other view components like train schedules or city information can be added here..
-
+        root.getChildren().add(gridpane);
     }
 
     // Function to fetch Icons
     private ImageView createWeatherIcon(String iconName) {
-        // Construct the path relative to the resources folder
         String iconPath = "/icon/" + iconName + ".png";
-
-        // Load the image
         Image icon = new Image(getClass().getResourceAsStream(iconPath));
         return new ImageView(icon);
     }
 
     private void updateCityWeather(CityInformation arrivalOrDepartingCityInfo, VBox arrivalOrDepartingInfoView, Forecast weatherForecast) {
         arrivalOrDepartingCityInfo.setForecast(weatherForecast);
-        arrivalOrDepartingInfoView.getChildren().clear();
-        arrivalOrDepartingInfoView = addCityInformationView(departingCityInfo);
+        Integer rowIndex = GridPane.getRowIndex(arrivalOrDepartingInfoView);
+        Integer columnIndex = GridPane.getColumnIndex(arrivalOrDepartingInfoView);
+        gridpane.getChildren().remove(arrivalOrDepartingInfoView);
+        arrivalOrDepartingInfoView = addCityInformationView(arrivalOrDepartingCityInfo);
+        gridpane.add(arrivalOrDepartingInfoView, columnIndex != null ? columnIndex : 0, rowIndex != null ? rowIndex : 0);
     }
 
     private HBox addLoadingView() {
@@ -449,36 +453,30 @@ public class InformationPage extends Application implements MessageCallback {
 
         } else if (event == EventType.WEATHER_RESPONSE && payload instanceof Events.WeatherResponseEvent.Payload) {
             Events.WeatherResponseEvent.Payload weatherResponse = (Events.WeatherResponseEvent.Payload) payload;
-            // These are example getters and you can replace them
-            weatherResponse.getWeatherResponse().getTemperature();
-            weatherResponse.getWeatherResponse().getWeatherCondition();
-            weatherResponse.getWeatherResponse().getWeatherIcon();
-            System.out.println("Weather response received: " + weatherResponse.getWeatherResponse().getTemperature() + " " + weatherResponse.getWeatherResponse().getWeatherCondition() + " " + weatherResponse.getWeatherResponse().getWeatherIcon());
-            
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     if (weatherResponse.getWeatherResponse() == null) {
-                        // Print an error message when no weather data is available
-                        System.err.println("Error: No weather data received.");
                     } else {
-                        // Set the weatherForecast array with the weather data received
                         WeatherResponse response = weatherResponse.getWeatherResponse();
+                        System.out.println("Received information for " + weatherResponse.getStationName() + ": " + response.toString());
                         Forecast forecast = new Forecast(
-                            response.getTemperature(),          // assuming getTemperature() returns temperature
-                            response.getWeatherCondition(),     // assuming getWeatherCondition() returns condition
-                            createWeatherIcon(response.getWeatherIcon()),          // assuming getWeatherIcon() returns an icon URL
-                            new ForecastDetails()               // pass any additional details required here
+                            (response.getTemperature() - 32) * 5 / 9,
+                            response.getWeatherCondition(),
+                            createWeatherIcon(response.getWeatherIcon()),
+                            new ForecastDetails()
                         );
             
-                        // Assign the forecast to weatherForecast (assuming it’s an array of Forecast)
-                        //if(departingCityInfo != null) {
-                        //    updateCityWeather(departingCityInfo, departCityInfoView, forecast);
-                        //    System.out.println("Weather data updated successfully.");
-                        //}
+                        if(weatherResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
+                            departingCityInfo.setForecast(forecast);
+                            updateCityWeather(departingCityInfo, departCityInfoView, forecast);
+                        } else {
+                            arrivingCityInfo.setForecast(forecast);
+                            updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
+                        }
                     }
                 }
-            });            
+            });
         }
     }
 

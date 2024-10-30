@@ -29,14 +29,16 @@ public class WeatherComponent extends BackendComponent{
         if(event == EventType.WEATHER_REQUEST && payload instanceof WeatherRequestEvent.Payload) {
             try {
                 Events.WeatherRequestEvent.Payload weatherRequestPayload = getPayload(event, payload);
-                String weatherName = weatherRequestPayload.getWeatherRequest().getCityName();
+                String stationName = weatherRequestPayload.getWeatherRequest().getStationName();
             
                 // Format the LocalDate to a String
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // Adjust format as needed
                 String weatherDate = weatherRequestPayload.getWeatherRequest().getDate().format(formatter);
                 Double longitude = weatherRequestPayload.getWeatherRequest().getLongitude();
                 Double latitude = weatherRequestPayload.getWeatherRequest().getLatitude();
-                fetchWeatherData(weatherDate, latitude, longitude);
+                String weatherJSONdata = fetchWeatherData(weatherDate, latitude, longitude);
+                WeatherResponse weatherResponse = parseWeatherData(weatherJSONdata, latitude, longitude);
+                broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse, stationName) );
             
             } catch (IOException e) {
                 System.err.println("Error fetching weather data for the city: " + e.getMessage());
@@ -45,12 +47,10 @@ public class WeatherComponent extends BackendComponent{
         }
     }
 
-    private void fetchWeatherData(String date, Double latitude, Double longitude) throws IOException {
+    private String fetchWeatherData(String date, Double latitude, Double longitude) throws IOException {
         // Build the Weather API URL using the city name
         String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
                      + latitude + "," + longitude + "/" + date + "?key=" + API_KEY;
-        System.out.print(url);
-                     // Create the request
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -63,11 +63,11 @@ public class WeatherComponent extends BackendComponent{
 
             // Parse the response
             String responseData = response.body().string();
-            parseWeatherData(responseData, latitude, longitude);
+            return responseData;
         }
     }
 
-    private void parseWeatherData(String jsonResponse, Double latitude, Double longitude) {
+    private WeatherResponse parseWeatherData(String jsonResponse, Double latitude, Double longitude) {
         JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
         // Get the current time in Finland (UTC+3)
@@ -88,13 +88,8 @@ public class WeatherComponent extends BackendComponent{
         String weatherIcon = currentConditions.get("icon").getAsString();
 
         // Create a WeatherResponse and send it to the MessageBroker
-        WeatherResponse WeatherResponse = new WeatherResponse(temperature, weatherCondition, weatherIcon);
-        sendWeatherResponse(WeatherResponse);
-    }
-
-    private void sendWeatherResponse(WeatherResponse weatherResponse) {
-        // Publish the weather data through the MessageBroker
-        broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse) );
+        WeatherResponse weatherResponse = new WeatherResponse(temperature, weatherCondition, weatherIcon);
+        return weatherResponse;
     }
 
     public void initialize() {

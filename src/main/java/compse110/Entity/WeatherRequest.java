@@ -3,14 +3,15 @@ import java.time.LocalDate;
 
 public class WeatherRequest {
     private LocalDate date;
-    private String cityName;
+    private String stationName;
     private Double longitude;
     private Double latitude;
 
-    public WeatherRequest(LocalDate date, Double longitude, Double latitude) {
+    public WeatherRequest(LocalDate date, Double longitude, Double latitude, String stationName) {
         this.date = date;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.stationName = stationName;
     }
 
     public WeatherRequest() {}
@@ -39,19 +40,19 @@ public class WeatherRequest {
         this.longitude = longitude;
     }
 
-    public String getCityName() {
-        return cityName;
+    public String getStationName() {
+        return stationName;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     @Override
     public String toString() {
         return "WeatherRequest{" +
                 "date=" + date +
-                ", cityName='" + cityName + '\'' +
+                ", cityName='" + stationName + '\'' +
                 '}';
     }
 }
