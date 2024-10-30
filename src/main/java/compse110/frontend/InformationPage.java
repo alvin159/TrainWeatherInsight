@@ -434,9 +434,9 @@ public class InformationPage extends Application implements MessageCallback {
         return titleLine;
     }
 
-    private void showTemperatureGraph(JsonArray response) {
+    private void showTemperatureGraph(JsonArray response, String name) {
         Stage stage = new Stage();
-        stage.setTitle("Temperature Graph");
+        stage.setTitle("Temperature Graph in " + name );
 
         // Set up the X (index) and Y (temperature in Celsius) axes
         final NumberAxis xAxis = new NumberAxis(1, 23, 1); // Set range from 1 to 25
@@ -520,12 +520,12 @@ public class InformationPage extends Application implements MessageCallback {
             
                         if(weatherResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
                             System.out.println(response.getHours());
-                            showTemperatureGraph(response.getHours());
+                            showTemperatureGraph(response.getHours(), message.getDepartingStation().getStationName());
                             departingCityInfo.setForecast(forecast);
                             updateCityWeather(departingCityInfo, departCityInfoView, forecast);
                         } else {
                             arrivingCityInfo.setForecast(forecast);
-                            showTemperatureGraph(response.getHours());
+                            showTemperatureGraph(response.getHours(), message.getArrivingStation().getStationName());
                             updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
                         }
                     }
