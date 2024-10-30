@@ -24,6 +24,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,6 +38,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 public class InformationPage extends Application implements MessageCallback {
 
     private static final MessageBroker broker = MessageBroker.getInstance();
@@ -386,10 +392,17 @@ public class InformationPage extends Application implements MessageCallback {
 
         cityInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
 
+        // Loading label for the graph
+        Label loadingLabel = new Label("Loading temperature graph...");
+        loadingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: gray;");
+        loadingLabel.setVisible(false); // Initially hidden
+        cityInfoBox.getChildren().add(loadingLabel);
+
         // Button for showing detailed forecast (expanded functionality)
         Button toggleForecastButton = new Button("See detailed forecast");
         toggleForecastButton.setOnAction(e -> {
-            // Expand to show the detailed forecast information
+            loadingLabel.setVisible(true); // Show loading label
+            // Optionally, you could disable the button or the whole UI to prevent further interactions
         });
         cityInfoBox.getChildren().add(toggleForecastButton);
 
@@ -427,6 +440,38 @@ public class InformationPage extends Application implements MessageCallback {
         titleLine.add(weatherLabel, 8, 0);
 
         return titleLine;
+    }
+
+    private void showTemperatureGraph(JsonArray response) {
+        Stage stage = new Stage();
+        stage.setTitle("Temperature Graph");
+
+        // Set up the X (index) and Y (temperature in Celsius) axes
+        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Time Point");
+        yAxis.setLabel("Temperature (°C)");
+
+        // Create the LineChart and data series
+        final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Temperature over Time");
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName("Temperature");
+
+        // Adding temperature data points to the chart
+        for (int i = 0; i < response.size(); i++) {
+            JsonObject entry = response.get(i).getAsJsonObject();
+            double tempFahrenheit = entry.get("temperature").getAsDouble();
+            double tempCelsius = (tempFahrenheit - 32) * 5 / 9;
+            series.getData().add(new XYChart.Data<>(i, tempCelsius));
+        }
+
+        // Add the series to the chart and set up the scene
+        lineChart.getData().add(series);
+        Scene scene = new Scene(lineChart, 800, 600);
+        stage.setScene(scene);
+        stage.show();
     }
 
 
@@ -482,10 +527,13 @@ public class InformationPage extends Application implements MessageCallback {
                         );
             
                         if(weatherResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
+                            System.out.println(response.getHours());
+                            showTemperatureGraph(response.getHours());
                             departingCityInfo.setForecast(forecast);
                             updateCityWeather(departingCityInfo, departCityInfoView, forecast);
                         } else {
                             arrivingCityInfo.setForecast(forecast);
+                            showTemperatureGraph(response.getHours());
                             updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
                         }
                     }

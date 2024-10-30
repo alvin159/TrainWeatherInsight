@@ -1,6 +1,8 @@
 package compse110.backend;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
@@ -14,6 +16,7 @@ import okhttp3.Response;
 import compse110.backend.utils.BackendComponent;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -79,8 +82,33 @@ public class WeatherComponent extends BackendComponent{
                 .get(0)
                 .getAsJsonObject()
                 .getAsJsonArray("hours")
-                .get(currentFinnishTime.getHour())  // Get current hour in Finnish time
+                .get(currentFinnishTime.getHour())
                 .getAsJsonObject();
+
+
+        JsonArray first24HoursData = new JsonArray();
+
+        JsonArray hoursArray = jsonObject
+                .getAsJsonArray("days")
+                .get(0)
+                .getAsJsonObject()
+                .getAsJsonArray("hours");
+        
+        for (int i = 0; i < 24; i++) {
+            JsonObject hourlyData = hoursArray.get(i).getAsJsonObject();
+            double first24HoursTemperature = hourlyData.get("temp").getAsDouble();
+            String first24HoursWeatherCondition = hourlyData.get("conditions").getAsString();
+            String first24HoursWeatherIcon = hourlyData.get("icon").getAsString();
+        
+            // Create a new JsonObject for this hour's data
+            JsonObject hourData = new JsonObject();
+            hourData.addProperty("temperature", first24HoursTemperature);
+            hourData.addProperty("conditions", first24HoursWeatherCondition);
+            hourData.addProperty("icon", first24HoursWeatherIcon);
+        
+            // Add this hour's data to the first24HoursData array
+            first24HoursData.add(hourData);
+        }
 
         // Extract temperature, conditions, and weather icon
         double temperature = currentConditions.get("temp").getAsDouble();
@@ -88,7 +116,7 @@ public class WeatherComponent extends BackendComponent{
         String weatherIcon = currentConditions.get("icon").getAsString();
 
         // Create a WeatherResponse and send it to the MessageBroker
-        WeatherResponse weatherResponse = new WeatherResponse(temperature, weatherCondition, weatherIcon);
+        WeatherResponse weatherResponse = new WeatherResponse(temperature, weatherCondition, weatherIcon, first24HoursData);
         return weatherResponse;
     }
 
