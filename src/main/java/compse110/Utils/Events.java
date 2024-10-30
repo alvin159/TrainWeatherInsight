@@ -56,14 +56,20 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final WeatherResponse weatherResponse;
+            private final String stationName;
             private String errorMessage;
 
-            public Payload(WeatherResponse weatherResponse) {
+            public Payload(WeatherResponse weatherResponse, String stationName) {
                 this.weatherResponse = weatherResponse;
+                this.stationName = stationName;
             }
 
             public WeatherResponse getWeatherResponse() {
                 return weatherResponse;
+            }
+
+            public String getStationName() {
+                return stationName;
             }
 
             @Override
