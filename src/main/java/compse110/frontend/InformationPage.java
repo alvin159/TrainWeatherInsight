@@ -392,17 +392,9 @@ public class InformationPage extends Application implements MessageCallback {
 
         cityInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
 
-        // Loading label for the graph
-        Label loadingLabel = new Label("Loading temperature graph...");
-        loadingLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: gray;");
-        loadingLabel.setVisible(false); // Initially hidden
-        cityInfoBox.getChildren().add(loadingLabel);
-
         // Button for showing detailed forecast (expanded functionality)
         Button toggleForecastButton = new Button("See detailed forecast");
         toggleForecastButton.setOnAction(e -> {
-            loadingLabel.setVisible(true); // Show loading label
-            // Optionally, you could disable the button or the whole UI to prevent further interactions
         });
         cityInfoBox.getChildren().add(toggleForecastButton);
 
@@ -447,14 +439,14 @@ public class InformationPage extends Application implements MessageCallback {
         stage.setTitle("Temperature Graph");
 
         // Set up the X (index) and Y (temperature in Celsius) axes
-        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis xAxis = new NumberAxis(1, 23, 1); // Set range from 1 to 25
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time Point");
         yAxis.setLabel("Temperature (°C)");
 
         // Create the LineChart and data series
         final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Temperature over Time");
+        lineChart.setTitle("Temperature over time");
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("Temperature");
