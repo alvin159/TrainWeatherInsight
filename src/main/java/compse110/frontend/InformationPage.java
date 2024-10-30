@@ -439,9 +439,9 @@ public class InformationPage extends Application implements MessageCallback {
         stage.setTitle("Temperature Graph in " + name );
 
         // Set up the X (index) and Y (temperature in Celsius) axes
-        final NumberAxis xAxis = new NumberAxis(1, 23, 1); // Set range from 1 to 25
+        final NumberAxis xAxis = new NumberAxis(1, 23, 1);
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time Point");
+        xAxis.setLabel("Hours");
         yAxis.setLabel("Temperature (°C)");
 
         // Create the LineChart and data series
@@ -451,17 +451,45 @@ public class InformationPage extends Application implements MessageCallback {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("Temperature");
 
-        // Adding temperature data points to the chart
-        for (int i = 0; i < response.size(); i++) {
-            JsonObject entry = response.get(i).getAsJsonObject();
-            double tempFahrenheit = entry.get("temperature").getAsDouble();
-            double tempCelsius = (tempFahrenheit - 32) * 5 / 9;
-            series.getData().add(new XYChart.Data<>(i, tempCelsius));
-        }
+        // Spinner for interval input (values from 1 to 6)
+        Spinner<Integer> intervalSpinner = new Spinner<>();
+        intervalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 6, 1));
 
-        // Add the series to the chart and set up the scene
+        intervalSpinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.equals(6) && oldValue.equals(6)) intervalSpinner.getValueFactory().setValue(1);
+            if (newValue.equals(1) && oldValue.equals(1)) intervalSpinner.getValueFactory().setValue(6);
+        });
+
+        // Button to update the graph
+        Button updateButton = new Button("Update Graph");
+
+        updateButton.setOnAction(e -> {
+            // Clear previous data points
+            series.getData().clear();
+
+            // Get user-selected interval from the Spinner
+            int interval = intervalSpinner.getValue();
+
+            // Limit to a maximum of 6 data points displayed
+            for (int i = 0; i < response.size(); i += interval) {
+                JsonObject entry = response.get(i).getAsJsonObject();
+                double tempFahrenheit = entry.get("temperature").getAsDouble();
+                double tempCelsius = (tempFahrenheit - 32) * 5 / 9;
+                series.getData().add(new XYChart.Data<>(i, tempCelsius));
+            }
+        });
+
+        // Add initial data with default interval (1)
+        updateButton.fire();
+
+        // Layout
+        VBox inputBox = new VBox(5, intervalSpinner, updateButton);
+        BorderPane root = new BorderPane();
+        root.setTop(inputBox);
+        root.setCenter(lineChart);
+
         lineChart.getData().add(series);
-        Scene scene = new Scene(lineChart, 800, 600);
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
         stage.show();
     }
