@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import compse110.backend.DemographicComponent;
 import compse110.backend.TrainComponent;
 import compse110.backend.WeatherComponent;
 import compse110.backend.SearhStationComponent.SearchStationComponent;
@@ -86,9 +87,14 @@ public class MessageBroker implements MessageBrokerInterface {
         }
     }
 
+    // IMPORTANT: Initialize all backend services here
+    // All backend services should be initialized here
     private static void initializeBackend() {
         SearchStationComponent searchStationComponent = new SearchStationComponent();
         searchStationComponent.initialize();
+
+        DemographicComponent demographicComponent = new DemographicComponent();
+        demographicComponent.initialize();
 
         TrainComponent trainComponent = new TrainComponent();
         trainComponent.initialize();
