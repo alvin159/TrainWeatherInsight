@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
+import compse110.Utils.Log;
 import compse110.backend.utils.BackendComponent;
 import compse110.messagebroker.MessageCallback;
 import com.google.gson.JsonObject;
@@ -18,11 +19,10 @@ import java.time.format.DateTimeFormatter;
 
 public class DemographicComponent extends BackendComponent {
 
-    private static final MessageBroker broker = MessageBroker.getInstance();
-
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {
-        if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent) {
+
+        if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent.Payload) {
             Events.DemographicRequestEvent.Payload demographicRequestPayload = getPayload(event, payload);
             String stationName = demographicRequestPayload.getDemographicRequest().getStationName();
             String cityName = demographicRequestPayload.getDemographicRequest().getCityName();
@@ -98,6 +98,7 @@ public class DemographicComponent extends BackendComponent {
     @Override
     public void shutdown() {
         broker.unsubscribe(EventType.DEMOGRAPHIC_REQUEST, this);
+        executor.shutdown();
     }
 
 }

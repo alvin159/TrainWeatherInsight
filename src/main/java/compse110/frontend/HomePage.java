@@ -34,7 +34,6 @@ import javafx.application.Platform;
 public class HomePage extends Application implements MessageCallback{
 
     private static final MessageBroker broker = MessageBroker.getInstance();
-    private Label backendLabel;
     private TextField departingStationField;
     private TextField arrivalStationField;
     private ContextMenu contextMenu;
@@ -146,7 +145,7 @@ public class HomePage extends Application implements MessageCallback{
         });
 
         // Label to display the response from the backend to user
-        backendLabel = new Label();
+        Label backendLabel = new Label();
         backendLabel.setPrefWidth(400); // Set the preferred width to 400 pixels
         backendLabel.setStyle("-fx-font-weight: bold;");
 

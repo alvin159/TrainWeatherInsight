@@ -9,6 +9,7 @@ import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
 import compse110.Utils.Events.WeatherRequestEvent;
 import compse110.Entity.*;
+import compse110.Utils.Log;
 import compse110.messagebroker.MessageBroker;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -66,6 +67,7 @@ public class WeatherComponent extends BackendComponent{
 
             // Parse the response
             String responseData = response.body().string();
+            Log.d("WeatherComponent", responseData);
             return responseData;
         }
     }
