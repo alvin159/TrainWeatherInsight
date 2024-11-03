@@ -182,14 +182,20 @@ public class Events {
 
         public static class Payload implements EventPayload {
             private final DemographicResponse demographicResponse;
+            private final String stationName;
             private String errorMessage;
 
-            public Payload(DemographicResponse demographicResponse) {
+            public Payload(DemographicResponse demographicResponse, String stationName) {
                 this.demographicResponse = demographicResponse;
+                this.stationName = stationName;
             }
 
             public DemographicResponse getDemographicResponse() {
                 return demographicResponse;
+            }
+
+            public String getStationName() {
+                return stationName;
             }
 
             @Override

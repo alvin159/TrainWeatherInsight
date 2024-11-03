@@ -6,6 +6,7 @@ public class Station {
     private boolean passengerTraffic;
     private String type;
     private String stationName;
+    private String cityName;
     private String stationShortCode;
     private int stationUICCode;
     private String countryCode;
@@ -15,10 +16,11 @@ public class Station {
     public Station() {
     }
 
-    public Station(boolean passengerTraffic, String type, String stationName, String stationShortCode, int stationUICCode, String countryCode, double longitude, double latitude) {
+    public Station(boolean passengerTraffic, String type, String stationName, String cityName, String stationShortCode, int stationUICCode, String countryCode, double longitude, double latitude) {
         this.passengerTraffic = passengerTraffic;
         this.type = type;
         this.stationName = stationName;
+        this.cityName = cityName;
         this.stationShortCode = stationShortCode;
         this.stationUICCode = stationUICCode;
         this.countryCode = countryCode;
@@ -48,6 +50,14 @@ public class Station {
 
     public void setStationName(String stationName) {
         this.stationName = stationName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 
     public String getStationShortCode() {

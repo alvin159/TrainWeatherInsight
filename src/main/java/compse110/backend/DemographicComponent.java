@@ -23,15 +23,15 @@ public class DemographicComponent extends BackendComponent {
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {
         if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent) {
-            // TODO: Implement the logic to fetch demographic data
             Events.DemographicRequestEvent.Payload demographicRequestPayload = getPayload(event, payload);
+            String stationName = demographicRequestPayload.getDemographicRequest().getStationName();
             String cityName = demographicRequestPayload.getDemographicRequest().getCityName();
             DemographicResponse response = fetchDemographicData(cityName);
             if ( response!= null) {
-                broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response));
+                broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response,stationName));
             } else {
 
-                Events.DemographicResponseEvent.Payload errorPayload = new Events.DemographicResponseEvent.Payload(null);
+                Events.DemographicResponseEvent.Payload errorPayload = new Events.DemographicResponseEvent.Payload(null,stationName);
                 errorPayload.setErrorMessage("No demographic information found in " + cityName);
                 broker.publish(EventType.DEMOGRAPHIC_RESPONSE, errorPayload);
             }
@@ -89,12 +89,7 @@ public class DemographicComponent extends BackendComponent {
             return null;
         }
     }
-/*
-    private void sendDemographicResponse(DemographicResponse response) {
-        broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response));
-        System.out.println("Published DEMOGRAPHIC_RESPONSE event with payload: " + response);
-    }
-*/
+
     @Override
     public void initialize() {
         broker.subscribe(EventType.DEMOGRAPHIC_REQUEST, this);

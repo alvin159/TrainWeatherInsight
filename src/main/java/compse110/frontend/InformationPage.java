@@ -1,9 +1,6 @@
 package compse110.frontend;
 
-import compse110.Entity.Station;
-import compse110.Entity.TrainInformation;
-import compse110.Entity.WeatherRequest;
-import compse110.Entity.WeatherResponse;
+import compse110.Entity.*;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
@@ -205,6 +202,7 @@ public class InformationPage extends Application implements MessageCallback {
         root.getChildren().add(addHeaderView());
 
         broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getDepartingStation().getLongitude(), message.getDepartingStation().getLatitude(), message.getDepartingStation().getStationName())));
+        broker.publish(EventType.DEMOGRAPHIC_REQUEST, new Events.DemographicRequestEvent.Payload(new DemographicRequest(message.getDepartingStation().getCityName(), message.getDepartingStation().getStationName())));
         // Add static city details and initialize placeholder departing city information view
         CityDetails cityDetails = new CityDetails(200000, 15231.3, 192.3);
         departingCityInfo = new CityInformation(0, message.getDepartingStation().getStationName(), weatherForecast, cityDetails);
@@ -225,7 +223,7 @@ public class InformationPage extends Application implements MessageCallback {
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
             broker.publish(EventType.WEATHER_REQUEST, new WeatherRequestEvent.Payload(new WeatherRequest(message.getDate() ,message.getArrivingStation().getLongitude(), message.getArrivingStation().getLatitude(), message.getArrivingStation().getStationName())));
-            
+            broker.publish(EventType.DEMOGRAPHIC_REQUEST, new Events.DemographicRequestEvent.Payload(new DemographicRequest(message.getArrivingStation().getCityName(), message.getArrivingStation().getStationName())));
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
@@ -243,6 +241,15 @@ public class InformationPage extends Application implements MessageCallback {
 
     private void updateCityWeather(CityInformation arrivalOrDepartingCityInfo, VBox arrivalOrDepartingInfoView, Forecast weatherForecast) {
         arrivalOrDepartingCityInfo.setForecast(weatherForecast);
+        Integer rowIndex = GridPane.getRowIndex(arrivalOrDepartingInfoView);
+        Integer columnIndex = GridPane.getColumnIndex(arrivalOrDepartingInfoView);
+        gridpane.getChildren().remove(arrivalOrDepartingInfoView);
+        arrivalOrDepartingInfoView = addCityInformationView(arrivalOrDepartingCityInfo);
+        gridpane.add(arrivalOrDepartingInfoView, columnIndex != null ? columnIndex : 0, rowIndex != null ? rowIndex : 0);
+    }
+
+    private void updateCityDetails(CityInformation arrivalOrDepartingCityInfo, VBox arrivalOrDepartingInfoView, CityDetails cityDetails) {
+        arrivalOrDepartingCityInfo.setCityDetails(cityDetails);
         Integer rowIndex = GridPane.getRowIndex(arrivalOrDepartingInfoView);
         Integer columnIndex = GridPane.getColumnIndex(arrivalOrDepartingInfoView);
         gridpane.getChildren().remove(arrivalOrDepartingInfoView);
@@ -501,6 +508,7 @@ public class InformationPage extends Application implements MessageCallback {
      * @param event   the type of the event received
      * @param payload the payload of the event
      */
+
     @Override
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
@@ -555,6 +563,29 @@ public class InformationPage extends Application implements MessageCallback {
                             arrivingCityInfo.setForecast(forecast);
                             showTemperatureGraph(response.getHours(), message.getArrivingStation().getStationName());
                             updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
+                        }
+
+                    }
+                }
+            });
+        }else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.WeatherResponseEvent.Payload) {
+            Events.DemographicResponseEvent.Payload demographicResponse = (Events.DemographicResponseEvent.Payload) payload;
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (demographicResponse.getDemographicResponse() == null) {
+                    } else {
+                        DemographicResponse response = demographicResponse.getDemographicResponse();
+                        System.out.println("Received information: " + response.toString());
+                        CityDetails cityDetails = new CityDetails(response.getPopulation(), response.getLandArea(), response.getPopulation());
+
+                        if(demographicResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
+                            departingCityInfo.setCityDetails(cityDetails);
+                            updateCityDetails(departingCityInfo,departCityInfoView,cityDetails);
+
+                        } else {
+                            arrivingCityInfo.setCityDetails(cityDetails);
+                            updateCityDetails(arrivingCityInfo,arriveCityInfoView,cityDetails);
                         }
                     }
                 }

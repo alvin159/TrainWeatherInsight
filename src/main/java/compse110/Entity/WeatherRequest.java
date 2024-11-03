@@ -52,7 +52,7 @@ public class WeatherRequest {
     public String toString() {
         return "WeatherRequest{" +
                 "date=" + date +
-                ", cityName='" + stationName + '\'' +
+                ", stationName='" + stationName + '\'' +
                 '}';
     }
 }
