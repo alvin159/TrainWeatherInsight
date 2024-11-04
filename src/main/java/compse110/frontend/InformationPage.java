@@ -565,7 +565,7 @@ public class InformationPage extends Application implements MessageCallback {
                     } else {
                         DemographicResponse response = demographicResponse.getDemographicResponse();
                         System.out.println("Received information: " + response.toString());
-                        CityDetails cityDetails = new CityDetails(response.getPopulation(), response.getLandArea(), response.getPopulation());
+                        CityDetails cityDetails = new CityDetails(response.getPopulation(), response.getLandArea(), response.getPopulationDensity());
 
                         if(demographicResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
                             departingCityInfo.setCityDetails(cityDetails);
