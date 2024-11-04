@@ -8,6 +8,7 @@ import compse110.Entity.Station;
 import compse110.Entity.WeatherRequest;
 import compse110.Utils.Log;
 import compse110.frontend.Entity.SearchInfo;
+import compse110.frontend.Entity.UIComponentFactory;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
@@ -83,21 +84,7 @@ public class HomePage extends Application implements MessageCallback{
         arrivalStationField.setOnMousePressed(this::handleFocusingOnTextField);
 
         Label departureDateLabel = new Label("Departure date:\n(require arrive station)");
-        departureDatePicker = new DatePicker();
-        departureDatePicker.setValue(LocalDate.now()); // Set default value to today
-
-        // Disable past dates and limit to 14 days in the DatePicker
-        departureDatePicker.setDayCellFactory(datePicker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                LocalDate today = LocalDate.now();
-                LocalDate maxDate = today.plusDays(14); // Calculate the maximum date (14 days from today)
-
-                // Disable dates that are empty, before today, or after maxDate
-                setDisable(empty || date.isBefore(today) || date.isAfter(maxDate));
-            }
-        });
+        departureDatePicker = UIComponentFactory.departureDatePickerCreator(LocalDate.now());
         
         Button searchButton = new Button("Search");
         searchButton.setStyle("-fx-background-color: #0BCAFF");

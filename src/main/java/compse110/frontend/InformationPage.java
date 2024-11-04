@@ -283,21 +283,7 @@ public class InformationPage extends Application implements MessageCallback {
         arrivalStationField.setId("arrivalStationField");
 
         Label dateLabel = new Label("Departure date:");
-        DatePicker departureDatePicker = new DatePicker();
-        departureDatePicker.setValue(message.getDate());
-
-        departureDatePicker.setDayCellFactory(datePicker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                setDisable(empty || date.isBefore(LocalDate.now()));
-                LocalDate today = LocalDate.now();
-                LocalDate maxDate = today.plusDays(14); // Calculate the maximum date (14 days from today)
-
-                // Disable dates that are empty, before today, or after maxDate
-                setDisable(empty || date.isBefore(today) || date.isAfter(maxDate));
-            }
-        });
+        DatePicker departureDatePicker = UIComponentFactory.departureDatePickerCreator(message.getDate());
 
         Button searchButton = new Button("Search");
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
