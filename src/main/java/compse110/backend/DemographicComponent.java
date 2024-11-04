@@ -25,7 +25,8 @@ public class DemographicComponent extends BackendComponent {
         if (event == EventType.DEMOGRAPHIC_REQUEST && payload instanceof DemographicRequestEvent.Payload) {
             Events.DemographicRequestEvent.Payload demographicRequestPayload = getPayload(event, payload);
             String stationName = demographicRequestPayload.getDemographicRequest().getStationName();
-            String cityName = demographicRequestPayload.getDemographicRequest().getCityName();
+            // Gets the city name by splitting station name where the space is
+            String cityName = stationName.split("\\s+")[0];
             DemographicResponse response = fetchDemographicData(cityName);
             if ( response!= null) {
                 broker.publish(EventType.DEMOGRAPHIC_RESPONSE, new Events.DemographicResponseEvent.Payload(response,stationName));

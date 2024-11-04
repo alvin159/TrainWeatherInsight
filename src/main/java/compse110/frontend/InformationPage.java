@@ -61,6 +61,7 @@ public class InformationPage extends Application implements MessageCallback {
 
         broker.subscribe(EventType.TRAIN_RESPONSE, this);
         broker.subscribe(EventType.WEATHER_RESPONSE, this);
+        broker.subscribe(EventType.DEMOGRAPHIC_RESPONSE, this);
 
         this.primaryStage = primaryStage;
 
@@ -568,8 +569,9 @@ public class InformationPage extends Application implements MessageCallback {
                     }
                 }
             });
-        }else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.WeatherResponseEvent.Payload) {
+        }else if (event == EventType.DEMOGRAPHIC_RESPONSE) { // TODO: For some reason the payload checking here doesn't work. Maybe payload is send wrongly ?
             Events.DemographicResponseEvent.Payload demographicResponse = (Events.DemographicResponseEvent.Payload) payload;
+            System.out.println(demographicResponse);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
