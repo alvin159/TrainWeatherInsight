@@ -569,7 +569,7 @@ public class InformationPage extends Application implements MessageCallback {
                     }
                 }
             });
-        }else if (event == EventType.DEMOGRAPHIC_RESPONSE) { // TODO: For some reason the payload checking here doesn't work. Maybe payload is send wrongly ?
+        }else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.DemographicResponseEvent.Payload) {
             Events.DemographicResponseEvent.Payload demographicResponse = (Events.DemographicResponseEvent.Payload) payload;
             System.out.println(demographicResponse);
             Platform.runLater(new Runnable() {
