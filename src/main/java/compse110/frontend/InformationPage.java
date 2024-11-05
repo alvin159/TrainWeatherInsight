@@ -413,7 +413,7 @@ public class InformationPage extends Application implements MessageCallback {
         Label arrivalStationLabel = new Label("Arrival Station");
         Label arrivalTimeLabel = new Label("Arrival Time");
         Label arrivalTrackLabel = new Label("Arrival Track");
-        Label weatherLabel = new Label("Weather");
+//        Label weatherLabel = new Label("Weather");
 
         titleLine.add(trainNameLabel, 0, 0);
         titleLine.add(departureTrackLabel, 1, 0);
@@ -423,7 +423,7 @@ public class InformationPage extends Application implements MessageCallback {
         titleLine.add(arrivalStationLabel, 5, 0);
         titleLine.add(arrivalTimeLabel, 6, 0);
         titleLine.add(arrivalTrackLabel, 7, 0);
-        titleLine.add(weatherLabel, 8, 0);
+//        titleLine.add(weatherLabel, 8, 0);
 
         return titleLine;
     }

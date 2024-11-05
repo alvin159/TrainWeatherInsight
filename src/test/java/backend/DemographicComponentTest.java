@@ -34,20 +34,20 @@ public class DemographicComponentTest {
         broker.publish(Events.DemographicRequestEvent.TOPIC, new Events.DemographicRequestEvent.Payload(new DemographicRequest("nokia")));
 
 
-        broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload("HEL", "Helsinki"));
-
-
-        broker.subscribe(Events.EventType.SEARCH_STATION_RESPONSE, new MessageCallback() {
-            @Override
-            public void onMessageReceived(Events.EventType event, EventPayload payload) {
-                Log.d("DemographicComponentTest", "SEARCH_STATION_RESPONSE Received event: " + event);
-                Class<?> clazz = payload.getClass();
-                Log.d("DemographicComponentTest", "SEARCH_STATION_RESPONSE Payload class: " + clazz.getName());
-                Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
-                Log.d("DemographicComponentTest", responsePayload.getStationList().toString());
-
-            }
-        });
+//        broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload("HEL", "Helsinki"));
+//
+//
+//        broker.subscribe(Events.EventType.SEARCH_STATION_RESPONSE, new MessageCallback() {
+//            @Override
+//            public void onMessageReceived(Events.EventType event, EventPayload payload) {
+//                Log.d("DemographicComponentTest", "SEARCH_STATION_RESPONSE Received event: " + event);
+//                Class<?> clazz = payload.getClass();
+//                Log.d("DemographicComponentTest", "SEARCH_STATION_RESPONSE Payload class: " + clazz.getName());
+//                Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
+//                Log.d("DemographicComponentTest", responsePayload.getStationList().toString());
+//
+//            }
+//        });
 
 
 

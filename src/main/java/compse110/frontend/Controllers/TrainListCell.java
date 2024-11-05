@@ -23,7 +23,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
     private final Label arrivalStation;
     private final Label arrivalTrack;
     private final Label arrivalTime;
-    private final ImageView forecastImage;
+//    private final ImageView forecastImage;
 
     public TrainListCell() {
         // Create view
@@ -39,13 +39,13 @@ public class TrainListCell extends ListCell<TrainInformation> {
         departureTrack = new Label();
         arrivalTrack = new Label();
         arrivalTime = new Label();
-        forecastImage = new ImageView();
+//        forecastImage = new ImageView();
 
-        forecastImage.setFitWidth(50);
-        forecastImage.setFitHeight(30);
+//        forecastImage.setFitWidth(50);
+//        forecastImage.setFitHeight(30);
 
         // Set fixed widths for each column
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 8; i++) {
             ColumnConstraints col = new ColumnConstraints(100);
             gridPane.getColumnConstraints().add(col);
         }
@@ -59,7 +59,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
         gridPane.add(arrivalStation, 5, 0);
         gridPane.add(arrivalTime, 6, 0);
         gridPane.add(arrivalTrack, 7, 0);
-        gridPane.add(forecastImage, 8, 0);
+//        gridPane.add(forecastImage, 8, 0);
 
         // Set alignment
         gridPane.setAlignment(Pos.CENTER);
@@ -78,7 +78,7 @@ public class TrainListCell extends ListCell<TrainInformation> {
             arrivalTrack.setText("Track " + item.getArriveTrack());
             arrivalStation.setText(item.getArriveStationName());
             arrivalTime.setText(getFormatTime(item.getArriveTime()));
-            forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/partly-cloudy-day.png"))));
+//            forecastImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon/partly-cloudy-day.png"))));
 
             setGraphic(gridPane);
         } else {
