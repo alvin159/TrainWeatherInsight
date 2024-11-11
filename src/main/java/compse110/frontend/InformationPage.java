@@ -29,6 +29,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
@@ -64,6 +65,12 @@ public class InformationPage extends Application implements MessageCallback {
         broker.subscribe(EventType.DEMOGRAPHIC_RESPONSE, this);
 
         this.primaryStage = primaryStage;
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.exit();
+            }
+        });
 
         // throw Exception if message is null
         if (message == null) {

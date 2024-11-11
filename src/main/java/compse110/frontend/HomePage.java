@@ -23,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.application.Platform;
+import javafx.stage.WindowEvent;
 
 public class HomePage extends Application implements MessageCallback{
 
@@ -123,6 +125,23 @@ public class HomePage extends Application implements MessageCallback{
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                        @Override
+                        public void handle(WindowEvent event) {
+                            if (infoStage.isShowing()) {
+                                infoStage.close();
+                                event.consume();
+                                infoStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                                    @Override
+                                    public void handle(WindowEvent event) {
+                                        Platform.exit();
+                                    }
+                                });
+                            } else {
+                                Platform.exit();
+                            }
+                        }
+                    });
 
                     // Close the current HomePage window
                     primaryStage.close();
