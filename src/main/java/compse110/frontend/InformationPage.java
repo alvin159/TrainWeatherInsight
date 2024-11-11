@@ -218,8 +218,8 @@ public class InformationPage extends Application implements MessageCallback {
         column.setPercentWidth(100);
         gridpane.getColumnConstraints().add(column);
         GridPane.setHgrow(departCityInfoView, Priority.ALWAYS);
-        gridpane.add(addTrainScheduleTitleLine(),0,1);
-        gridpane.add(trainScheduleBox, 0, 2);
+        gridpane.add(addTrainScheduleTitleLine(),0,2);
+        gridpane.add(trainScheduleBox, 0, 3);
 
         if (message.getArrivingStation() != null) {
             // if no any arriving city will not show this part
@@ -228,7 +228,7 @@ public class InformationPage extends Application implements MessageCallback {
             CityDetails cityDetails1 = new CityDetails(100300, 21521.3, 215.2);
             arrivingCityInfo = new CityInformation(0, message.getArrivingStation().getStationName(), weatherForecast, cityDetails1);
             arriveCityInfoView = addCityInformationView(arrivingCityInfo);
-            gridpane.add(arriveCityInfoView, 0, 3);
+            gridpane.add(arriveCityInfoView, 0, 4);
         }
         root.getChildren().add(gridpane);
     }
