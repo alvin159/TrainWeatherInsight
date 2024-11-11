@@ -192,6 +192,14 @@ public class HomePage extends Application implements MessageCallback{
             if (!filteredStations.isEmpty()) {
                 contextMenu.getItems().clear();
                 for (Station station : filteredStations) {
+
+                    //Ensures that station will be set if user has typed the full name of the station, but not clicked that station from the drop-down list
+                    if(departingStationField.getText().equals(station.getStationName() ) && textFieldId.equals("departingStationField")) {
+                        departStation = station;
+                    } else if ( arrivalStationField.getText().equals(station.getStationName()) && textFieldId.equals("arrivalStationField")) {
+                        arriveStation = station;
+                    }
+
                     MenuItem item = new MenuItem(station.getStationName()); // set results
                     item.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
