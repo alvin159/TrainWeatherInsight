@@ -462,6 +462,7 @@ public class InformationPage extends Application implements MessageCallback {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("Temperature");
 
+        Label label = new Label("Set time interval:");
         // Spinner for interval input (values from 1 to 6)
         Spinner<Integer> intervalSpinner = new Spinner<>();
         intervalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 6, 1));
@@ -494,7 +495,7 @@ public class InformationPage extends Application implements MessageCallback {
         updateButton.fire();
 
         // Layout
-        VBox inputBox = new VBox(5, intervalSpinner, updateButton);
+        VBox inputBox = new VBox(5, label, intervalSpinner, updateButton);
         BorderPane root = new BorderPane();
         root.setTop(inputBox);
         root.setCenter(lineChart);
