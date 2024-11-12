@@ -45,8 +45,7 @@ public class WeatherComponent extends BackendComponent{
                 broker.publish(EventType.WEATHER_RESPONSE, new Events.WeatherResponseEvent.Payload(weatherResponse, stationName) );
             
             } catch (IOException e) {
-                System.err.println("Error fetching weather data for the city: " + e.getMessage());
-                e.printStackTrace();
+                Log.e("WeatherComponent", "Error fetching weather data for the city: " + e.getMessage());
             }
         }
     }

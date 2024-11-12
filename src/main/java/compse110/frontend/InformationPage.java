@@ -32,7 +32,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -79,7 +78,7 @@ public class InformationPage extends Application implements MessageCallback {
         } else {
             this.message = message;
             // debug
-            System.out.println(message);
+            Log.d("SearchInfo: ", message.toString());
         }
 
         root = new VBox();
@@ -396,6 +395,17 @@ public class InformationPage extends Application implements MessageCallback {
         // Button for showing detailed forecast (expanded functionality)
         Button toggleForecastButton = new Button("See detailed forecast");
         toggleForecastButton.setOnAction(e -> {
+
+            if (message.getDepartingStation().getStationName().equals(cityInformation.getTitle())) {
+                if (message.getDepartingWeatherData() != null) {
+                    showTemperatureGraph(message.getDepartingWeatherData(), message.getDepartingStation().getStationName());
+                }
+            } else {
+                if (message.getArrivingWeatherData() != null) {
+                    showTemperatureGraph(message.getArrivingWeatherData(), message.getArrivingStation().getStationName());
+                }
+            }
+
         });
         cityInfoBox.getChildren().add(toggleForecastButton);
 
@@ -537,41 +547,40 @@ public class InformationPage extends Application implements MessageCallback {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (weatherResponse.getWeatherResponse() == null) {
-                    } else {
+                    if (weatherResponse.getWeatherResponse() != null) {
                         WeatherResponse response = weatherResponse.getWeatherResponse();
-                        System.out.println("Received information for " + weatherResponse.getStationName() + ": " + response.toString());
+                        Log.d("Received information for " + weatherResponse.getStationName() + ": ", response.toString());
                         Forecast forecast = new Forecast(
-                            (response.getTemperature() - 32) * 5 / 9,
-                            response.getWeatherCondition(),
-                            createWeatherIcon(response.getWeatherIcon()),
-                            new ForecastDetails()
+                                (response.getTemperature() - 32) * 5 / 9,
+                                response.getWeatherCondition(),
+                                createWeatherIcon(response.getWeatherIcon()),
+                                new ForecastDetails()
                         );
-            
+
                         if(weatherResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
-                            System.out.println(response.getHours());
-                            showTemperatureGraph(response.getHours(), message.getDepartingStation().getStationName());
+                            Log.d(response.getHours().toString());
+//                            showTemperatureGraph(response.getHours(), message.getDepartingStation().getStationName());
+                            message.setDepartingWeatherData(response.getHours());
                             departingCityInfo.setForecast(forecast);
                             updateCityWeather(departingCityInfo, departCityInfoView, forecast);
                         } else {
                             arrivingCityInfo.setForecast(forecast);
-                            showTemperatureGraph(response.getHours(), message.getArrivingStation().getStationName());
+//                            showTemperatureGraph(response.getHours(), message.getArrivingStation().getStationName());
+                            message.setArrivingWeatherData(response.getHours());
                             updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
                         }
-
                     }
+
                 }
             });
-        }else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.DemographicResponseEvent.Payload) {
-            Events.DemographicResponseEvent.Payload demographicResponse = (Events.DemographicResponseEvent.Payload) payload;
-            System.out.println(demographicResponse);
+        } else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.DemographicResponseEvent.Payload demographicResponse) {
+            Log.d(demographicResponse.toString());
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (demographicResponse.getDemographicResponse() == null) {
-                    } else {
+                    if (demographicResponse.getDemographicResponse() != null) {
                         DemographicResponse response = demographicResponse.getDemographicResponse();
-                        System.out.println("Received information: " + response.toString());
+                        Log.i("Received information: ", response.toString());
                         CityDetails cityDetails = new CityDetails(response.getPopulation(), response.getLandArea(), response.getPopulationDensity());
 
                         if(demographicResponse.getStationName().equals(message.getDepartingStation().getStationName())) {

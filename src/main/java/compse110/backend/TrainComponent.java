@@ -119,11 +119,22 @@ public class TrainComponent extends BackendComponent {
         return trainInformation;
     }
 
+    /**
+     * Convert Date to String
+     * @param date Date
+     * @return String
+     */
     private String covertDateToString(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(date);
     }
 
+    /**
+     * Get TimeTableRows from TrainData
+     * @param trainData TrainData
+     * @param stationShortCode  StationShortCode
+     * @return TimeTableRows
+     */
     private TimeTableRows getTimeTableRowsFromTrainData(TrainData trainData, String stationShortCode) {
         if (trainData == null) {
             return null;
@@ -142,7 +153,6 @@ public class TrainComponent extends BackendComponent {
      * 
      * @param event   The type of event to handle.
      * @param payload The payload associated with the event.
-     * 
      * Note that BackendComponent.java catches any unexpected errors that might appear during this function.
      * Error handling for this function focuses more on handling known errors that might occur during the function.
      */
