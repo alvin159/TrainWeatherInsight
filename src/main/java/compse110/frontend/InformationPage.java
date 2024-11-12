@@ -27,6 +27,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -180,13 +182,25 @@ public class InformationPage extends Application implements MessageCallback {
         trainScheduleBox = new VBox();
         trainScheduleBox.setSpacing(10);
         trainScheduleBox.setStyle("-fx-background-color: #f0f0f0;");
-        
-        // TODO change to list view to show
+
+        // Train list view
         trainListView = new ListView<>();
         trainListView.setCellFactory(new Callback<ListView<TrainInformation>, ListCell<TrainInformation>>() {
             @Override
             public ListCell<TrainInformation> call(ListView<TrainInformation> param) {
                 return new TrainListCell();
+            }
+        });
+
+        // Add listener for train selection
+        trainListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    TrainInformation selectedTrain = trainListView.getSelectionModel().getSelectedItem();
+                    Log.d("Selected train: ", selectedTrain.getTrainName());
+                    addTrainDetailView(selectedTrain);
+                }
             }
         });
 
@@ -271,6 +285,11 @@ public class InformationPage extends Application implements MessageCallback {
         HBox loadingBox = new HBox(loadingLabel);
         loadingBox.setAlignment(Pos.CENTER);
         return loadingBox;
+    }
+
+    private void addTrainDetailView(TrainInformation selectTrain) {
+        TrainDetailPage trainDetailPage = new TrainDetailPage();
+        trainDetailPage.start(new Stage(), selectTrain);
     }
 
     private HBox addHeaderView() {
