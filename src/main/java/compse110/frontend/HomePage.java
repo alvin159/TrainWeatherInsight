@@ -110,6 +110,10 @@ public class HomePage extends Application implements MessageCallback{
                     message.setArrivingStation(arriveStation);
                     
                     message.setDate(departureDatePicker.getValue());
+
+                    if (arrivalStationField.getText().isEmpty()) {
+                        message.setArrivingStation(null);
+                    }
                     // Open new window
                     InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
                     Stage infoStage = new Stage(); // Create a new Stage (window)

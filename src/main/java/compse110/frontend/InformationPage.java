@@ -368,48 +368,58 @@ public class InformationPage extends Application implements MessageCallback {
         departInfoDetails.setSpacing(30);
         departInfoDetails.setAlignment(Pos.CENTER);
 
-        if (cityInformation.getForecast() == null) {
 
-            //TODO fake data
-            Forecast forecast = new Forecast(
-                5,
-                "Sunny",
-                createWeatherIcon("partly-cloudy-night"),
-                new ForecastDetails()
+//        if (cityInformation.getForecast() == null) {
+//
+//            Forecast forecast = new Forecast(
+//                5,
+//                "Sunny",
+//                createWeatherIcon("partly-cloudy-night"),
+//                new ForecastDetails()
+//            );
+//            cityInformation.setForecast(forecast);
+//        }
+
+        if (cityInformation.getForecast() != null) {
+
+            InfoBox temperatureBox = new InfoBox(
+                    String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()),
+                    "Temperature"
             );
-            cityInformation.setForecast(forecast);
+
+            // Placeholder for weather icon and condition (we can dynamically load this if needed)
+            VBox weatherBox = new VBox(cityInformation.getForecast().getWeatherImage(),
+                    new Label(cityInformation.getForecast().getWeatherStatus()));
+            weatherBox.setAlignment(Pos.CENTER);
+
+            departInfoDetails.getChildren().addAll(temperatureBox, weatherBox);
+
+            if (cityInformation.getCityDetails() != null) {
+                InfoBox populationBox = new InfoBox(
+                        String.valueOf(cityInformation.getCityDetails().getPopulation()),
+                        "Population"
+                );
+
+                InfoBox areaBox = new InfoBox(
+                        String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea()),
+                        "Area"
+                );
+
+                InfoBox densityBox = new InfoBox(
+                        String.valueOf(cityInformation.getCityDetails().getPopulationDensity()),
+                        "Population\n  Density"
+                );
+
+                departInfoDetails.getChildren().addAll(populationBox, areaBox, densityBox);
+
+            }
+
+
+            cityInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
+
         }
 
-        //TODO
-        InfoBox temperatureBox = new InfoBox(
-            String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()), 
-            "Temperature"
-        );
 
-        // Placeholder for weather icon and condition (we can dynamically load this if needed)
-        VBox weatherBox = new VBox(cityInformation.getForecast().getWeatherImage(),
-                new Label(cityInformation.getForecast().getWeatherStatus()));
-        weatherBox.setAlignment(Pos.CENTER);
-
-
-        InfoBox populationBox = new InfoBox(
-            String.valueOf(cityInformation.getCityDetails().getPopulation()), 
-            "Population"
-        );
-        
-        InfoBox areaBox = new InfoBox(
-            String.format(StringUtils.area_data, cityInformation.getCityDetails().getArea()), 
-            "Area"
-        );
-
-        InfoBox densityBox = new InfoBox(
-            String.valueOf(cityInformation.getCityDetails().getPopulationDensity()), 
-            "Population\n  Density"
-        );
-
-        departInfoDetails.getChildren().addAll(temperatureBox, weatherBox, populationBox, areaBox, densityBox);
-
-        cityInfoBox.getChildren().addAll(departInfoHeader, departInfoDetails);
 
         // Button for showing detailed forecast (expanded functionality)
         Button toggleForecastButton = new Button("See detailed forecast");
