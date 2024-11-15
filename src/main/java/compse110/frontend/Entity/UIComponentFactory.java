@@ -4,6 +4,16 @@ import java.time.LocalDate;
 
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.layout.VBox;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UIComponentFactory {
     public static DatePicker departureDatePickerCreator(LocalDate date) {
@@ -22,5 +32,37 @@ public class UIComponentFactory {
             }
         });
         return datePicker;
+    }
+
+    public static VBox createLatestSearchesComponent(TextField departingStationField, TextField arrivingStationField) {
+        VBox vBox = new VBox();
+        Label label = new Label("Latest searches");
+        vBox.getChildren().add(label);
+
+        List<String> latestSearches = getLatestSearches();
+        for (String search : latestSearches) {
+            Text searchText = new Text(search);
+            searchText.setOnMouseClicked(event -> {
+                String[] stations = search.split(" to ");
+                if (stations.length == 2) {
+                    departingStationField.setText(stations[0]);
+                    arrivingStationField.setText(stations[1]);
+                }
+            });
+            vBox.getChildren().add(searchText);
+        }
+
+        return vBox;
+    }
+
+    private static List<String> getLatestSearches() {
+        List<String> searches = new ArrayList<>();
+        try (FileReader reader = new FileReader("src/main/resources/data/latest_searches.json")) {
+            JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+            jsonObject.getAsJsonArray("searches").forEach(jsonElement -> searches.add(jsonElement.getAsString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return searches;
     }
 }

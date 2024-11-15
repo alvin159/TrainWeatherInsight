@@ -152,6 +152,8 @@ public class HomePage extends Application implements MessageCallback{
         backendLabel.setPrefWidth(400); // Set the preferred width to 400 pixels
         backendLabel.setStyle("-fx-font-weight: bold;");
 
+        VBox latestSearches = UIComponentFactory.createLatestSearchesComponent(departingStationField, arrivalStationField);
+
         // Create layout for input fields
         GridPane gridPane = new GridPane();
         gridPane.setHgap(30);
@@ -164,7 +166,8 @@ public class HomePage extends Application implements MessageCallback{
         gridPane.add(arrivalStationField, 1, 3);
         gridPane.add(departureDateLabel, 0, 4);
         gridPane.add(departureDatePicker, 1, 4);
-        gridPane.add(searchButton, 1, 5);
+        gridPane.add(latestSearches, 1, 5);
+        gridPane.add(searchButton, 1, 6);
         gridPane.add(backendLabel, 1, 7);
 
         // Create the main layout with a BorderPane
