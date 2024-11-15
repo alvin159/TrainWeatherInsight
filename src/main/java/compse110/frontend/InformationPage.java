@@ -476,12 +476,12 @@ public class InformationPage extends Application implements MessageCallback {
 
     private void showTemperatureGraph(JsonArray response, String name) {
         Stage stage = new Stage();
-        stage.setTitle("Temperature Graph in " + name );
+        stage.setTitle("Temperature Graph on "+ message.getDate() +" in " + name );
 
         // Set up the X (index) and Y (temperature in Celsius) axes
         final NumberAxis xAxis = new NumberAxis(1, 23, 1);
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Hours");
+        xAxis.setLabel("Time");
         yAxis.setLabel("Temperature (°C)");
 
         // Create the LineChart and data series
@@ -491,7 +491,7 @@ public class InformationPage extends Application implements MessageCallback {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName("Temperature");
 
-        Label label = new Label("Set time interval:");
+        Label label = new Label("Set a time interval to display data every nth hour");
         // Spinner for interval input (values from 1 to 6)
         Spinner<Integer> intervalSpinner = new Spinner<>();
         intervalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 6, 1));
