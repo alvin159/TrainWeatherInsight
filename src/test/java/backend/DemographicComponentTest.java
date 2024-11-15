@@ -27,13 +27,6 @@ public class DemographicComponentTest {
             }
         });
 
-        broker.publish(Events.EventType.DEMOGRAPHIC_REQUEST, new Events.DemographicRequestEvent.Payload(new DemographicRequest("Helsinki")));
-        broker.publish(Events.DemographicRequestEvent.TOPIC, new Events.DemographicRequestEvent.Payload(new DemographicRequest("Oulu")));
-        broker.publish(Events.DemographicRequestEvent.TOPIC, new Events.DemographicRequestEvent.Payload(new DemographicRequest("HKI")));
-        broker.publish(Events.DemographicRequestEvent.TOPIC, new Events.DemographicRequestEvent.Payload(new DemographicRequest("Nokia")));
-        broker.publish(Events.DemographicRequestEvent.TOPIC, new Events.DemographicRequestEvent.Payload(new DemographicRequest("nokia")));
-
-
 //        broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload("HEL", "Helsinki"));
 //
 //
