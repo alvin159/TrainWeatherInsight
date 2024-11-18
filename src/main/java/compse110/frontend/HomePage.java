@@ -210,6 +210,13 @@ public class HomePage extends Application implements MessageCallback{
     private void handleStationSearch(Events.SearchStationResponse.Payload responsePayload) {
         List<Station> filteredStations = responsePayload.getStationList();
         String textFieldId = responsePayload.getTextFieldId();
+
+        if(textFieldId.equals("departingStationField")) {
+            departStation = null;
+        } else if (textFieldId.equals("arrivalStationField")) {
+            arriveStation = null;
+        }
+
         Platform.runLater(() -> {
             Log.i("Filtered stations: " + filteredStations.size());
 
@@ -222,23 +229,12 @@ public class HomePage extends Application implements MessageCallback{
             for (Station station : filteredStations) {
 
                 //Ensures that station will be set if user has typed the full name of the station, but not clicked that station from the drop-down list
-                if(textFieldId.equals("departingStationField")) {
-                    if(departingStationField.getText().equals(station.getStationName())) {
-                        departStation = station;
-                        break;
-                    }
-                    else {
-                        departStation = null;
-                    }
-                }
-                else if (textFieldId.equals("arrivalStationField")) {
-                    if(arrivalStationField.getText().equals(station.getStationName())) {
-                        arriveStation = station;
-                        break;
-                    }
-                    else {
-                        arriveStation = null;
-                    }
+                if(departingStationField.getText().equals(station.getStationName() ) && textFieldId.equals("departingStationField")) {
+                    departStation = station;
+                    break;
+                } else if ( arrivalStationField.getText().equals(station.getStationName()) && textFieldId.equals("arrivalStationField")) {
+                    arriveStation = station;
+                    break;
                 }
 
                 MenuItem item = new MenuItem(station.getStationName()); // set results
