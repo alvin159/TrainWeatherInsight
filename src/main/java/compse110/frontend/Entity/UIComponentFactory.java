@@ -25,7 +25,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

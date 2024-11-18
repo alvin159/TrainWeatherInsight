@@ -73,6 +73,7 @@ public class InformationPage extends Application implements MessageCallback {
             @Override
             public void handle(WindowEvent event) {
                 Platform.exit();
+                System.exit(0);
             }
         });
 

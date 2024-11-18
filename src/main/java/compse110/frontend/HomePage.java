@@ -35,6 +35,14 @@ public class HomePage extends Application implements MessageCallback{
     public void start(Stage primaryStage) {
         primaryStage.setTitle("TrainFinder");
 
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+
         //Listen for responses from the backend
         broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
         broker.subscribe(EventType.SEARCH_STATION_RESPONSE, this);
@@ -96,24 +104,7 @@ public class HomePage extends Application implements MessageCallback{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                    @Override
-                    public void handle(WindowEvent event) {
-                        if (infoStage.isShowing()) {
-                            infoStage.close();
-                            event.consume();
-                            infoStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                                @Override
-                                public void handle(WindowEvent event) {
-                                    Platform.exit();
-                                }
-                            });
-                        } else {
-                            Platform.exit();
-                        }
-                    }
-                });
-
+                
                 // Close the current HomePage window
                 primaryStage.close();
             }
