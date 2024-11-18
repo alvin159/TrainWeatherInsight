@@ -9,6 +9,9 @@ import javafx.scene.layout.VBox;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import compse110.Utils.Events;
+import compse110.messagebroker.MessageBroker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -21,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UIComponentFactory {
+    private static final MessageBroker broker = MessageBroker.getInstance();
+    
     public static DatePicker departureDatePickerCreator(LocalDate date) {
         DatePicker datePicker = new DatePicker();
         datePicker.setValue(date);
@@ -39,7 +44,7 @@ public class UIComponentFactory {
         return datePicker;
     }
 
-    public class LatestSearches{
+    public static class LatestSearches{
         public static VBox createLatestSearchesComponent(TextField departingStationField, TextField arrivingStationField) {
             VBox vBox = new VBox();
             Label label = new Label("Latest searches");
@@ -57,7 +62,14 @@ public class UIComponentFactory {
 
                 searchText.setOnMouseClicked(event -> {
                     departingStationField.setText(stations[0]);
-                    arrivingStationField.setText(stations[1].equals("Anywhere") ? "" : stations[1]);
+                    broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(stations[0], departingStationField.getId()));
+                    if(stations[1].equals("Anywhere")) {
+                        arrivingStationField.setText(stations[1]);
+                    }
+                    else {
+                        arrivingStationField.setText(stations[1]);
+                        broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(stations[1], arrivingStationField.getId()));
+                    }
                 });
                 vBox.getChildren().add(searchText);
             }
