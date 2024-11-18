@@ -30,6 +30,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -289,11 +291,9 @@ public class InformationPage extends Application implements MessageCallback {
 //        }
 
         if (cityInformation.getForecast() != null) {
-
-            InfoBox temperatureBox = new InfoBox(
-                    String.format(StringUtils.celsius_data, cityInformation.getForecast().getTemperature()),
-                    "Temperature"
-            );
+            BigDecimal roundedTemperature = new BigDecimal(cityInformation.getForecast().getTemperature()).setScale(1, RoundingMode.HALF_UP);
+            String temperature = String.format("%.1f \u00B0C", roundedTemperature.doubleValue());
+            InfoBox temperatureBox = new InfoBox(temperature, "Temperature");
 
             // Placeholder for weather icon and condition (we can dynamically load this if needed)
             VBox weatherBox = new VBox(cityInformation.getForecast().getWeatherImage(),
