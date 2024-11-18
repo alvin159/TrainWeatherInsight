@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -56,8 +57,9 @@ public class UIComponentFactory {
 
     public static class LatestSearches{
         public static VBox createLatestSearchesComponent(TextField departingStationField, TextField arrivingStationField) {
-            VBox vBox = new VBox();
+            VBox vBox = new VBox(7);
             Label label = new Label("Latest searches");
+            label.setStyle("fx-font-weight: bold;'");
             vBox.getChildren().add(label);
         
             List<String> latestSearches = getLatestSearches();
@@ -68,7 +70,8 @@ public class UIComponentFactory {
             for (String search : latestSearches) {
                 String[] stations = search.split(":");
                 if (stations.length != 2) continue;
-                Text searchText = new Text(stations[0] + " -> " + stations[1]);
+                Button searchText = new Button(stations[0] + " -> " + stations[1]);
+                searchText.setStyle("-fx-background-color: green; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 3 7;");
 
                 searchText.setOnMouseClicked(event -> {
                     departingStationField.setText(stations[0]);
