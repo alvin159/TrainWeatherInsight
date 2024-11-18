@@ -2,7 +2,6 @@ package compse110.frontend;
 
 import compse110.Entity.*;
 import compse110.frontend.Controllers.TrainListCell;
-import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
 import compse110.frontend.Entity.UIComponentFactory.StationSearchHandler;
 import compse110.Utils.StringUtils;
@@ -15,8 +14,6 @@ import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,8 +25,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -37,7 +32,6 @@ import javafx.util.Callback;
 
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -46,7 +40,6 @@ public class InformationPage extends Application implements MessageCallback {
     private static final MessageBroker broker = MessageBroker.getInstance();
     private SearchInfo message;
     private VBox root;
-    private StationInfoFetcher stationInfoFetcher;
     ListView<TrainInformation> trainListView;
     VBox trainScheduleBox;
     Forecast weatherForecast;
@@ -72,6 +65,8 @@ public class InformationPage extends Application implements MessageCallback {
 
         uiComponentFactory = new UIComponentFactory();
         stationSearchHandler = uiComponentFactory.new StationSearchHandler();
+        stationSearchHandler.arrivalStationField.setText(message.getArrivingStation() != null ? message.getArrivingStation().getStationName() : "");
+        stationSearchHandler.departingStationField.setText(message.getDepartingStation().getStationName());
 
         this.primaryStage = primaryStage;
         this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -94,8 +89,6 @@ public class InformationPage extends Application implements MessageCallback {
         root = new VBox();
         root.setPadding(new Insets(20));
         root.setSpacing(20);
-
-        stationInfoFetcher = StationInfoFetcher.getInstance(); // Initialize station info fetcher
 
         initView();
 

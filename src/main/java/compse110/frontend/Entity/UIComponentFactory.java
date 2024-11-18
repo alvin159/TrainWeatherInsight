@@ -74,7 +74,7 @@ public class UIComponentFactory {
                     departingStationField.setText(stations[0]);
                     broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(stations[0], departingStationField.getId()));
                     if(stations[1].equals("Anywhere")) {
-                        arrivingStationField.setText(stations[1]);
+                        arrivingStationField.setText("");
                     }
                     else {
                         arrivingStationField.setText(stations[1]);
@@ -144,10 +144,7 @@ public class UIComponentFactory {
         private ContextMenu contextMenu = new ContextMenu();
 
         public StationSearchHandler() {
-            departingStationField.setPromptText("Oulu asema"); // Set hint text
             departingStationField.setId("departingStationField"); //Set the ID for identification of the drop-down box below
-
-            arrivalStationField.setPromptText("Helsinki asema"); // Set hint text
             arrivalStationField.setId("arrivalStationField");
             
             departingStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
