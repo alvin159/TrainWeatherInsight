@@ -69,7 +69,9 @@ public class HomePage extends Application implements MessageCallback{
         // TODO if not debug remove it!!
         if (Log.getIsDebug()) {
             departingStationField.setText("Oulu asema");
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(departingStationField.getText(), departingStationField.getId()));
             arrivalStationField.setText("Helsinki asema");
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(arrivalStationField.getText(), arrivalStationField.getId()));
         }
 
         contextMenu = new ContextMenu();
