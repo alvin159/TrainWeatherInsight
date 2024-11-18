@@ -94,6 +94,7 @@ public class HomePage extends Application implements MessageCallback{
                     alert.setHeaderText("Input departing station");
                     alert.setContentText("Please input departing station name or short code");
                     alert.showAndWait();
+                    return;
 
                 } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
                     // Check Departing and arrive station is same?
@@ -102,48 +103,50 @@ public class HomePage extends Application implements MessageCallback{
                     alert.setHeaderText("Departing station and arrive station can not same name");
                     alert.setContentText("Please input departing station name or short code again");
                     alert.showAndWait();
-                } else {
-                    // Create a message entity
-                    SearchInfo message = new SearchInfo();
-                    // Put data to message
-                    message.setDepartingStation(departStation);
-                    message.setArrivingStation(arriveStation);
-                    
-                    message.setDate(departureDatePicker.getValue());
-
-                    if (arrivalStationField.getText().isEmpty()) {
-                        message.setArrivingStation(null);
-                    }
-                    // Open new window
-                    InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
-                    Stage infoStage = new Stage(); // Create a new Stage (window)
-                    try {
-                        infoPage.start(infoStage, message); // Call the start method of InformationPage to display it
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            if (infoStage.isShowing()) {
-                                infoStage.close();
-                                event.consume();
-                                infoStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                                    @Override
-                                    public void handle(WindowEvent event) {
-                                        Platform.exit();
-                                    }
-                                });
-                            } else {
-                                Platform.exit();
-                            }
-                        }
-                    });
-
-                    // Close the current HomePage window
-                    primaryStage.close();
+                    return;
                 }
 
+                UIComponentFactory.LatestSearches.addSearchToLatestSearches(departingStationField, arrivalStationField);
+
+                // Create a message entity
+                SearchInfo message = new SearchInfo();
+                // Put data to message
+                message.setDepartingStation(departStation);
+                message.setArrivingStation(arriveStation);
+                
+                message.setDate(departureDatePicker.getValue());
+
+                if (arrivalStationField.getText().isEmpty()) {
+                    message.setArrivingStation(null);
+                }
+                // Open new window
+                InformationPage infoPage = new InformationPage(); // Create an instance of InformationPage
+                Stage infoStage = new Stage(); // Create a new Stage (window)
+                try {
+                    infoPage.start(infoStage, message); // Call the start method of InformationPage to display it
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                    @Override
+                    public void handle(WindowEvent event) {
+                        if (infoStage.isShowing()) {
+                            infoStage.close();
+                            event.consume();
+                            infoStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                                @Override
+                                public void handle(WindowEvent event) {
+                                    Platform.exit();
+                                }
+                            });
+                        } else {
+                            Platform.exit();
+                        }
+                    }
+                });
+
+                // Close the current HomePage window
+                primaryStage.close();
             }
         });
 
@@ -152,7 +155,7 @@ public class HomePage extends Application implements MessageCallback{
         backendLabel.setPrefWidth(400); // Set the preferred width to 400 pixels
         backendLabel.setStyle("-fx-font-weight: bold;");
 
-        VBox latestSearches = UIComponentFactory.createLatestSearchesComponent(departingStationField, arrivalStationField);
+        VBox latestSearches = UIComponentFactory.LatestSearches.createLatestSearchesComponent(departingStationField, arrivalStationField);
 
         // Create layout for input fields
         GridPane gridPane = new GridPane();

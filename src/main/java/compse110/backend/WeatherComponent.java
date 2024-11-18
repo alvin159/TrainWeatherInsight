@@ -66,7 +66,7 @@ public class WeatherComponent extends BackendComponent{
 
             // Parse the response
             String responseData = response.body().string();
-            Log.d("WeatherComponent", responseData);
+            //Log.d("WeatherComponent", responseData);
             return responseData;
         }
     }

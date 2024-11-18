@@ -322,7 +322,7 @@ public class InformationPage extends Application implements MessageCallback {
                     alert.setHeaderText("Input departing station");
                     alert.setContentText("Please input departing station name or short code");
                     alert.showAndWait();
-
+                    return;
                 } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
                     // Check Departing and arrive station is same?
                     Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -330,13 +330,15 @@ public class InformationPage extends Application implements MessageCallback {
                     alert.setHeaderText("Departing station and arrive station can not same name");
                     alert.setContentText("Please input departing station name or short code again");
                     alert.showAndWait();
-                } else {
-                    if (arrivalStationField.getText().isEmpty()) {
-                        message.setArrivingStation(null);
-                    }
-                    message.setDate(departureDatePicker.getValue());
-                    initView();
+                    return;
                 }
+                
+                UIComponentFactory.LatestSearches.addSearchToLatestSearches(departingStationField, departingStationField);
+                if (arrivalStationField.getText().isEmpty()) {
+                    message.setArrivingStation(null);
+                }
+                message.setDate(departureDatePicker.getValue());
+                initView();
             }
         });
 

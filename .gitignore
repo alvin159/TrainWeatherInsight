@@ -14,3 +14,6 @@ list_files.sh
 *.swp
 *.class
 .DS_Store
+
+# Ignore user-generated files
+src/main/resources/data/latest_searches.json
