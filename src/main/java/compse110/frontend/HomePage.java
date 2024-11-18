@@ -213,45 +213,59 @@ public class HomePage extends Application implements MessageCallback{
         Platform.runLater(() -> {
             Log.i("Filtered stations: " + filteredStations.size());
 
-            if (!filteredStations.isEmpty()) {
-                contextMenu.getItems().clear();
-                for (Station station : filteredStations) {
+            if (filteredStations.isEmpty()) {
+                contextMenu.hide();
+                return;
+            }
 
-                    //Ensures that station will be set if user has typed the full name of the station, but not clicked that station from the drop-down list
-                    if(departingStationField.getText().equals(station.getStationName() ) && textFieldId.equals("departingStationField")) {
+            contextMenu.getItems().clear();
+            for (Station station : filteredStations) {
+
+                //Ensures that station will be set if user has typed the full name of the station, but not clicked that station from the drop-down list
+                if(textFieldId.equals("departingStationField")) {
+                    if(departingStationField.getText().equals(station.getStationName())) {
                         departStation = station;
-                    } else if ( arrivalStationField.getText().equals(station.getStationName()) && textFieldId.equals("arrivalStationField")) {
-                        arriveStation = station;
+                        break;
                     }
+                    else {
+                        departStation = null;
+                    }
+                }
+                else if (textFieldId.equals("arrivalStationField")) {
+                    if(arrivalStationField.getText().equals(station.getStationName())) {
+                        arriveStation = station;
+                        break;
+                    }
+                    else {
+                        arriveStation = null;
+                    }
+                }
 
-                    MenuItem item = new MenuItem(station.getStationName()); // set results
-                    item.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent event) {
-                            if (textFieldId.equals("departingStationField")) {
-                                departStation = station;
-                            } else {
-                                arriveStation = station;
-                            }
-                            TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
-                            textField.setText(station.getStationName());
-                            contextMenu.hide();
+                MenuItem item = new MenuItem(station.getStationName()); // set results
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        if (textFieldId.equals("departingStationField")) {
+                            departStation = station;
+                        } else {
+                            arriveStation = station;
                         }
-                    });
-                    contextMenu.getItems().add(item);
-                }
+                        TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
+                        textField.setText(station.getStationName());
+                        contextMenu.hide();
+                    }
+                });
+                contextMenu.getItems().add(item);
+            }
 
-                if (!contextMenu.isShowing()) {
-                    // Use localToScreen to get the absolute position of the TextField on the screen
-                    TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
-                    double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
-                    double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
+            if (!contextMenu.isShowing()) {
+                // Use localToScreen to get the absolute position of the TextField on the screen
+                TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
+                double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
+                double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
 
-                    // Show ContextMenu below TextField
-                    contextMenu.show(textField, screenX, screenY);
-                }
-            } else {
-                contextMenu.hide();  // Hide ContextMenu when no match
+                // Show ContextMenu below TextField
+                contextMenu.show(textField, screenX, screenY);
             }
         });
     }
