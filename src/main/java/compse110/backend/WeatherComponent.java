@@ -2,7 +2,6 @@ package compse110.backend;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
@@ -17,7 +16,6 @@ import okhttp3.Response;
 import compse110.backend.utils.BackendComponent;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;

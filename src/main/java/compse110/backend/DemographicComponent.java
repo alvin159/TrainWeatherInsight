@@ -5,17 +5,13 @@ import com.google.gson.JsonArray;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
-import compse110.Utils.Log;
 import compse110.backend.utils.BackendComponent;
-import compse110.messagebroker.MessageCallback;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import compse110.Utils.Events.DemographicRequestEvent;
 import compse110.Entity.*;
-import compse110.messagebroker.MessageBroker;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 
 public class DemographicComponent extends BackendComponent {
 

@@ -33,10 +33,6 @@ public class TrainComponent extends BackendComponent {
         stationInfoFetcher = StationInfoFetcher.getInstance();
     }
 
-    private List<TrainData> getTrainData(Date departingDate, String departureStationShortCode) {
-        return getTrainData(departingDate, departureStationShortCode, null);
-    }
-
     private List<TrainData> getTrainData(Date departingDate, String departureStationShortCode, String arrivalStationShortCode) {
 
         //create a OkHttp client
@@ -73,7 +69,7 @@ public class TrainComponent extends BackendComponent {
 
     }
 
-    public List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode, String arrivalStationShortCode) {
+    private List<TrainInformation> getTrainInformation(List<TrainData> trainDataList, String departureStationShortCode, String arrivalStationShortCode) {
         if(trainDataList == null || trainDataList.isEmpty()) {
             return null;
         }
