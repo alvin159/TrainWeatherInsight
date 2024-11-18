@@ -279,17 +279,6 @@ public class InformationPage extends Application implements MessageCallback {
         departInfoDetails.setAlignment(Pos.CENTER);
 
 
-//        if (cityInformation.getForecast() == null) {
-//
-//            Forecast forecast = new Forecast(
-//                5,
-//                "Sunny",
-//                createWeatherIcon("partly-cloudy-night"),
-//                new ForecastDetails()
-//            );
-//            cityInformation.setForecast(forecast);
-//        }
-
         if (cityInformation.getForecast() != null) {
             BigDecimal roundedTemperature = new BigDecimal(cityInformation.getForecast().getTemperature()).setScale(1, RoundingMode.HALF_UP);
             String temperature = String.format("%.1f \u00B0C", roundedTemperature.doubleValue());
