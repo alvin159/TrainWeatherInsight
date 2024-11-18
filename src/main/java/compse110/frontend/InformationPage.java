@@ -65,6 +65,7 @@ public class InformationPage extends Application implements MessageCallback {
     public void start(Stage primaryStage, SearchInfo message) {
         primaryStage.setTitle("Information Page");
 
+        broker.subscribe(EventType.SEARCH_STATION_RESPONSE, this);
         broker.subscribe(EventType.TRAIN_RESPONSE, this);
         broker.subscribe(EventType.WEATHER_RESPONSE, this);
         broker.subscribe(EventType.DEMOGRAPHIC_RESPONSE, this);
@@ -108,62 +109,6 @@ public class InformationPage extends Application implements MessageCallback {
     public void start(Stage primaryStage) {
         // This method is required, but unused in this scenario
         // Leave it empty or redirect to the overloaded start method
-    }
-
-    private void addSearchStationRecommendListener(TextField textField, ContextMenu contextMenu) {
-        textField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue.length() < 2) {
-                    contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
-                } else {
-                    // Start showing recommendations when typing more than two characters
-                    List<Station> filteredStations = stationInfoFetcher.searchStations(newValue);
-                    Log.i("Filtered stations: " + filteredStations.size());
-
-                    if (!filteredStations.isEmpty()) {
-                        contextMenu.getItems().clear();
-                        for (Station station : filteredStations) {
-                            MenuItem item = new MenuItem(station.getStationName()); // set results
-                            item.setOnAction(new EventHandler<ActionEvent>() {
-                                @Override
-                                public void handle(ActionEvent event) {
-                                    if (textField.getId().equals("departingStationField")) {
-                                        message.setDepartingStation(station);
-                                    } else {
-                                        message.setArrivingStation(station);
-                                    }
-                                    textField.setText(station.getStationName());
-                                    contextMenu.hide();
-                                }
-                            });
-                            contextMenu.getItems().add(item);
-                        }
-
-                        if (!contextMenu.isShowing()) {
-                            // Use localToScreen to get the absolute position of the TextField on the screen
-                            double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
-                            double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
-
-                            // Show ContextMenu below TextField
-                            contextMenu.show(textField, screenX, screenY);
-                        }
-                    } else {
-                        contextMenu.hide();  // Hide ContextMenu when no match
-                    }
-                }
-            }
-        });
-
-        // When the TextField gets focus, display the ContextMenu
-        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue) {
-                    contextMenu.hide();  // Hide ContextMenu when TextField loses focus
-                }
-            }
-        });
     }
     
     private void initView() {
@@ -606,6 +551,11 @@ public class InformationPage extends Application implements MessageCallback {
                     }
                 }
             });
+        }
+
+        else if (event == Events.SearchStationResponse.TOPIC && payload instanceof Events.SearchStationResponse.Payload) {
+            Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
+            stationSearchHandler.handleStationSearchResponse(responsePayload);
         }
     }
 
