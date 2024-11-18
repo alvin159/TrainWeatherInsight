@@ -3,10 +3,10 @@ package compse110.frontend;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
-import compse110.Entity.Station;
 import compse110.Utils.Log;
 import compse110.frontend.Entity.SearchInfo;
 import compse110.frontend.Entity.UIComponentFactory;
+import compse110.frontend.Entity.UIComponentFactory.StationSearchHandler;
 import compse110.messagebroker.MessageBroker;
 import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
@@ -15,14 +15,11 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.time.LocalDate;
-import java.util.List;
 
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
@@ -30,12 +27,9 @@ import javafx.stage.WindowEvent;
 public class HomePage extends Application implements MessageCallback{
 
     private static final MessageBroker broker = MessageBroker.getInstance();
-    private TextField departingStationField;
-    private TextField arrivalStationField;
-    private ContextMenu contextMenu;
-    private Station departStation;
-    private Station arriveStation;
     private DatePicker departureDatePicker;
+    private UIComponentFactory uiComponentFactory;
+    private StationSearchHandler stationSearchHandler;
 
     @Override
     public void start(Stage primaryStage) {
@@ -44,6 +38,9 @@ public class HomePage extends Application implements MessageCallback{
         //Listen for responses from the backend
         broker.subscribe(EventType.ABBREVIATION_RESPONSE, this);
         broker.subscribe(EventType.SEARCH_STATION_RESPONSE, this);
+
+        uiComponentFactory = new UIComponentFactory();
+        stationSearchHandler = uiComponentFactory.new StationSearchHandler();
 
         // Create UI elements
         Label titleLabel = new Label("TrainFinder");
@@ -58,27 +55,15 @@ public class HomePage extends Application implements MessageCallback{
 
         Label welcomeLabel = new Label("Welcome to search any train connections and information about your destination");
         Label departingStationLabel = new Label("Departing station:");
-        departingStationField = new TextField();
-        departingStationField.setPromptText("Oulu"); // Set hint text
-        departingStationField.setId("departingStationField"); //Set the ID for identification of the drop-down box below
         Label arrivalStationLabel = new Label("Arrival station (optional):");
-        arrivalStationField = new TextField();
-        arrivalStationField.setPromptText("Helsinki"); // Set hint text
-        arrivalStationField.setId("arrivalStationField");
 
         // TODO if not debug remove it!!
         if (Log.getIsDebug()) {
-            departingStationField.setText("Oulu asema");
-            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(departingStationField.getText(), departingStationField.getId()));
-            arrivalStationField.setText("Helsinki asema");
-            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(arrivalStationField.getText(), arrivalStationField.getId()));
+            stationSearchHandler.departingStationField.setText("Oulu asema");
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(stationSearchHandler.departingStationField.getText(), stationSearchHandler.departingStationField.getId()));
+            stationSearchHandler.arrivalStationField.setText("Helsinki asema");
+            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(stationSearchHandler.arrivalStationField.getText(), stationSearchHandler.arrivalStationField.getId()));
         }
-
-        contextMenu = new ContextMenu();
-        departingStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
-        departingStationField.setOnMousePressed(this::handleFocusingOnTextField);
-        arrivalStationField.setOnKeyReleased(this::handleTypingOnStationSearch);
-        arrivalStationField.setOnMousePressed(this::handleFocusingOnTextField);
 
         Label departureDateLabel = new Label("Departure date:\n(require arrive station)");
         departureDatePicker = UIComponentFactory.departureDatePickerCreator(LocalDate.now());
@@ -88,37 +73,19 @@ public class HomePage extends Application implements MessageCallback{
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // Check departing Station Field is empty
-                if (departingStationField.getText().isEmpty() || departStation == null) {
-                    // Show input alert
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Alert");
-                    alert.setHeaderText("Input departing station");
-                    alert.setContentText("Please input departing station name or short code");
-                    alert.showAndWait();
-                    return;
-
-                } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
-                    // Check Departing and arrive station is same?
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Alert");
-                    alert.setHeaderText("Departing station and arrive station can not same name");
-                    alert.setContentText("Please input departing station name or short code again");
-                    alert.showAndWait();
+                if(stationSearchHandler.handlePressingSearch() == false) {
                     return;
                 }
-
-                UIComponentFactory.LatestSearches.addSearchToLatestSearches(departingStationField, arrivalStationField);
 
                 // Create a message entity
                 SearchInfo message = new SearchInfo();
                 // Put data to message
-                message.setDepartingStation(departStation);
-                message.setArrivingStation(arriveStation);
+                message.setDepartingStation(stationSearchHandler.departStation);
+                message.setArrivingStation(stationSearchHandler.arriveStation);
                 
                 message.setDate(departureDatePicker.getValue());
 
-                if (arrivalStationField.getText().isEmpty()) {
+                if (stationSearchHandler.arrivalStationField.getText().isEmpty()) {
                     message.setArrivingStation(null);
                 }
                 // Open new window
@@ -157,7 +124,7 @@ public class HomePage extends Application implements MessageCallback{
         backendLabel.setPrefWidth(400); // Set the preferred width to 400 pixels
         backendLabel.setStyle("-fx-font-weight: bold;");
 
-        VBox latestSearches = UIComponentFactory.LatestSearches.createLatestSearchesComponent(departingStationField, arrivalStationField);
+        VBox latestSearches = UIComponentFactory.LatestSearches.createLatestSearchesComponent(stationSearchHandler.departingStationField, stationSearchHandler.arrivalStationField);
 
         // Create layout for input fields
         GridPane gridPane = new GridPane();
@@ -166,9 +133,9 @@ public class HomePage extends Application implements MessageCallback{
         gridPane.setAlignment(Pos.CENTER);
         gridPane.add(welcomeLabel, 0, 1, 2, 1);
         gridPane.add(departingStationLabel, 0, 2);
-        gridPane.add(departingStationField, 1, 2);
+        gridPane.add(stationSearchHandler.departingStationField, 1, 2);
         gridPane.add(arrivalStationLabel, 0, 3);
-        gridPane.add(arrivalStationField, 1, 3);
+        gridPane.add(stationSearchHandler.arrivalStationField, 1, 3);
         gridPane.add(departureDateLabel, 0, 4);
         gridPane.add(departureDatePicker, 1, 4);
         gridPane.add(latestSearches, 1, 5);
@@ -187,90 +154,11 @@ public class HomePage extends Application implements MessageCallback{
         primaryStage.show();
     }
 
-    private void handleTypingOnStationSearch(KeyEvent event) {
-        TextField source = (TextField) event.getSource();
-        String newValue = source.getText();
-        if (newValue.length() < 2) {
-            contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
-        } else {
-            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(newValue, source.getId()));
-        }
-    }
-
-    private void handleFocusingOnTextField(MouseEvent event) {
-        TextField source = (TextField) event.getSource();
-        if (source.getText().length() < 2) {
-            contextMenu.hide();  // Hide recommendation list when inputting less than 2 characters
-        } else if (!contextMenu.isShowing()) { // Don't send request if the context menu is already showing
-            broker.publish(Events.SearchStationRequest.TOPIC, new Events.SearchStationRequest.Payload(source.getText(), source.getId()));
-        }
-    }
-
-    // Method to handle station search response and update the context menu
-    private void handleStationSearch(Events.SearchStationResponse.Payload responsePayload) {
-        List<Station> filteredStations = responsePayload.getStationList();
-        String textFieldId = responsePayload.getTextFieldId();
-
-        if(textFieldId.equals("departingStationField")) {
-            departStation = null;
-        } else if (textFieldId.equals("arrivalStationField")) {
-            arriveStation = null;
-        }
-
-        Platform.runLater(() -> {
-            Log.i("Filtered stations: " + filteredStations.size());
-
-            if (filteredStations.isEmpty()) {
-                contextMenu.hide();
-                return;
-            }
-
-            contextMenu.getItems().clear();
-            for (Station station : filteredStations) {
-
-                //Ensures that station will be set if user has typed the full name of the station, but not clicked that station from the drop-down list
-                if(departingStationField.getText().equals(station.getStationName() ) && textFieldId.equals("departingStationField")) {
-                    departStation = station;
-                    break;
-                } else if ( arrivalStationField.getText().equals(station.getStationName()) && textFieldId.equals("arrivalStationField")) {
-                    arriveStation = station;
-                    break;
-                }
-
-                MenuItem item = new MenuItem(station.getStationName()); // set results
-                item.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        if (textFieldId.equals("departingStationField")) {
-                            departStation = station;
-                        } else {
-                            arriveStation = station;
-                        }
-                        TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
-                        textField.setText(station.getStationName());
-                        contextMenu.hide();
-                    }
-                });
-                contextMenu.getItems().add(item);
-            }
-
-            if (!contextMenu.isShowing()) {
-                // Use localToScreen to get the absolute position of the TextField on the screen
-                TextField textField = textFieldId.equals("departingStationField") ? departingStationField : arrivalStationField;
-                double screenX = textField.localToScreen(textField.getBoundsInLocal()).getMinX();
-                double screenY = textField.localToScreen(textField.getBoundsInLocal()).getMaxY();
-
-                // Show ContextMenu below TextField
-                contextMenu.show(textField, screenX, screenY);
-            }
-        });
-    }
-
     @Override
     public void onMessageReceived(EventType eventType, EventPayload payload) {
         if (eventType == Events.SearchStationResponse.TOPIC && payload instanceof Events.SearchStationResponse.Payload) {
             Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
-            handleStationSearch(responsePayload);
+            stationSearchHandler.handleStationSearchResponse(responsePayload);
         }
     }
 

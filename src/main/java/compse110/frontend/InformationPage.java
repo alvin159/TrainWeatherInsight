@@ -4,6 +4,7 @@ import compse110.Entity.*;
 import compse110.frontend.Controllers.TrainListCell;
 import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.frontend.Entity.*;
+import compse110.frontend.Entity.UIComponentFactory.StationSearchHandler;
 import compse110.Utils.StringUtils;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
@@ -55,6 +56,9 @@ public class InformationPage extends Application implements MessageCallback {
     CityInformation arrivingCityInfo;
     GridPane gridpane;
 
+    private UIComponentFactory uiComponentFactory;
+    private StationSearchHandler stationSearchHandler;
+
     private Stage primaryStage;
 
     // Main method to start with SearchInfo object
@@ -64,6 +68,9 @@ public class InformationPage extends Application implements MessageCallback {
         broker.subscribe(EventType.TRAIN_RESPONSE, this);
         broker.subscribe(EventType.WEATHER_RESPONSE, this);
         broker.subscribe(EventType.DEMOGRAPHIC_RESPONSE, this);
+
+        uiComponentFactory = new UIComponentFactory();
+        stationSearchHandler = uiComponentFactory.new StationSearchHandler();
 
         this.primaryStage = primaryStage;
         this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -298,14 +305,8 @@ public class InformationPage extends Application implements MessageCallback {
         header.setAlignment(Pos.CENTER_LEFT);
 
         Label departingLabel = new Label("Departing station:");
-        TextField departingStationField = new TextField();
-        departingStationField.setText(message.getDepartingStation().getStationName());
-        departingStationField.setId("departingStationField");
 
         Label arrivingLabel = new Label("Arrival station (optional):");
-        TextField arrivalStationField = new TextField();
-        arrivalStationField.setText(message.getArrivingStation() != null ? message.getArrivingStation().getStationName() : "");
-        arrivalStationField.setId("arrivalStationField");
 
         Label dateLabel = new Label("Departure date:");
         DatePicker departureDatePicker = UIComponentFactory.departureDatePickerCreator(message.getDate());
@@ -314,27 +315,11 @@ public class InformationPage extends Application implements MessageCallback {
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                // Check departing Station Field is empty
-                if (departingStationField.getText().isEmpty()) {
-                    // Show input alert
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Alert");
-                    alert.setHeaderText("Input departing station");
-                    alert.setContentText("Please input departing station name or short code");
-                    alert.showAndWait();
-                    return;
-                } else if (departingStationField.getText().equals(arrivalStationField.getText())) {
-                    // Check Departing and arrive station is same?
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Alert");
-                    alert.setHeaderText("Departing station and arrive station can not same name");
-                    alert.setContentText("Please input departing station name or short code again");
-                    alert.showAndWait();
+                if(stationSearchHandler.handlePressingSearch() == false) {
                     return;
                 }
-                
-                UIComponentFactory.LatestSearches.addSearchToLatestSearches(departingStationField, departingStationField);
-                if (arrivalStationField.getText().isEmpty()) {
+
+                if (stationSearchHandler.arrivalStationField.getText().isEmpty()) {
                     message.setArrivingStation(null);
                 }
                 message.setDate(departureDatePicker.getValue());
@@ -342,12 +327,7 @@ public class InformationPage extends Application implements MessageCallback {
             }
         });
 
-        // Add listeners for auto-complete functionality
-        ContextMenu contextMenu = new ContextMenu();
-        addSearchStationRecommendListener(departingStationField, contextMenu);
-        addSearchStationRecommendListener(arrivalStationField, contextMenu);
-
-        header.getChildren().addAll(departingLabel, departingStationField, arrivingLabel, arrivalStationField, dateLabel, departureDatePicker, searchButton);
+        header.getChildren().addAll(departingLabel, stationSearchHandler.departingStationField, arrivingLabel, stationSearchHandler.arrivalStationField, dateLabel, departureDatePicker, searchButton);
         return header;
     }
 
