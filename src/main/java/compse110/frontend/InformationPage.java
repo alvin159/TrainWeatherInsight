@@ -144,18 +144,6 @@ public class InformationPage extends Application implements MessageCallback {
             }
         });
 
-        // Add listener for train selection
-        trainListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                    TrainInformation selectedTrain = trainListView.getSelectionModel().getSelectedItem();
-                    Log.d("Selected train: ", selectedTrain.getTrainName());
-                    addTrainDetailView(selectedTrain);
-                }
-            }
-        });
-
         //add data
         broker.publish(
             Events.TrainRequestEvent.TOPIC, 
@@ -264,9 +252,8 @@ public class InformationPage extends Application implements MessageCallback {
                     return;
                 }
 
-                if (stationSearchHandler.arrivalStationField.getText().isEmpty()) {
-                    message.setArrivingStation(null);
-                }
+                message.setDepartingStation(stationSearchHandler.departStation);
+                message.setArrivingStation(stationSearchHandler.arriveStation);
                 message.setDate(departureDatePicker.getValue());
                 initView();
             }
@@ -516,13 +503,11 @@ public class InformationPage extends Application implements MessageCallback {
 
                         if(weatherResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
                             Log.d(response.getHours().toString());
-//                            showTemperatureGraph(response.getHours(), message.getDepartingStation().getStationName());
                             message.setDepartingWeatherData(response.getHours());
                             departingCityInfo.setForecast(forecast);
                             updateCityWeather(departingCityInfo, departCityInfoView, forecast);
                         } else {
                             arrivingCityInfo.setForecast(forecast);
-//                            showTemperatureGraph(response.getHours(), message.getArrivingStation().getStationName());
                             message.setArrivingWeatherData(response.getHours());
                             updateCityWeather(arrivingCityInfo, arriveCityInfoView, forecast);
                         }
@@ -540,7 +525,7 @@ public class InformationPage extends Application implements MessageCallback {
                         Log.i("Received information: ", response.toString());
                         CityDetails cityDetails = new CityDetails(response.getPopulation(), response.getLandArea(), response.getPopulationDensity());
 
-                        if(demographicResponse.getStationName().equals(message.getDepartingStation().getStationName())) {
+                        if(demographicResponse.getStationName().equals(stationSearchHandler.departStation.getStationName())) {
                             departingCityInfo.setCityDetails(cityDetails);
                             updateCityDetails(departingCityInfo,departCityInfoView,cityDetails);
 
