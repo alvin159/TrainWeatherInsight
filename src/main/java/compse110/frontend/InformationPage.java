@@ -25,6 +25,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -137,6 +139,16 @@ public class InformationPage extends Application implements MessageCallback {
             @Override
             public ListCell<TrainInformation> call(ListView<TrainInformation> param) {
                 return new TrainListCell();
+            }
+        });
+        trainListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                    TrainInformation selectedTrain = trainListView.getSelectionModel().getSelectedItem();
+                    Log.d("Selected train: ", selectedTrain.getTrainName());
+                    addTrainDetailView(selectedTrain);
+                }
             }
         });
 
