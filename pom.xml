@@ -118,6 +118,9 @@
                 <version>3.6.2</version>
                 <configuration>
                     <source>1.8</source>
+                    <additionalJOptions>
+                        <arg>-Xdoclint:missing</arg>
+                    </additionalJOptions>
                 </configuration>
             </plugin>
 
