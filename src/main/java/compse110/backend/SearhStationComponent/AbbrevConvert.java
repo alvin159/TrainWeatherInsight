@@ -13,6 +13,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * The AbbrevConvert class provides functionality to convert station short codes
+ * to their full names by fetching data from an external API and caching the results.
+ * 
+ * Usage example:
+ * AbbrevConvert abbrevConvert = new AbbrevConvert();
+ * String stationName = abbrevConvert.getStationFullName("HKI");
+ */
 public class AbbrevConvert {
 
     // API URL to fetch the station data
