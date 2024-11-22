@@ -12,7 +12,19 @@ import compse110.Utils.Events.DemographicRequestEvent;
 import compse110.Entity.*;
 import java.io.FileReader;
 import java.io.IOException;
-
+/**
+ * Handles demographic data requests and responses in an event-driven architecture.
+ *
+ * <p>This class is responsible for:
+ * <ul>
+ *     <li>Receiving demographic data requests (e.g., city and station names).</li>
+ *     <li>Fetching relevant demographic data (e.g., population, land area, density) from a JSON file.</li>
+ *     <li>Publishing a response event with the requested demographic information or an error message if data is unavailable.</li>
+ * </ul>
+ *
+ * <p>The class integrates with a message broker for subscribing to and publishing events, and
+ * processes JSON data using the Gson library.
+ */
 public class DemographicComponent extends BackendComponent {
 
     @Override
