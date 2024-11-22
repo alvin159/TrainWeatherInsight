@@ -109,7 +109,7 @@ public class TrainComponent extends BackendComponent {
             } else {
                 information.setArriveStationName(stationInfoFetcher.getStationByShortCode(arriveRows.getStationShortCode()).getStationName());
             }
-
+            information.setTimeTableRows(trainData.getTimeTableRows()); // add rows data give detail page use.
             trainInformation.add(information);
         }
         return trainInformation;

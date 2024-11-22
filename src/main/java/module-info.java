@@ -6,6 +6,7 @@ module compse.frontend {
     requires com.google.gson;
     requires okhttp3;
     requires javafx.graphics;
+    requires java.desktop;
     //allow Gson access model
     opens compse110.frontend.Entity;
     opens compse110.Entity;

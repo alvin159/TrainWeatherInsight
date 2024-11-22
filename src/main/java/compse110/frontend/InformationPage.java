@@ -97,7 +97,9 @@ public class InformationPage extends Application implements MessageCallback {
 
         initView();
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 1000, 800);
+        primaryStage.setMinWidth(1000); // Set window minimum width
+        primaryStage.setMinHeight(800); // Set the minimum height of the window
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
@@ -141,6 +143,7 @@ public class InformationPage extends Application implements MessageCallback {
                 return new TrainListCell();
             }
         });
+        // Double click train list to show train detail
         trainListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {

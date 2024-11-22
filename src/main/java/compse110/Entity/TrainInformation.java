@@ -3,6 +3,7 @@ package compse110.Entity;
 import compse110.frontend.Entity.Forecast;
 
 import java.util.Date;
+import java.util.List;
 
 public class TrainInformation {
 
@@ -24,12 +25,12 @@ public class TrainInformation {
 
     private String arriveTrack;
 
-    private Forecast forecast;
+    private List<TimeTableRows> timeTableRows;
 
     public TrainInformation() {
     }
 
-    public TrainInformation(int id, String trainName, Date departureTime, long duration, Date estimatedTime, String departureTrack, String arriveStationName, Date arriveTime, String arriveTrack, Forecast forecast) {
+    public TrainInformation(int id, String trainName, Date departureTime, long duration, Date estimatedTime, String departureTrack, String arriveStationName, Date arriveTime, String arriveTrack, List<TimeTableRows> timeTableRows) {
         Id = id;
         this.trainName = trainName;
         this.departureTime = departureTime;
@@ -39,7 +40,7 @@ public class TrainInformation {
         this.arriveStationName = arriveStationName;
         this.arriveTime = arriveTime;
         this.arriveTrack = arriveTrack;
-        this.forecast = forecast;
+        this.timeTableRows = timeTableRows;
     }
 
     public int getId() {
@@ -114,11 +115,11 @@ public class TrainInformation {
         this.arriveTrack = arriveTrack;
     }
 
-    public Forecast getForecast() {
-        return forecast;
+    public List<TimeTableRows> getTimeTableRows() {
+        return timeTableRows;
     }
 
-    public void setForecast(Forecast forecast) {
-        this.forecast = forecast;
+    public void setTimeTableRows(List<TimeTableRows> timeTableRows) {
+        this.timeTableRows = timeTableRows;
     }
 }

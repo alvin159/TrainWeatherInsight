@@ -139,8 +139,9 @@ public class HomePage extends Application implements MessageCallback{
         mainLayout.setCenter(gridPane); // Add the input fields in the center
 
         // Create scene and stage with full screen and centered content
+        primaryStage.setMinWidth(1000); // Set window minimum width
+        primaryStage.setMinHeight(800); // Set the minimum height of the window
         primaryStage.setScene(new Scene(mainLayout));
-
         primaryStage.setMaximized(true); // Maximize the stage for full screen
         primaryStage.show();
     }
