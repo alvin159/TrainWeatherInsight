@@ -9,6 +9,12 @@ import compse110.Utils.Events.EventType;
 import compse110.Utils.Events.SearchStationRequest;
 import compse110.backend.utils.BackendComponent;
 
+/**
+ * The SearchStationComponent class is responsible for handling search station requests.
+ * It extends the BackendComponent class and utilizes the StationInfoFetcher class to search for stations.
+ * 
+ * The component should only be used through Events
+ */
 public class SearchStationComponent extends BackendComponent {
     private StationInfoFetcher stationInfoFetcher;
 
@@ -17,9 +23,6 @@ public class SearchStationComponent extends BackendComponent {
      * 
      * @param event   The type of event to handle.
      * @param payload The payload associated with the event.
-     * 
-     * Note that BackendComponent.java catches any unexpected errors that might appear during this function.
-     * Error handling for this function focuses more on handling known errors that might occur during the function.
      */
     @Override
     protected void handleEvent(EventType event, EventPayload payload) {

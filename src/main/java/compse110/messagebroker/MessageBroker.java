@@ -38,12 +38,6 @@ public class MessageBroker implements MessageBrokerInterface {
         return instance;
     }
 
-    /**
-     * Publishes an event to all components that are subscribed to the event type.
-     *
-     * @param event   The type of event to publish.
-     * @param payload The payload associated with the event.
-     */
     @Override
     public void publish(EventType event, EventPayload payload) {
         // Check if there are any subscribers for the given event type
@@ -55,26 +49,12 @@ public class MessageBroker implements MessageBrokerInterface {
         }
     }
 
-    /**
-     * Other components can use subscribe() if they are interested of that specific event type.
-     * That way message broker will direct these events to the correct components.
-     *
-     * @param event    the type of event to subscribe to
-     * @param callback the instance of the component that wants to subscribe to the event. Usually "this"
-     */
     @Override
     public void subscribe(EventType event, MessageCallback callback) {
         // Add the subscriber to the set of subscribers for the given event type
         subscribers.computeIfAbsent(event, k -> new HashSet<>()).add(callback);
     }
 
-    /**
-     * Other components can unsubscribe from the event type if they are no longer interested in that event.
-     * 
-     * @param event The event type to unsubscribe from.
-     * @param callback The callback to be removed from the subscribers list.
-     * 
-     */
     @Override
     public void unsubscribe(EventType event, MessageCallback callback) {
         // Remove the subscriber from the set of subscribers for the given event type
@@ -87,8 +67,7 @@ public class MessageBroker implements MessageBrokerInterface {
         }
     }
 
-    // IMPORTANT: Initialize all backend services here
-    // All backend services should be initialized here
+    // Private function for initializing all backend components
     private static void initializeBackend() {
         SearchStationComponent searchStationComponent = new SearchStationComponent();
         searchStationComponent.initialize();
@@ -103,5 +82,6 @@ public class MessageBroker implements MessageBrokerInterface {
         weatherComponent.initialize();
 
         // Initialize other backend services here as well
+        // Otherwise Events won't go to them/they cant send response Events
     }
 }

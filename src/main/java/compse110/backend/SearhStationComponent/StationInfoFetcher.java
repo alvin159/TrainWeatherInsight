@@ -15,6 +15,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The StationInfoFetcher class is responsible for fetching and caching station information.
+ * It uses a singleton pattern to ensure only one instance of the class is created.
+ * The class fetches station data from an API and caches it in a local file for a 7 days.
+ * It also provides methods to get Station class by its short code.
+ */
 public class StationInfoFetcher {
 
     private static StationInfoFetcher instance;

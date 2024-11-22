@@ -455,17 +455,15 @@ public class InformationPage extends Application implements MessageCallback {
     @Override
     public void onMessageReceived(EventType event, EventPayload payload) {
         if (event == Events.TrainResponseEvent.TOPIC && payload instanceof Events.TrainResponseEvent.Payload) {
-            // Train information update
 
-            Events.TrainResponseEvent.Payload responseData = (Events.TrainResponseEvent.Payload) payload;
-
+            Events.TrainResponseEvent.Payload trainResponse = (Events.TrainResponseEvent.Payload) payload;
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    if(responseData.getTrainInformationList() == null) {
+                    if(trainResponse.getTrainInformationList() == null) {
                         // No any train show no train view
                         trainScheduleBox.getChildren().clear();
-                        Label errorLabel = new Label(responseData.getErrorMessage());
+                        Label errorLabel = new Label(trainResponse.getErrorMessage());
                         errorLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
                         errorLabel.setAlignment(Pos.CENTER);
                         HBox errorBox = new HBox(errorLabel);
@@ -474,7 +472,7 @@ public class InformationPage extends Application implements MessageCallback {
                     } else {
                         // Load Schedule to train list
                         trainListView.getItems().clear();
-                        trainListView.getItems().addAll(responseData.getTrainInformationList());
+                        trainListView.getItems().addAll(trainResponse.getTrainInformationList());
                         trainScheduleBox.getChildren().clear();
                         trainScheduleBox.getChildren().add(trainListView);
                     }
@@ -510,7 +508,8 @@ public class InformationPage extends Application implements MessageCallback {
 
                 }
             });
-        } else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.DemographicResponseEvent.Payload demographicResponse) {
+        } else if (event == EventType.DEMOGRAPHIC_RESPONSE && payload instanceof Events.DemographicResponseEvent.Payload) {
+            Events.DemographicResponseEvent.Payload demographicResponse = (Events.DemographicResponseEvent.Payload) payload;
             Log.d(demographicResponse.toString());
             Platform.runLater(new Runnable() {
                 @Override
@@ -534,8 +533,8 @@ public class InformationPage extends Application implements MessageCallback {
         }
 
         else if (event == Events.SearchStationResponse.TOPIC && payload instanceof Events.SearchStationResponse.Payload) {
-            Events.SearchStationResponse.Payload responsePayload = (Events.SearchStationResponse.Payload) payload;
-            stationSearchHandler.handleStationSearchResponse(responsePayload);
+            Events.SearchStationResponse.Payload searchStationResponse = (Events.SearchStationResponse.Payload) payload;
+            stationSearchHandler.handleStationSearchResponse(searchStationResponse);
         }
     }
 
