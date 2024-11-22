@@ -20,6 +20,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * The WeatherComponent class is responsible for handling weather-related events by fetching weather data
+ * from an external API, parsing the response, and publishing the processed data. It listens for WEATHER_REQUEST
+ * events and responds with WEATHER_RESPONSE events containing the current weather conditions and a 24-hour forecast.
+ * 
+ * Usage example:
+ * WeatherComponent weatherComponent = new WeatherComponent();
+ * weatherComponent.initialize(); // Subscribes to WEATHER_REQUEST events
+ */
+
 public class WeatherComponent extends BackendComponent{
 
     private static final String API_KEY = "XRDPDDZZDR7SX9EMEYPPS9CTK";

@@ -2,6 +2,12 @@ package compse110.frontend.Entity;
 
 import javafx.scene.image.ImageView;
 
+/**
+ * The Forecast class represents a weather forecast, encapsulating details such as 
+ * temperature, weather status, a visual representation of the weather, and additional
+ * forecast details. 
+ */
+
 public class Forecast {
 
     private double temperature;
