@@ -1,5 +1,16 @@
 package compse110.Entity;
-
+/**
+ * Represents a demographic response containing details about a specific city.
+ *
+ * <p>This class encapsulates key demographic information, including:
+ * <ul>
+ *     <li>Total population</li>
+ *     <li>Total land area (in square kilometers)</li>
+ *     <li>Population density (people per square kilometer)</li>
+ * </ul>
+ *
+ * <p>It is used to store and transfer demographic data between frontend and backend.
+ */
 public class DemographicResponse {
     private int population;
     private double landArea;

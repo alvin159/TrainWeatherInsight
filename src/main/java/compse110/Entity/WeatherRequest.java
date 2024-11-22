@@ -1,6 +1,19 @@
 package compse110.Entity;
 import java.time.LocalDate;
-
+/**
+ * Represents a request for weather information based on specific geographic criteria and date.
+ *
+ * <p>This class encapsulates the following details:
+ * <ul>
+ *     <li><b>Date:</b> The date for which weather data is requested.</li>
+ *     <li><b>Station Name:</b> The name of the weather station.</li>
+ *     <li><b>Latitude:</b> The geographic latitude of the location.</li>
+ *     <li><b>Longitude:</b> The geographic longitude of the location.</li>
+ * </ul>
+ *
+ * <p>It is typically used to request weather data for a specific date and location
+ * from weather data APIs.
+ */
 public class WeatherRequest {
     private LocalDate date;
     private String stationName;
