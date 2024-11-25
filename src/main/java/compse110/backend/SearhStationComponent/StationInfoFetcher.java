@@ -3,6 +3,7 @@ package compse110.backend.SearhStationComponent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import compse110.Entity.Station;
+import compse110.Entity.TimeTableRows;
 import compse110.Utils.API_Config;
 import compse110.Utils.Log;
 import compse110.backend.Entity.StationStorage;
@@ -11,6 +12,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,5 +139,14 @@ public class StationInfoFetcher {
                 .filter(station -> station.getStationShortCode().equals(shortCode))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public List<TimeTableRows> addTimeTableRowsStationName(List<TimeTableRows> timeTableRows) {
+        List<TimeTableRows> result = new ArrayList<>();
+        for (TimeTableRows row : timeTableRows) {
+            row.setStationName(getStationByShortCode(row.getStationShortCode()).getStationName());
+            result.add(row);
+        }
+        return result;
     }
 }

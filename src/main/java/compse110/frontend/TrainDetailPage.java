@@ -2,6 +2,7 @@ package compse110.frontend;
 
 import compse110.Entity.TimeTableRows;
 import compse110.Entity.TrainInformation;
+import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,6 +30,7 @@ public class TrainDetailPage extends Application {
         }
         List<TimeTableRows> stops = trainInformation.getTimeTableRows();
         List<TimeTableRows> mergedStops = mergeStops(stops);
+        mergedStops = StationInfoFetcher.getInstance().addTimeTableRowsStationName(mergedStops);
 
         primaryStage.setTitle(trainInformation.getTrainName());
 
@@ -56,7 +58,7 @@ public class TrainDetailPage extends Application {
         stopsBox.setStyle("-fx-padding: 10;");
 
         for (TimeTableRows stop : mergedStops) {
-            String stopText = stop.getStationShortCode() + ", " + timeFormat.format(stop.getScheduledTime());
+            String stopText = stop.getStationName() + ", " + timeFormat.format(stop.getScheduledTime());
 
             if (stop.getLiveEstimateTime() != null) {
                 stopText += " -> " + timeFormat.format(stop.getLiveEstimateTime());
