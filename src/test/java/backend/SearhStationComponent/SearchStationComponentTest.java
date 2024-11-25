@@ -1,61 +1,65 @@
 package backend.SearhStationComponent;
-
-import compse110.Entity.Station;
 import compse110.Utils.Events;
-import compse110.Utils.EventPayload;
+import compse110.Utils.Events.EventType;
 import compse110.Utils.Events.SearchStationRequest;
-import compse110.backend.SearhStationComponent.SearchStationComponent;
-import compse110.backend.SearhStationComponent.StationInfoFetcher;
 import compse110.messagebroker.MessageBroker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
-import static org.mockito.Mockito.*;
+
+import backend.messageBroker.MessageCallbackMock;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class SearchStationComponentTest {
 
-    private SearchStationComponent searchStationComponent;
-    private StationInfoFetcher stationInfoFetcherMock;
-    //private MessageBroker messageBrokerMock;
+    private MessageBroker messageBroker;
+    private MessageCallbackMock callback;
 
     @BeforeEach
     public void setUp() {
-        //messageBrokerMock = MessageBroker.getInstance();
-        stationInfoFetcherMock = mock(StationInfoFetcher.class);
-        searchStationComponent = new SearchStationComponent();
-        searchStationComponent.initialize();
-        searchStationComponent.stationInfoFetcher = stationInfoFetcherMock; // Inject the mock,need to change stationInfoFetcher to public before testing
+        messageBroker = MessageBroker.getInstance();
+        callback = new MessageCallbackMock();
+        messageBroker.subscribe(EventType.SEARCH_STATION_RESPONSE, callback);
     }
 
     @Test
-    public void testHandleEventWithValidRequest() {
-        // Set up test data
-        String searchInput = "Helsinki";
-        String textFieldId = "field1";
-        List<Station> mockStations = new ArrayList<>();
-        mockStations.add(new Station(
-                false,              // passengerTraffic
-                "STATION",          // type
-                "Helsinki Kivihaka",// stationName
-                "Helsinki",         // cityName
-                "KHK",              // stationShortCode
-                1028,               // stationUICCode
-                "FI",               // countryCode
-                24.917191,          // longitude
-                60.209813           // latitude
-        ));
+    void testSubscribeAndPublish() {
+        messageBroker.publish(EventType.SEARCH_STATION_REQUEST, new SearchStationRequest.Payload("Helsinki as", "field1"));
 
-        // Configure the mock
-        when(stationInfoFetcherMock.searchStations(searchInput)).thenReturn(mockStations);
+        try {
+            Thread.sleep(1000); // 1 second
+        } catch (InterruptedException e) {
+            fail("Test was interrupted");
+        }
+        assertEquals(1, callback.getReceivedPayloads().size());
+        Events.SearchStationResponse.Payload payload = null;
+        try {
+            payload = (Events.SearchStationResponse.Payload) callback.getReceivedPayloads().get(0);
+        } catch (Exception e) {
+            fail("Payload is not of type SearchStationResponse");
+        }
+        assertEquals(1, payload.getStationList().size());
+        assertEquals("Helsinki asema", payload.getStationList().get(0).getStationName());
+    }
 
-        // Create the payload
-        EventPayload payload = new SearchStationRequest.Payload(searchInput, textFieldId);
+    //Test with string that gives no results
+    @Test
+    void testSubscribeAndPublishNoResults() {
+        messageBroker.publish(EventType.SEARCH_STATION_REQUEST, new SearchStationRequest.Payload("New Yo", "field1"));
 
-        // Invoke the method (need to change the handleEvent to public before testing)
-        searchStationComponent.handleEvent(Events.EventType.SEARCH_STATION_REQUEST, payload);
-
-        // Verify that the stationInfoFetcher was called with the correct input
-        verify(stationInfoFetcherMock, times(1)).searchStations(searchInput);
+        try {
+            Thread.sleep(1000); // 1 second
+        } catch (InterruptedException e) {
+            fail("Test was interrupted");
+        }
+        assertEquals(1, callback.getReceivedPayloads().size());
+        Events.SearchStationResponse.Payload payload = null;
+        try {
+            payload = (Events.SearchStationResponse.Payload) callback.getReceivedPayloads().get(0);
+        } catch (Exception e) {
+            fail("Payload is not of type SearchStationResponse");
+        }
+        assertEquals(0, payload.getStationList().size());
     }
 }
