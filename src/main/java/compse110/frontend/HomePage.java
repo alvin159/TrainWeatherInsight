@@ -85,6 +85,10 @@ public class HomePage extends Application implements MessageCallback{
                     return;
                 }
 
+                // Unsubscribe from events
+                broker.unsubscribe(EventType.ABBREVIATION_RESPONSE, HomePage.this);
+                broker.unsubscribe(EventType.SEARCH_STATION_RESPONSE, HomePage.this);
+
                 // Create a message entity
                 SearchInfo message = new SearchInfo();
                 // Put data to message

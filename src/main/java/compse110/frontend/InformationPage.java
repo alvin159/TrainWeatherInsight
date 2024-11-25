@@ -123,6 +123,10 @@ public class InformationPage extends Application implements MessageCallback {
             @Override
             public void handle(ActionEvent event) {
                 try {
+                    broker.unsubscribe(EventType.SEARCH_STATION_RESPONSE, InformationPage.this);
+                    broker.unsubscribe(EventType.TRAIN_RESPONSE, InformationPage.this);
+                    broker.unsubscribe(EventType.WEATHER_RESPONSE, InformationPage.this);
+                    broker.unsubscribe(EventType.DEMOGRAPHIC_RESPONSE, InformationPage.this);
                     HomePage homePage = new HomePage();
                     Stage homeStage = new Stage();
                     homePage.start(homeStage);
