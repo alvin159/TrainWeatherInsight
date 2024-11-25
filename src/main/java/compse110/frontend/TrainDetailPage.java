@@ -14,7 +14,11 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TrainDetailPage extends Application {
 
@@ -24,6 +28,7 @@ public class TrainDetailPage extends Application {
             return;
         }
         List<TimeTableRows> stops = trainInformation.getTimeTableRows();
+        List<TimeTableRows> mergedStops = mergeStops(stops);
 
         primaryStage.setTitle(trainInformation.getTrainName());
 
@@ -39,14 +44,9 @@ public class TrainDetailPage extends Application {
         Label departInfo = new Label(departureText);
         departInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        int stopCount = 0;
-        for (TimeTableRows stop : stops) {
-            if (stop.isTrainStopping()) {
-                stopCount++;
-            }
-        }
+
         String trainDetails = "Travel time: " + getFormatDurationTime(trainInformation.getDuration()) + "\n"
-                + stopCount + " stops";
+                + (mergedStops.size() - 1) + " stops";
         Label trainInfo = new Label(trainDetails);
         trainInfo.setStyle("-fx-font-size: 14px;");
 
@@ -55,14 +55,14 @@ public class TrainDetailPage extends Application {
         VBox stopsBox = new VBox(5);
         stopsBox.setStyle("-fx-padding: 10;");
 
-        for (TimeTableRows stop : stops) {
-            if (!stop.isTrainStopping()) continue; // Filter non-stop sites
+        for (TimeTableRows stop : mergedStops) {
+            String stopText = stop.getStationShortCode() + ", " + timeFormat.format(stop.getScheduledTime());
 
-            String stopText = stop.getStationShortCode() + ", "
-                    + timeFormat.format(stop.getScheduledTime());
             if (stop.getLiveEstimateTime() != null) {
-                stopText += " (Est: " + timeFormat.format(stop.getLiveEstimateTime()) + ")";
+                stopText += " -> " + timeFormat.format(stop.getLiveEstimateTime());
+                stopText += " (stop " + stop.getDifferenceInMinutes() + " min)";
             }
+
             TextFlow stopDetail = createStopDetail(stopText, stop.isCancelled());
             stopsBox.getChildren().add(stopDetail);
         }
@@ -89,7 +89,7 @@ public class TrainDetailPage extends Application {
         root.setCenter(scrollPane);
         root.setBottom(bottomBox);
 
-        Scene scene = new Scene(root, 400, 800);
+        Scene scene = new Scene(root, 400, 600);
         primaryStage.setMinWidth(400); // Set window minimum width
         primaryStage.setMinHeight(600); // Set the minimum height of the window
         primaryStage.setScene(scene);
@@ -121,4 +121,45 @@ public class TrainDetailPage extends Application {
         }
 
     }
+
+    private List<TimeTableRows> mergeStops(List<TimeTableRows> stops) {
+
+        Map<String, List<TimeTableRows>> groupedStops = stops.stream()
+                .filter(TimeTableRows::isTrainStopping) // Filter out non-parking sites
+                .collect(Collectors.groupingBy(TimeTableRows::getStationShortCode));
+
+        List<TimeTableRows> mergedStops = new ArrayList<>();
+
+        for (Map.Entry<String, List<TimeTableRows>> entry : groupedStops.entrySet()) {
+            String stationShortCode = entry.getKey();
+            List<TimeTableRows> rows = entry.getValue();
+
+            // Make sure to sort by time
+            rows.sort(Comparator.comparing(TimeTableRows::getScheduledTime));
+
+            // create new TimeTableRows
+            TimeTableRows mergedRow = new TimeTableRows();
+            mergedRow.setStationShortCode(stationShortCode);
+            mergedRow.setScheduledTime(rows.get(0).getScheduledTime()); // Arrival time
+            if (rows.size() > 1) {
+                mergedRow.setLiveEstimateTime(rows.get(rows.size() - 1).getScheduledTime()); // Departure time
+            }
+            mergedRow.setTrainStopping(true); // Guaranteed to be a parking site
+            mergedRow.setCancelled(rows.stream().anyMatch(TimeTableRows::isCancelled));
+
+            // Check train is late
+            if (mergedRow.getLiveEstimateTime() != null &&
+                    mergedRow.getLiveEstimateTime().after(mergedRow.getScheduledTime())) {
+                mergedRow.setDifferenceInMinutes((int) ((mergedRow.getLiveEstimateTime().getTime() - mergedRow.getScheduledTime().getTime()) / 60000));
+            } else {
+                mergedRow.setDifferenceInMinutes(0);
+            }
+
+            mergedStops.add(mergedRow);
+        }
+
+        mergedStops.sort(Comparator.comparing(TimeTableRows::getScheduledTime));
+        return mergedStops;
+    }
+
 }

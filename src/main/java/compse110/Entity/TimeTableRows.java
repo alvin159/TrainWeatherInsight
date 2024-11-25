@@ -1,11 +1,15 @@
 package compse110.Entity;
 
+import net.minidev.json.annotate.JsonIgnore;
+
 import java.util.Date;
 import java.util.List;
 
 // IMPORTANT! Gson library is required to run this code. DONT modify this class
 public class TimeTableRows {
     private String stationShortCode;
+    @JsonIgnore
+    private String stationName;
     private int stationUICCode;
     private String countryCode;
     private String type;
@@ -139,6 +143,14 @@ public class TimeTableRows {
 
     public void setCauses(List<Causes> causes) {
         this.causes = causes;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     @Override
