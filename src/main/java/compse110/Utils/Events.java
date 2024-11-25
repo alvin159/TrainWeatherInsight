@@ -1,11 +1,7 @@
 package compse110.Utils;
 
-import compse110.Entity.Station;
-import compse110.Entity.WeatherRequest;
-import compse110.Entity.WeatherResponse;
-import compse110.Entity.TrainInformation;
-import compse110.Entity.DemographicRequest;
-import compse110.Entity.DemographicResponse;
+import compse110.Entity.*;
+
 import java.util.List;
 import java.util.Date;
 
@@ -21,7 +17,9 @@ public class Events {
         TRAIN_REQUEST,
         TRAIN_RESPONSE,
         SEARCH_STATION_REQUEST,
-        SEARCH_STATION_RESPONSE
+        SEARCH_STATION_RESPONSE,
+        ADD_STATION_NAME_REQUEST,
+        ADD_STATION_NAME_RESPONSE
     }
 
     public static class WeatherRequestEvent {
@@ -329,4 +327,61 @@ public class Events {
             }
         }
     }
+
+    public static class AddStationNameRequest {
+        public static final EventType TOPIC = EventType.ADD_STATION_NAME_REQUEST;
+
+        public static class Payload implements EventPayload {
+
+            private final List<TimeTableRows> timeTableRows;
+            private String errorMessage;
+
+            public Payload(List<TimeTableRows> timeTableRows) {
+                this.timeTableRows = timeTableRows;
+            }
+
+            public List<TimeTableRows> getTimeTableRows() {
+                return timeTableRows;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
+        }
+    }
+
+    public static class AddStationNameResponse {
+        public static final EventType TOPIC = EventType.ADD_STATION_NAME_RESPONSE;
+
+        public static class Payload implements EventPayload {
+
+            private final List<TimeTableRows> timeTableRows;
+            private String errorMessage;
+
+            public Payload(List<TimeTableRows> timeTableRows) {
+                this.timeTableRows = timeTableRows;
+            }
+
+            public List<TimeTableRows> getTimeTableRows() {
+                return timeTableRows;
+            }
+
+            @Override
+            public String getErrorMessage() {
+                return errorMessage;
+            }
+
+            @Override
+            public void setErrorMessage(String errorMessage) {
+                this.errorMessage = errorMessage;
+            }
+        }
+    }
+
 }

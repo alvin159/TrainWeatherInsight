@@ -2,8 +2,12 @@ package compse110.frontend;
 
 import compse110.Entity.TimeTableRows;
 import compse110.Entity.TrainInformation;
-import compse110.backend.SearhStationComponent.StationInfoFetcher;
+import compse110.Utils.EventPayload;
+import compse110.Utils.Events;
+import compse110.messagebroker.MessageBroker;
+import compse110.messagebroker.MessageCallback;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,12 +32,26 @@ public class TrainDetailPage extends Application {
         if (trainInformation == null) {
             return;
         }
+        MessageBroker broker = MessageBroker.getInstance();
         List<TimeTableRows> stops = trainInformation.getTimeTableRows();
         List<TimeTableRows> mergedStops = mergeStops(stops);
-        mergedStops = StationInfoFetcher.getInstance().addTimeTableRowsStationName(mergedStops);
 
         primaryStage.setTitle(trainInformation.getTrainName());
 
+        broker.subscribe(Events.EventType.ADD_STATION_NAME_RESPONSE, new MessageCallback() {
+            @Override
+            public void onMessageReceived(Events.EventType event, EventPayload payload) {
+                Events.AddStationNameResponse.Payload stationNamePayload = (Events.AddStationNameResponse.Payload) payload;
+                Platform.runLater(() -> initView(trainInformation, stationNamePayload.getTimeTableRows(), primaryStage));
+                broker.unsubscribe(Events.EventType.ADD_STATION_NAME_RESPONSE, this);
+            }
+        });
+
+        broker.publish(Events.EventType.ADD_STATION_NAME_REQUEST, new Events.AddStationNameRequest.Payload(mergedStops));
+
+    }
+
+    private void initView(TrainInformation trainInformation, List<TimeTableRows> mergedStops, Stage primaryStage) {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-padding: 15; -fx-background-color: #f4f4f4;");
 
@@ -42,7 +60,7 @@ public class TrainDetailPage extends Application {
         VBox topBox = new VBox(5);
         topBox.setStyle("-fx-padding: 10;");
 
-        String departureText = trainInformation.getTrainName() + "\nDeparture " + timeFormat.format(trainInformation.getDepartureTime());
+        String departureText = trainInformation.getTrainName() + "\nDeparture " + mergedStops.get(0).getStationName() + "  " + timeFormat.format(trainInformation.getDepartureTime());
         Label departInfo = new Label(departureText);
         departInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
@@ -58,7 +76,13 @@ public class TrainDetailPage extends Application {
         stopsBox.setStyle("-fx-padding: 10;");
 
         for (TimeTableRows stop : mergedStops) {
-            String stopText = stop.getStationName() + ", " + timeFormat.format(stop.getScheduledTime());
+            String stopText = "";
+            if (stop.getStationName() != null) {
+                stopText += stop.getStationName();
+            } else {
+                stopText += stop.getStationShortCode();
+            }
+            stopText += ", " + timeFormat.format(stop.getScheduledTime());
 
             if (stop.getLiveEstimateTime() != null) {
                 stopText += " -> " + timeFormat.format(stop.getLiveEstimateTime());
@@ -97,7 +121,6 @@ public class TrainDetailPage extends Application {
         primaryStage.setScene(scene);
         primaryStage.setMaximized(false);
         primaryStage.show();
-
     }
 
     private TextFlow createStopDetail(String stopInfo, boolean isCancelled) {

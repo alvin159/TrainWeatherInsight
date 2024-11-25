@@ -3,6 +3,7 @@ package compse110.backend.SearhStationComponent;
 import java.util.List;
 
 import compse110.Entity.Station;
+import compse110.Entity.TimeTableRows;
 import compse110.Utils.EventPayload;
 import compse110.Utils.Events;
 import compse110.Utils.Events.EventType;
@@ -31,17 +32,22 @@ public class SearchStationComponent extends BackendComponent {
             List<Station> stationsToReturn = stationInfoFetcher.searchStations(searchStationRequest.getCurrentSearchInput());
             String textFieldId = searchStationRequest.getTextFieldId();
             broker.publish(Events.SearchStationResponse.TOPIC, new Events.SearchStationResponse.Payload(stationsToReturn, textFieldId));
-
+        } else if (event == EventType.ADD_STATION_NAME_REQUEST && payload instanceof Events.AddStationNameRequest.Payload) {
+            Events.AddStationNameRequest.Payload addStationNameRequest = getPayload(event, payload);
+            List<TimeTableRows> timeTableRows = stationInfoFetcher.addTimeTableRowsStationName(addStationNameRequest.getTimeTableRows());
+            broker.publish(Events.AddStationNameResponse.TOPIC, new Events.AddStationNameResponse.Payload(timeTableRows));
         }
     }
 
     public void initialize() {
         broker.subscribe(EventType.SEARCH_STATION_REQUEST, this);
+        broker.subscribe(EventType.ADD_STATION_NAME_REQUEST, this);
         stationInfoFetcher = StationInfoFetcher.getInstance();
     }
 
     public void shutdown() {
         broker.unsubscribe(EventType.SEARCH_STATION_REQUEST, this);
+        broker.unsubscribe(EventType.ADD_STATION_NAME_REQUEST, this);
         executor.shutdown();
     }
     
