@@ -69,8 +69,10 @@ public class InformationPage extends Application implements MessageCallback {
 
         uiComponentFactory = new UIComponentFactory();
         stationSearchHandler = uiComponentFactory.new StationSearchHandler();
-        stationSearchHandler.arrivalStationField.setText(message.getArrivingStation() != null ? message.getArrivingStation().getStationName() : "");
         stationSearchHandler.departingStationField.setText(message.getDepartingStation().getStationName());
+        stationSearchHandler.departStation = message.getDepartingStation() != null ? message.getDepartingStation() : null;
+        stationSearchHandler.arrivalStationField.setText(message.getArrivingStation() != null ? message.getArrivingStation().getStationName() : "");
+        stationSearchHandler.arriveStation = message.getArrivingStation() != null ? message.getArrivingStation() : null;
 
         this.primaryStage = primaryStage;
         this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
