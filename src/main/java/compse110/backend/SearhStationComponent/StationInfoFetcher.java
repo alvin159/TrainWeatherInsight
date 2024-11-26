@@ -37,6 +37,11 @@ public class StationInfoFetcher {
 
     private List<Station> stations;
 
+    /**
+     * Get the instance of the StationInfoFetcher class.
+     * If the instance is null, create a new instance.
+     * @return the instance of the StationInfoFetcher class
+     */
     public static StationInfoFetcher getInstance() {
         if (instance == null) {
             instance = new StationInfoFetcher();
@@ -44,6 +49,11 @@ public class StationInfoFetcher {
         return instance;
     }
 
+    /**
+     * Private constructor to hide the implicit public one.
+     * It initializes the stations list by reading from the cache file.
+     * If the cache file does not exist or is expired, it refreshes the cache by fetching data from the API.
+     */
     private StationInfoFetcher() {
         // private constructor to hide the implicit public one
         stations = getStationsFromFile();
@@ -52,6 +62,11 @@ public class StationInfoFetcher {
         }
     }
 
+    /**
+     * Get the list of stations.
+     * Check the cache file first.
+     * @return the list of stations
+     */
     private List<Station> getStationsFromFile() {
         File cacheFile = new File(cacheFilePath);
         if (cacheFile.exists()) {
@@ -74,6 +89,11 @@ public class StationInfoFetcher {
     }
 
 
+    /**
+     * Refresh the cache by fetching data from the API.
+     * If the data is fetched successfully, save the data to the cache file.
+     * @return the list of stations
+     */
     private List<Station> refreshCache() {
         List<Station> stations = fetchStationDataFromAPI();
         if (stations != null) {
@@ -104,6 +124,10 @@ public class StationInfoFetcher {
         return stations;
     }
 
+    /**
+     * Fetch station data from the API.
+     * @return the list of stations
+     */
     private static List<Station> fetchStationDataFromAPI() {
         //create a OkHttp client
         OkHttpClient client = new OkHttpClient();
@@ -125,6 +149,11 @@ public class StationInfoFetcher {
         }
     }
 
+    /**
+     * Search stations by query.
+     * @param query the query string
+     * @return the list of stations
+     */
     public List<Station> searchStations(String query) {
         String lowerCaseQuery = query.toLowerCase();
         return this.stations.stream()
@@ -134,6 +163,11 @@ public class StationInfoFetcher {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get the station by its short code.
+     * @param shortCode the short code of the station
+     * @return the station
+     */
     public Station getStationByShortCode(String shortCode) {
         return this.stations.stream()
                 .filter(station -> station.getStationShortCode().equals(shortCode))
@@ -141,6 +175,12 @@ public class StationInfoFetcher {
                 .orElse(null);
     }
 
+    /**
+     * Add station name to the list of timetable rows.
+     * Beacuse the TrainDetailPage needs station name information.
+     * @param timeTableRows the list of timetable rows
+     * @return the list of timetable rows with station name
+     */
     public List<TimeTableRows> addTimeTableRowsStationName(List<TimeTableRows> timeTableRows) {
         List<TimeTableRows> result = new ArrayList<>();
         for (TimeTableRows row : timeTableRows) {

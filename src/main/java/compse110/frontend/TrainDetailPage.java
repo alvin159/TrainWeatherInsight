@@ -56,6 +56,12 @@ public class TrainDetailPage extends Application {
 
     }
 
+    /**
+     * Initialize the window with train details such as departure and arrival times, stops, and travel duration.
+     * @param trainInformation train information.
+     * @param mergedStops List<TimeTableRows> merged stops, raw data is every station has two records, need merge first.
+     * @param primaryStage the stage of the window.
+     */
     private void initView(TrainInformation trainInformation, List<TimeTableRows> mergedStops, Stage primaryStage) {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-padding: 15; -fx-background-color: #f4f4f4;");
@@ -127,6 +133,12 @@ public class TrainDetailPage extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Create a TextFlow object for each stop.
+     * @param stopInfo stop information.
+     * @param isCancelled whether the stop is canceled.
+     * @return TextFlow object.
+     */
     private TextFlow createStopDetail(String stopInfo, boolean isCancelled) {
         Text stopText = new Text(stopInfo);
         stopText.setStyle(isCancelled ? "-fx-fill: red;" : "-fx-fill: black;");
@@ -134,11 +146,21 @@ public class TrainDetailPage extends Application {
         return new TextFlow(stopText);
     }
 
+    /**
+     * Start the window. No any use but need to implement.
+     * @param primaryStage the stage of the window.
+     * @throws Exception exception.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 
     }
 
+    /**
+     * Format the duration time.
+     * @param duration duration time.
+     * @return formatted duration time.
+     */
     private String getFormatDurationTime(long duration) {
         long minutes = duration / (60 * 1000);
         if (minutes > 60) {
@@ -151,6 +173,11 @@ public class TrainDetailPage extends Application {
 
     }
 
+    /**
+     * Merge the stops. The raw data is every station has two records, need to merge first.
+     * @param stops List<TimeTableRows> stops.
+     * @return List<TimeTableRows> merged stops.
+     */
     private List<TimeTableRows> mergeStops(List<TimeTableRows> stops) {
 
         Map<String, List<TimeTableRows>> groupedStops = stops.stream()
