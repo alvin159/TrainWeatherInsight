@@ -25,6 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * The TrainDetailPage class is responsible for displaying detailed information about a train's journey.
+ * It initializes the window with train details such as departure and arrival times, stops, and travel duration.
+ * The window is opened from InformationPage and has a close button to return to it.
+ */
 public class TrainDetailPage extends Application {
 
     public void start(Stage primaryStage, TrainInformation trainInformation) {

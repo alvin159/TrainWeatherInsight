@@ -33,6 +33,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The UIComponentFactory class provides factory pattern for creating reusable UI elements.
+ * DatePicker is for creating date picker component to select the trip date.
+ * Nested class LatestSearches is for creating latest searches component.
+ * Nested class StationSearchHandler is for handling station search requests and responses.
+
+ */
 public class UIComponentFactory {
     private static final MessageBroker broker = MessageBroker.getInstance();
     

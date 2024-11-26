@@ -5,6 +5,11 @@ import compse110.Entity.Station;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The StationStorage class is responsible for storing a list of Station objects
+ * along with a cache time indicating when the data was cached.
+ * The data will be transformed from JSON to this class.
+ */
 public class StationStorage {
 
     private Date cacheTime;

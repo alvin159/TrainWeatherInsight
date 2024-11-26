@@ -39,6 +39,11 @@ import java.util.Date;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+/**
+ * The InformationPage class serves as the main UI component for displaying train schedules,
+ * weather forecasts, and city demographic information.
+ * The class subscribes to various event types from a MessageBroker to receive updates and dynamically update the UI.
+ */
 public class InformationPage extends Application implements MessageCallback {
 
     private static final MessageBroker broker = MessageBroker.getInstance();
