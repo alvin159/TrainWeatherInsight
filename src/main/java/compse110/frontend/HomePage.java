@@ -24,6 +24,12 @@ import java.time.LocalDate;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
 
+/**
+ * The HomePage class serves as the main entry point for the TrainFinder application,
+ * setting up the primary stage and UI components.
+ * The class subscribes to backend events, handles user interactions, and transitions
+ * to the InformationPage upon a successful search.
+ */
 public class HomePage extends Application implements MessageCallback{
 
     private static final MessageBroker broker = MessageBroker.getInstance();

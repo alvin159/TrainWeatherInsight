@@ -4,15 +4,16 @@ import compse110.Entity.TrainInformation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
+/**
+ * TrainListCell is a custom ListCell implementation for displaying train information in a GridPane layout.
+ * It extends the ListCell class and is parameterized with TrainInformation.
+ */
 public class TrainListCell extends ListCell<TrainInformation> {
     private final GridPane gridPane;
     private final Label trainName;

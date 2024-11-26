@@ -5,6 +5,11 @@ import compse110.Entity.Station;
 
 import java.time.LocalDate;
 
+/**
+ * The SearchInfo class represents the information required for a train timetable search query.
+ * It includes details about the departing and arriving stations, the date of travel,
+ * whether to show cool facts, and weather data for both the departing and arriving locations.
+ */
 public class SearchInfo {
     private Station departingStation;
     private Station arrivingStation;
