@@ -24,6 +24,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The TrainComponent class is responsible for handling train-related events and fetching train data.
+ * It extends the BackendComponent class and utilizes the StationInfoFetcher to retrieve station information.
+ * 
+ * Listens for TRAIN_REQUEST events and responds with TRAIN_RESPONSE events.
+ */
 public class TrainComponent extends BackendComponent {
 
     StationInfoFetcher stationInfoFetcher;

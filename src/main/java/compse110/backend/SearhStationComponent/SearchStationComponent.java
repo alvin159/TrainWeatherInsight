@@ -14,7 +14,8 @@ import compse110.backend.utils.BackendComponent;
  * The SearchStationComponent class is responsible for handling search station requests.
  * It extends the BackendComponent class and utilizes the StationInfoFetcher class to search for stations.
  * 
- * The component should only be used through Events
+ * Listens for SEARCH_STATION_REQUEST and ADD_STATION_NAME_REQUEST events and responds with
+ * SEARCH_STATION_RESPONSE and ADD_STATION_NAME_REQUEST events.
  */
 public class SearchStationComponent extends BackendComponent {
     private StationInfoFetcher stationInfoFetcher;

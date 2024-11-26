@@ -28,6 +28,8 @@ import java.time.format.DateTimeFormatter;
  * Usage example:
  * WeatherComponent weatherComponent = new WeatherComponent();
  * weatherComponent.initialize(); // Subscribes to WEATHER_REQUEST events
+ * 
+ * Listens for WEATHER_REQUEST events and responds with WEATHER_RESPONSE events.
  */
 
 public class WeatherComponent extends BackendComponent{

@@ -24,6 +24,8 @@ import java.io.IOException;
  *
  * <p>The class integrates with a message broker for subscribing to and publishing events, and
  * processes JSON data using the Gson library.
+ * 
+ * Listens for DEMOGRAPHIC_REQUEST events and responds with DEMOGRAPHIC_RESPONSE events.
  */
 public class DemographicComponent extends BackendComponent {
 
