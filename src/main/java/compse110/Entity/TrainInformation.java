@@ -19,6 +19,8 @@ public class TrainInformation {
 
     private String departureTrack; //i.e. Track 1 or Track 2A 3B
 
+    private String departureStationName;
+
     private String arriveStationName;
 
     private Date arriveTime;
@@ -97,6 +99,14 @@ public class TrainInformation {
 
     public void setArriveStationName(String arriveStationName) {
         this.arriveStationName = arriveStationName;
+    }
+
+    public String getDepartureStationName() {
+        return departureStationName;
+    }
+
+    public void setDepartureStationName(String departureStationName) {
+        this.departureStationName = departureStationName;
     }
 
     public Date getArriveTime() {

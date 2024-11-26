@@ -60,7 +60,7 @@ public class TrainDetailPage extends Application {
         VBox topBox = new VBox(5);
         topBox.setStyle("-fx-padding: 10;");
 
-        String departureText = trainInformation.getTrainName() + "\nDeparture " + mergedStops.get(0).getStationName() + "  " + timeFormat.format(trainInformation.getDepartureTime());
+        String departureText = trainInformation.getTrainName() + "\nDeparture " + trainInformation.getDepartureStationName() + "  " + timeFormat.format(trainInformation.getDepartureTime());
         Label departInfo = new Label(departureText);
         departInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
@@ -100,8 +100,7 @@ public class TrainDetailPage extends Application {
         VBox bottomBox = new VBox(5);
         bottomBox.setStyle("-fx-padding: 10;");
 
-        String arrivalText = "Arrives " + timeFormat.format(trainInformation.getArriveTime())
-                + " " + trainInformation.getArriveStationName();
+        String arrivalText = "Arrives " + trainInformation.getArriveStationName() + "  " +timeFormat.format(trainInformation.getArriveTime());
         Label arrivalInfo = new Label(arrivalText);
         arrivalInfo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         // Add close button

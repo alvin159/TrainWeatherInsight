@@ -89,6 +89,7 @@ public class TrainComponent extends BackendComponent {
             TrainInformation information = new TrainInformation();
             information.setId(i);
             information.setTrainName(trainData.getTrainType() + trainData.getTrainNumber());
+            information.setDepartureStationName(stationInfoFetcher.getStationByShortCode(departureStationShortCode).getStationName());
 
             TimeTableRows departureRow = getTimeTableRowsFromTrainData(trainData, departureStationShortCode);
             if (departureRow != null) {
