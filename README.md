@@ -11,3 +11,7 @@ git clone https://github.com/alvin159/TrainWeatherInsight.git
 2. Use command `mvn clean javafx:run` on the root directory to run the application
 
 All required dependencies are already included in the `pom.xml`, Maven will automatically download the dependencies.
+
+## Generate Javadoc report
+1. Use command `mvn clean javadoc:javadoc`
+2. Open target\site\apidocs\index.html to your browser
