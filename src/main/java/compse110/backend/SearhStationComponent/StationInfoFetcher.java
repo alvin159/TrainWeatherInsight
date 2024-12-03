@@ -1,6 +1,7 @@
 package compse110.backend.SearhStationComponent;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import compse110.Entity.Station;
 import compse110.Entity.TimeTableRows;
@@ -71,7 +72,10 @@ public class StationInfoFetcher {
         File cacheFile = new File(cacheFilePath);
         if (cacheFile.exists()) {
             try (FileReader reader = new FileReader(cacheFile)) {
-                StationStorage storage = new Gson().fromJson(reader, StationStorage.class);
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(Date.class, new CustomDateTypeAdapter())
+                        .create();
+                StationStorage storage = gson.fromJson(reader, StationStorage.class);
                 if (storage != null && storage.getCacheTime() != null) {
                     long diff = new Date().getTime() - storage.getCacheTime().getTime();
                     if (diff < CACHE_MAX_DAY * 24 * 60 * 60 * 1000) { // check if the cache is expired
